@@ -1,0 +1,56 @@
+/* SkillsBar Component - Diagonal Marquee
+   Reference: styles.css lines 285-337 */
+
+.skillsBar {
+    position: absolute;
+    bottom: 5vw;
+    width: 150vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.skillsBarInner {
+    width: 100%;
+}
+
+.skillsWrapper {
+    background-color: var(--color-background);
+    border: clamp(3px, 0.4vw, 5px) solid var(--color-black);
+    height: clamp(50px, 7vw, 91px);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-left: 0;
+    border-right: 0;
+}
+
+.skillsContent {
+    display: flex;
+    align-items: center;
+    gap: clamp(30px, 5vw, 70px);
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: var(--font-size-skills);
+    color: var(--color-accent-purple);
+    white-space: nowrap;
+    line-height: normal;
+    animation: scroll-skills 20s linear infinite;
+}
+
+.skillsContent span {
+    flex-shrink: 0;
+}
+
+@keyframes scroll-skills {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}

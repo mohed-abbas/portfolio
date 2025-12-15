@@ -1,0 +1,97 @@
+/* HeroText Component - Text and Arm Section
+   Reference: styles.css lines 173-251 */
+
+.textAndArm {
+    position: relative;
+    padding-top: clamp(80px, 10vw, 121px);
+    padding-left: var(--spacing-nav-side);
+    padding-right: var(--spacing-nav-side);
+    z-index: 5;
+}
+
+/* Hero Text Base Styles */
+.heroText {
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: var(--font-size-hero);
+    line-height: 0.85;
+    margin: 0;
+    padding: 0;
+}
+
+/* MOHED Text */
+.heroTextMohed {
+    color: var(--color-primary-text);
+    display: block;
+    perspective: 1000px;
+}
+
+/* Individual letter for stagger animation */
+.letter {
+    display: inline-block;
+    transform-style: preserve-3d;
+}
+
+/* ABBAS Text */
+.heroTextAbbas {
+    display: block;
+    text-align: right;
+    margin-top: clamp(10px, 2vw, 20px);
+    transform-origin: center bottom;
+    will-change: transform;
+    perspective: 1000px;
+}
+
+/* Individual ABBAS letter for stagger animation */
+.abbasLetter {
+    display: inline-block;
+    transform-style: preserve-3d;
+    transform-origin: center bottom;
+    will-change: transform, opacity;
+}
+
+/* Text Color Utilities */
+.textPurple {
+    color: var(--color-accent-purple);
+}
+
+.textDark {
+    color: var(--color-primary-text);
+}
+
+/* Hand Illustration */
+.handIllustration {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(35%, -65%);
+    width: clamp(100px, 20vw, 24vw);
+    height: clamp(100px, 20vw, 24vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transform-origin: bottom center;
+    will-change: transform, opacity;
+}
+
+.handIllustration img {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-4.54deg);
+    object-fit: contain;
+}
+
+/* Tagline */
+.tagline {
+    margin-top: clamp(30px, 5vw, 60px);
+    max-width: 400px;
+    margin-left: auto;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: var(--font-size-tagline);
+    color: var(--color-primary-text);
+    text-align: right;
+    text-transform: uppercase;
+    line-height: 1.4;
+}

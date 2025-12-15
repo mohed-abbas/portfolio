@@ -1,0 +1,13 @@
+/* Hero Section - Main Container
+   Reference: styles.css lines 79-88 */
+
+.hero {
+    position: relative;
+    min-width: 100%;
+    max-width: var(--canvas-max-width);
+    min-height: var(--canvas-min-height);
+    margin: 0 auto;
+    background-color: var(--color-background);
+    overflow: hidden;
+    padding-bottom: 60px;
+}

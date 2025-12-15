@@ -1,0 +1,67 @@
+/* Navbar Component
+   Reference: styles.css lines 111-169 */
+
+.navbar {
+    position: absolute;
+    top: var(--spacing-nav-top);
+    left: var(--spacing-nav-side);
+    right: var(--spacing-nav-side);
+    width: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.navLeft {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 25px;
+}
+
+.hamburgerMenu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 16px;
+    height: 25px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.hamburgerLine {
+    display: block;
+    width: 16px;
+    height: 2px;
+    background-color: var(--color-black);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.navText {
+    font-family: var(--font-navbar);
+    font-size: var(--font-size-nav);
+    font-weight: 400;
+    color: var(--color-black);
+    text-transform: uppercase;
+    line-height: normal;
+}
+
+.navContact {
+    font-family: var(--font-navbar);
+    font-size: var(--font-size-nav);
+    font-weight: 400;
+    color: var(--color-primary-text);
+    text-decoration: none;
+    text-transform: uppercase;
+    line-height: normal;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.navContact:hover {
+    color: var(--color-accent-purple);
+}
