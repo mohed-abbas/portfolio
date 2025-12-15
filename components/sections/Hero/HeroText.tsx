@@ -81,52 +81,48 @@ export function HeroText() {
       },
       '-=0.3'
     )
-    // Hand: Compressed spring decompressing pop!
-    // Starts hidden and compressed below, springs up to correct position
+    // Hand: Compressed spring popping out from behind the "B"
+    // Starts small and hidden at bottom of its container (near the B)
     .fromTo(
       handRef.current,
       {
         opacity: 0,
-        scaleY: 0.1,  // Very compressed vertically
-        scaleX: 1.5,  // Squished wide
-        yPercent: 80, // Start pushed down (hidden behind text)
-        rotate: -30,
+        scale: 0,     // Start completely hidden
+        yPercent: 30, // Slightly below (as if tucked behind B)
+        rotate: -15,
+        transformOrigin: 'center bottom', // Grow upward from bottom
       },
       {
         opacity: 1,
-        scaleY: 1.2,  // Overshoot tall
-        scaleX: 0.9,  // Overshoot narrow
-        yPercent: -10, // Spring up past rest position
+        scale: 1.15,  // Overshoot size
+        yPercent: -8, // Spring up past rest position
         rotate: 8,
-        duration: 0.3,
-        ease: 'power4.out',
+        duration: 0.35,
+        ease: 'back.out(2.5)', // Snappy pop with overshoot
       },
-      '+=0.1' // Small pause after ABBAS completes
+      '+=0.05' // Quick pause after ABBAS completes
     )
     // Spring settle with wobble - back to original position
     .to(handRef.current, {
-      scaleY: 0.95,
-      scaleX: 1.05,
-      yPercent: 5,
-      rotate: -5,
-      duration: 0.15,
-      ease: 'power2.inOut',
-    })
-    .to(handRef.current, {
-      scaleY: 1.05,
-      scaleX: 0.97,
-      yPercent: -3,
-      rotate: 3,
+      scale: 0.92,
+      yPercent: 3,
+      rotate: -6,
       duration: 0.12,
       ease: 'power2.inOut',
     })
     .to(handRef.current, {
-      scaleY: 1,
-      scaleX: 1,
+      scale: 1.08,
+      yPercent: -4,
+      rotate: 4,
+      duration: 0.1,
+      ease: 'power2.inOut',
+    })
+    .to(handRef.current, {
+      scale: 1,
       yPercent: 0,  // Back to CSS-defined position
       rotate: 0,
-      duration: 0.3,
-      ease: 'elastic.out(0.8, 0.3)',
+      duration: 0.25,
+      ease: 'elastic.out(1, 0.4)',
     })
     // Hand: Loose springy wave
     .to(handRef.current, {

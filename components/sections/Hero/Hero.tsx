@@ -18,7 +18,7 @@ export function Hero() {
       <HeroText />
 
       {/* Portrait Section */}
-      <Portrait />
+      {/* <Portrait /> */}
 
       {/* Skills Bar (Diagonal) */}
       <SkillsBar />
