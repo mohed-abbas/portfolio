@@ -94,7 +94,7 @@ export function Menu({ isOpen, onClose }: MenuProps) {
       }, 0.3)
       // 3. Numbers fade in
       .to(linkNumbers, {
-        opacity: 0.4,
+        opacity: 1,
         x: 0,
         duration: 0.5,
         stagger: 0.1,

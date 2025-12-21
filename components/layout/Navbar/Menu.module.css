@@ -107,8 +107,8 @@
 .linkNumber {
     font-family: var(--font-primary);
     font-size: clamp(12px, 1.2vw, 16px);
-    font-weight: 500;
-    color: rgba(4, 8, 15, 0.4);
+    font-weight: 600;
+    color: #04080f80;
     transition: color 0.4s ease;
     will-change: opacity, transform;
 }
@@ -121,10 +121,10 @@
 .linkInner {
     display: block;
     position: relative;
-    will-change: transform;
-    transition: transform 0.4s var(--ease-out-expo);
+    will-change: clip-path;
 }
 
+/* Base layer - dark navy text (becomes the "ghost" peeking from top) */
 .linkText {
     display: block;
     font-family: var(--font-primary);
@@ -134,10 +134,9 @@
     letter-spacing: -0.02em;
     line-height: 1.1;
     color: var(--color-primary-text);
-    transition: transform 0.4s var(--ease-out-expo);
 }
 
-/* Ghost layer - sits behind with offset to create depth */
+/* Fill layer - white text that reveals from bottom on hover */
 .linkFill {
     position: absolute;
     inset: 0;
@@ -149,22 +148,15 @@
     letter-spacing: -0.02em;
     line-height: 1.1;
     color: var(--color-background);
-    transform: translate(0, 0);
-    opacity: 0;
-    transition: transform 0.4s var(--ease-out-expo),
-                opacity 0.4s var(--ease-out-expo);
-    z-index: -1;
+    /* Start fully clipped (hidden) - inset from bottom 100% */
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.4s var(--ease-out-expo);
 }
 
-/* Double-layer hover: ghost appears offset behind */
+/* Hover: white layer fills up from bottom, revealing ~60% */
 .linkItem:hover .linkFill {
-    opacity: 1;
-    transform: translate(4px, 4px);
-}
-
-/* Hover: main text shifts slightly for enhanced depth */
-.linkItem:hover .linkText {
-    transform: translate(-2px, -2px);
+    /* Reveal from bottom: top 40% clipped, bottom 60% visible */
+    clip-path: inset(40% 0 0 0);
 }
 
 /* Link description - positioned absolutely to prevent layout shift */
@@ -174,10 +166,10 @@
     bottom: -1.2em;
     font-family: var(--font-primary);
     font-size: clamp(10px, 1vw, 14px);
-    font-weight: 400;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(4, 8, 15, 0.5);
+    color: #04080fcc;
     margin: 0;
     opacity: 0;
     transform: translateY(-5px);
