@@ -9,9 +9,8 @@ import styles from './Navbar.module.css';
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
-  const navLeftRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const navContactRef = useRef<HTMLAnchorElement>(null);
-  const hamburgerRef = useRef<HTMLButtonElement>(null);
   const hamburgerLinesRef = useRef<HTMLSpanElement[]>([]);
 
   const toggleMenu = useCallback(() => {
@@ -33,7 +32,7 @@ export function Navbar() {
     });
 
     tl.fromTo(
-      navLeftRef.current,
+      menuButtonRef.current,
       {
         opacity: 0,
         y: -30,
@@ -60,10 +59,10 @@ export function Navbar() {
 
   // Hamburger morph animation
   useGSAP(() => {
-    if (!hamburgerRef.current || hamburgerLinesRef.current.length < 3) return;
+    if (!menuButtonRef.current || hamburgerLinesRef.current.length < 3) return;
 
     const [line1, line2, line3] = hamburgerLinesRef.current;
-    const navTextEl = navLeftRef.current?.querySelector(`.${styles.navText}`);
+    const navTextEl = menuButtonRef.current.querySelector(`.${styles.navText}`);
 
     if (isMenuOpen) {
       // Morph to X - white for teal background
@@ -142,15 +141,15 @@ export function Navbar() {
   return (
     <>
       <nav ref={navRef} className={`${styles.navbar} ${isMenuOpen ? styles.menuOpen : ''}`}>
-        <div ref={navLeftRef} className={styles.navLeft}>
-          <button
-            ref={hamburgerRef}
-            className={styles.hamburgerMenu}
-            onClick={toggleMenu}
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMenuOpen}
-            aria-controls="main-menu"
-          >
+        <button
+          ref={menuButtonRef}
+          className={styles.navLeft}
+          onClick={toggleMenu}
+          aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isMenuOpen}
+          aria-controls="main-menu"
+        >
+          <span className={styles.hamburgerMenu}>
             <span
               ref={(el) => { if (el) hamburgerLinesRef.current[0] = el; }}
               className={styles.hamburgerLine}
@@ -163,12 +162,10 @@ export function Navbar() {
               ref={(el) => { if (el) hamburgerLinesRef.current[2] = el; }}
               className={styles.hamburgerLine}
             />
-          </button>
+          </span>
           <span className={styles.navText}>{isMenuOpen ? 'CLOSE' : 'MENU'}</span>
-        </div>
-        <a ref={navContactRef} href="#contact" className={styles.navContact}>
-          CONTACT
-        </a>
+        </button>
+        
       </nav>
       <Menu isOpen={isMenuOpen} onClose={closeMenu} />
     </>

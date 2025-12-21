@@ -85,7 +85,7 @@ export function InteractiveBackground() {
   ) => {
     const halfSize = size / 2;
 
-    ctx.strokeStyle = `rgba(160, 82, 255, ${opacity})`; // Purple color from design
+    ctx.strokeStyle = `rgba(98, 182, 203, ${opacity})`; // --color-accent-purple: #62B6CB
     ctx.lineWidth = STROKE_WIDTH;
     ctx.lineCap = 'round';
 

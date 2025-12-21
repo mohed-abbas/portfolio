@@ -24,6 +24,10 @@
     align-items: center;
     gap: 6px;
     height: 25px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 .hamburgerMenu {
@@ -31,28 +35,22 @@
     flex-direction: column;
     justify-content: center;
     gap: 6px;
-    width: 32px;
+    width: 24px;
     height: 25px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-    overflow: hidden;
+    pointer-events: none;
 }
 
 .hamburgerLine {
     display: block;
-    width: 32px;
+    width: 24px;
     height: 2px;
     background-color: var(--color-black);
     transform-origin: center center;
     will-change: transform, opacity, background-color;
 }
 
-/* Accent colored middle line (shorter, aligned right) */
+/* Accent colored middle line - same width, different color */
 .hamburgerLineAccent {
-    width: 20px;
-    align-self: flex-end;
     background-color: var(--color-accent-purple);
 }
 

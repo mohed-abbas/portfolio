@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef } from 'react';
-import Image from 'next/image';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import styles from './HeroText.module.css';
@@ -17,11 +16,13 @@ const ABBAS_LETTERS = [
   { letter: 'S', color: 'purple' },
 ];
 
+// Tagline words for staggered animation
+const TAGLINE_WORDS = ['I', 'design', 'solutions', 'for', 'people,', 'brands', '&', 'digital', 'products'];
+
 export function HeroText() {
   const sectionRef = useRef<HTMLElement>(null);
   const mohedRef = useRef<HTMLHeadingElement>(null);
   const abbasRef = useRef<HTMLHeadingElement>(null);
-  const handRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(() => {
@@ -29,6 +30,7 @@ export function HeroText() {
 
     const mohedLetters = mohedRef.current.querySelectorAll(`.${styles.letter}`);
     const abbasLetters = abbasRef.current.querySelectorAll(`.${styles.abbasLetter}`);
+    const taglineWords = taglineRef.current?.querySelectorAll(`.${styles.taglineWord}`);
 
     const tl = gsap.timeline({
       defaults: {
@@ -81,84 +83,30 @@ export function HeroText() {
       },
       '-=0.35'
     )
-    // Hand: Snappy spring pop
+    // Tagline: Word-by-word reveal with funky stagger
     .fromTo(
-      handRef.current,
+      taglineWords,
       {
         opacity: 0,
-        scale: 0,
-        yPercent: 25,
-        rotate: -12,
-        transformOrigin: 'center bottom',
-      },
-      {
-        opacity: 1,
-        scale: 1.12,
-        yPercent: -6,
-        rotate: 6,
-        duration: 0.4,
-        ease: 'back.out(2.2)',
-      },
-      '+=0.05'
-    )
-    // Quick spring settle
-    .to(handRef.current, {
-      scale: 0.94,
-      yPercent: 2,
-      rotate: -5,
-      duration: 0.14,
-      ease: 'power2.inOut',
-    })
-    .to(handRef.current, {
-      scale: 1.06,
-      yPercent: -3,
-      rotate: 4,
-      duration: 0.12,
-      ease: 'power2.inOut',
-    })
-    .to(handRef.current, {
-      scale: 1,
-      yPercent: 0,
-      rotate: 0,
-      duration: 0.3,
-      ease: 'elastic.out(0.8, 0.5)',
-    })
-    // Funky wave - snappy but fluid
-    .to(handRef.current, {
-      keyframes: [
-        { rotate: 32, scaleX: 1.12, scaleY: 0.9, duration: 0.2 },
-        { rotate: -28, scaleX: 0.9, scaleY: 1.1, duration: 0.24 },
-        { rotate: 26, scaleX: 1.1, scaleY: 0.92, duration: 0.22 },
-        { rotate: -22, scaleX: 0.92, scaleY: 1.08, duration: 0.2 },
-        { rotate: 18, scaleX: 1.06, scaleY: 0.95, duration: 0.18 },
-        { rotate: -12, scaleX: 0.95, scaleY: 1.05, duration: 0.16 },
-        { rotate: 8, scaleX: 1.03, scaleY: 0.98, duration: 0.14 },
-        { rotate: -4, scaleX: 0.98, scaleY: 1.02, duration: 0.12 },
-      ],
-      ease: 'sine.inOut',
-    })
-    // Final settle
-    .to(handRef.current, {
-      rotate: 0,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 0.9,
-      ease: 'elastic.out(0.6, 0.25)',
-    })
-    // Tagline fades up
-    .fromTo(
-      taglineRef.current,
-      {
-        opacity: 0,
-        y: 20,
+        y: 40,
+        rotateX: -60,
+        scale: 0.8,
+        filter: 'blur(8px)',
       },
       {
         opacity: 1,
         y: 0,
-        duration: 0.8,
-        ease: 'power3.out',
+        rotateX: 0,
+        scale: 1,
+        filter: 'blur(0px)',
+        duration: 0.6,
+        stagger: {
+          each: 0.06,
+          ease: 'power2.out',
+        },
+        ease: 'back.out(1.2)',
       },
-      '-=1.4'
+      '-=0.2' // Overlap with end of ABBAS animation
     );
   }, { scope: sectionRef });
 
@@ -187,20 +135,13 @@ export function HeroText() {
         ))}
       </h1>
 
-      {/* Hand Illustration - Springs out like compressed spring */}
-      <div ref={handRef} className={styles.handIllustration}>
-        <Image
-          src="/images/hero/cartoon-arm.svg"
-          alt="Waving hand illustration"
-          width={300}
-          height={300}
-          priority
-        />
-      </div>
-
-      {/* Tagline */}
+      {/* Tagline - Word by word for stagger animation */}
       <p ref={taglineRef} className={styles.tagline}>
-        I design solutions for people, brands &amp; digital products
+        {TAGLINE_WORDS.map((word, index) => (
+          <span key={index} className={styles.taglineWord}>
+            {word}
+          </span>
+        ))}
       </p>
     </section>
   );

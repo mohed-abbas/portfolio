@@ -5,15 +5,17 @@ import { gsap } from '@/lib/gsap';
 import styles from './CustomCursor.module.css';
 
 // Trail sphere configuration using palette colors
+// Colors: primary-text (via CSS var), accent-purple, orange, green
 const TRAIL_CONFIG = {
-  count: 3,
+  count: 4,
   colors: [
-    '#A052FF', // --color-accent-purple
-    '#FFD700', // gold
-    '#A052FF', // purple again for cohesion
+    'var(--color-primary-text)', // Main: primary text color
+    'var(--color-accent-purple)', // Secondary: #A052FF
+    '#ffb224', // Third: orange
+    '#388e4a', // Fourth: green
   ],
-  sizes: [10, 8, 6], // Decreasing sizes
-  lerpFactors: [0.12, 0.09, 0.06], // Slower follow = longer trail
+  sizes: [28, 20, 14, 8], // Decreasing sizes for 4 spheres
+  lerpFactors: [0.12, 0.09, 0.06, 0.04], // Slower follow = longer trail
 };
 
 interface TrailSphere {
