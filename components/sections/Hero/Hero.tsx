@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/layout/Navbar';
-import { BackgroundGrid } from './BackgroundGrid';
+import { InteractiveBackground } from './InteractiveBackground';
 import { HeroText } from './HeroText';
 import { Portrait } from './Portrait';
 import { SkillsBar } from './SkillsBar';
@@ -8,8 +8,8 @@ import styles from './Hero.module.css';
 export function Hero() {
   return (
     <main className={styles.hero}>
-      {/* Background Grid with Plus Signs */}
-      <BackgroundGrid />
+      {/* Interactive Background with Hover Micro-interactions */}
+      <InteractiveBackground />
 
       {/* Navbar */}
       <Navbar />

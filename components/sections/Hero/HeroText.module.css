@@ -84,9 +84,12 @@
 
 /* Tagline */
 .tagline {
-    margin-top: clamp(30px, 5vw, 60px);
-    max-width: 400px;
+    position: relative;
+    margin-top: clamp(40px, 6vw, 80px);
+    max-width: clamp(280px, 28vw, 420px);
     margin-left: auto;
+    margin-right: 0;
+    padding-right: 0;
     font-family: var(--font-primary);
     font-weight: 700;
     font-size: var(--font-size-tagline);
@@ -94,4 +97,20 @@
     text-align: right;
     text-transform: uppercase;
     line-height: 1.4;
+}
+
+/* Responsive adjustments for MacBook 14" and similar screens */
+@media (min-width: 1200px) and (max-width: 1600px) {
+    .tagline {
+        margin-top: clamp(50px, 5vw, 70px);
+        max-width: 380px;
+    }
+}
+
+/* Larger desktop adjustments */
+@media (min-width: 1600px) {
+    .tagline {
+        margin-top: 80px;
+        max-width: 420px;
+    }
 }

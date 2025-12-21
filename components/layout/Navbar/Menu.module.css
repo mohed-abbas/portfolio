@@ -1,0 +1,114 @@
+/* Menu Component - Full-screen overlay navigation */
+
+.menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-nav);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+}
+
+.menuOpen {
+    visibility: visible;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-black);
+    opacity: 0;
+}
+
+.nav {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: var(--spacing-nav-side);
+}
+
+.linkList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vw;
+}
+
+.linkItem {
+    overflow: hidden;
+}
+
+/* Mask container for reveal animation */
+.linkMask {
+    overflow: hidden;
+    line-height: 1;
+}
+
+.link {
+    display: block;
+    position: relative;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-menu);
+    font-weight: 500;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    color: var(--color-background);
+    cursor: pointer;
+    will-change: transform, opacity;
+}
+
+/* Base text layer */
+.linkText {
+    display: block;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+
+/* Fill layer for hover effect */
+.linkFill {
+    position: absolute;
+    inset: 0;
+    display: block;
+    color: var(--color-accent-purple);
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.4s var(--ease-out-expo);
+}
+
+/* Hover effects */
+.link:hover .linkText {
+    transform: translateY(-10%);
+}
+
+.link:hover .linkFill {
+    clip-path: inset(0 0 0 0);
+}
+
+/* Focus styles */
+.link:focus-visible {
+    outline: 2px solid var(--color-accent-purple);
+    outline-offset: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .linkList {
+        gap: 1vw;
+    }
+
+    .link {
+        font-weight: 500;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav {
+        padding: 20px;
+    }
+
+    .linkList {
+        gap: 2vw;
+    }
+}

@@ -10,7 +10,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 10;
+    z-index: var(--z-above);
+    transition: z-index 0s;
+}
+
+.navbar.menuOpen {
+    position: fixed;
+    z-index: calc(var(--z-nav) + 1);
 }
 
 .navLeft {
@@ -38,7 +44,8 @@
     width: 16px;
     height: 2px;
     background-color: var(--color-black);
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: center center;
+    will-change: transform, opacity, background-color;
 }
 
 .navText {

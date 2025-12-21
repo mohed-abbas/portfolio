@@ -37,33 +37,33 @@ export function HeroText() {
       delay: 0.3,
     });
 
-    // MOHED: Letter-by-letter reveal from left to right
+    // MOHED: Letter-by-letter reveal - snappy but smooth
     tl.fromTo(
       mohedLetters,
       {
         opacity: 0,
-        y: 80,
-        rotateX: -90,
+        y: 70,
+        rotateX: -75,
       },
       {
         opacity: 1,
         y: 0,
         rotateX: 0,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: 'back.out(1.2)',
+        duration: 0.7,
+        stagger: 0.09,
+        ease: 'back.out(1.4)',
       }
     )
-    // ABBAS: Letter-by-letter with bounce and funk
+    // ABBAS: Funky bounce - snappy with personality
     .fromTo(
       abbasLetters,
       {
         opacity: 0,
-        y: 120,
-        scaleY: 0.3,
-        scaleX: 1.4,
-        skewX: -20,
-        rotate: -15,
+        y: 100,
+        scaleY: 0.4,
+        scaleX: 1.3,
+        skewX: -15,
+        rotate: -10,
       },
       {
         opacity: 1,
@@ -72,94 +72,93 @@ export function HeroText() {
         scaleX: 1,
         skewX: 0,
         rotate: 0,
-        duration: 0.7,
+        duration: 0.75,
         stagger: {
-          each: 0.1,
+          each: 0.08,
           ease: 'power2.out',
         },
-        ease: 'elastic.out(1, 0.4)', // Bouncy funky landing
+        ease: 'elastic.out(1, 0.6)', // Funky but controlled bounce
       },
-      '-=0.3'
+      '-=0.35'
     )
-    // Hand: Compressed spring popping out from behind the "B"
-    // Starts small and hidden at bottom of its container (near the B)
+    // Hand: Snappy spring pop
     .fromTo(
       handRef.current,
       {
         opacity: 0,
-        scale: 0,     // Start completely hidden
-        yPercent: 30, // Slightly below (as if tucked behind B)
-        rotate: -15,
-        transformOrigin: 'center bottom', // Grow upward from bottom
+        scale: 0,
+        yPercent: 25,
+        rotate: -12,
+        transformOrigin: 'center bottom',
       },
       {
         opacity: 1,
-        scale: 1.15,  // Overshoot size
-        yPercent: -8, // Spring up past rest position
-        rotate: 8,
-        duration: 0.35,
-        ease: 'back.out(2.5)', // Snappy pop with overshoot
+        scale: 1.12,
+        yPercent: -6,
+        rotate: 6,
+        duration: 0.4,
+        ease: 'back.out(2.2)',
       },
-      '+=0.05' // Quick pause after ABBAS completes
+      '+=0.05'
     )
-    // Spring settle with wobble - back to original position
+    // Quick spring settle
     .to(handRef.current, {
-      scale: 0.92,
-      yPercent: 3,
-      rotate: -6,
+      scale: 0.94,
+      yPercent: 2,
+      rotate: -5,
+      duration: 0.14,
+      ease: 'power2.inOut',
+    })
+    .to(handRef.current, {
+      scale: 1.06,
+      yPercent: -3,
+      rotate: 4,
       duration: 0.12,
       ease: 'power2.inOut',
     })
     .to(handRef.current, {
-      scale: 1.08,
-      yPercent: -4,
-      rotate: 4,
-      duration: 0.1,
-      ease: 'power2.inOut',
-    })
-    .to(handRef.current, {
       scale: 1,
-      yPercent: 0,  // Back to CSS-defined position
+      yPercent: 0,
       rotate: 0,
-      duration: 0.25,
-      ease: 'elastic.out(1, 0.4)',
+      duration: 0.3,
+      ease: 'elastic.out(0.8, 0.5)',
     })
-    // Hand: Loose springy wave
+    // Funky wave - snappy but fluid
     .to(handRef.current, {
       keyframes: [
-        { rotate: 35, scaleX: 1.15, scaleY: 0.9, duration: 0.18 },
-        { rotate: -30, scaleX: 0.88, scaleY: 1.12, duration: 0.22 },
-        { rotate: 32, scaleX: 1.12, scaleY: 0.92, duration: 0.2 },
-        { rotate: -28, scaleX: 0.9, scaleY: 1.1, duration: 0.2 },
-        { rotate: 25, scaleX: 1.08, scaleY: 0.94, duration: 0.18 },
-        { rotate: -18, scaleX: 0.94, scaleY: 1.06, duration: 0.16 },
-        { rotate: 12, scaleX: 1.04, scaleY: 0.97, duration: 0.14 },
-        { rotate: -8, scaleX: 0.97, scaleY: 1.03, duration: 0.12 },
-        { rotate: 5, scaleX: 1.02, scaleY: 0.99, duration: 0.1 },
+        { rotate: 32, scaleX: 1.12, scaleY: 0.9, duration: 0.2 },
+        { rotate: -28, scaleX: 0.9, scaleY: 1.1, duration: 0.24 },
+        { rotate: 26, scaleX: 1.1, scaleY: 0.92, duration: 0.22 },
+        { rotate: -22, scaleX: 0.92, scaleY: 1.08, duration: 0.2 },
+        { rotate: 18, scaleX: 1.06, scaleY: 0.95, duration: 0.18 },
+        { rotate: -12, scaleX: 0.95, scaleY: 1.05, duration: 0.16 },
+        { rotate: 8, scaleX: 1.03, scaleY: 0.98, duration: 0.14 },
+        { rotate: -4, scaleX: 0.98, scaleY: 1.02, duration: 0.12 },
       ],
       ease: 'sine.inOut',
     })
-    // Final wobbly settle
+    // Final settle
     .to(handRef.current, {
       rotate: 0,
       scaleX: 1,
       scaleY: 1,
-      duration: 0.8,
-      ease: 'elastic.out(0.8, 0.15)',
+      duration: 0.9,
+      ease: 'elastic.out(0.6, 0.25)',
     })
     // Tagline fades up
     .fromTo(
       taglineRef.current,
       {
         opacity: 0,
-        y: 30,
+        y: 20,
       },
       {
         opacity: 1,
         y: 0,
         duration: 0.8,
+        ease: 'power3.out',
       },
-      '-=1.5' // Start during the wave
+      '-=1.4'
     );
   }, { scope: sectionRef });
 

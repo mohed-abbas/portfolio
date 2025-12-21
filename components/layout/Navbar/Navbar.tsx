@@ -1,15 +1,28 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
+import { Menu } from './Menu';
 import styles from './Navbar.module.css';
 
 export function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const navLeftRef = useRef<HTMLDivElement>(null);
   const navContactRef = useRef<HTMLAnchorElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const hamburgerLinesRef = useRef<HTMLSpanElement[]>([]);
 
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen((prev) => !prev);
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
+
+  // Initial navbar animation
   useGSAP(() => {
     if (!navRef.current) return;
 
@@ -19,7 +32,6 @@ export function Navbar() {
       },
     });
 
-    // Animate navbar elements from top with stagger
     tl.fromTo(
       navLeftRef.current,
       {
@@ -42,27 +54,123 @@ export function Navbar() {
         y: 0,
         duration: 0.8,
       },
-      '-=0.6' // Overlap with previous animation
+      '-=0.6'
     );
   }, { scope: navRef });
 
+  // Hamburger morph animation
+  useGSAP(() => {
+    if (!hamburgerRef.current || hamburgerLinesRef.current.length < 3) return;
+
+    const [line1, line2, line3] = hamburgerLinesRef.current;
+    const navTextEl = navLeftRef.current?.querySelector(`.${styles.navText}`);
+
+    if (isMenuOpen) {
+      // Morph to X
+      gsap.to(line1, {
+        rotation: 45,
+        y: 7,
+        backgroundColor: 'var(--color-background)',
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+      gsap.to(line2, {
+        opacity: 0,
+        scaleX: 0,
+        duration: 0.2,
+        ease: 'power2.out',
+      });
+      gsap.to(line3, {
+        rotation: -45,
+        y: -7,
+        backgroundColor: 'var(--color-background)',
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+      // Change nav text color
+      if (navTextEl) {
+        gsap.to(navTextEl, {
+          color: 'var(--color-background)',
+          duration: 0.3,
+        });
+      }
+      if (navContactRef.current) {
+        gsap.to(navContactRef.current, {
+          color: 'var(--color-background)',
+          duration: 0.3,
+        });
+      }
+    } else {
+      // Morph back to hamburger
+      gsap.to(line1, {
+        rotation: 0,
+        y: 0,
+        backgroundColor: 'var(--color-black)',
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+      gsap.to(line2, {
+        opacity: 1,
+        scaleX: 1,
+        duration: 0.2,
+        ease: 'power2.out',
+        delay: 0.1,
+      });
+      gsap.to(line3, {
+        rotation: 0,
+        y: 0,
+        backgroundColor: 'var(--color-black)',
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+      // Reset nav text color
+      if (navTextEl) {
+        gsap.to(navTextEl, {
+          color: 'var(--color-black)',
+          duration: 0.3,
+        });
+      }
+      if (navContactRef.current) {
+        gsap.to(navContactRef.current, {
+          color: 'var(--color-primary-text)',
+          duration: 0.3,
+        });
+      }
+    }
+  }, { dependencies: [isMenuOpen] });
+
   return (
-    <nav ref={navRef} className={styles.navbar}>
-      <div ref={navLeftRef} className={styles.navLeft}>
-        <button
-          className={styles.hamburgerMenu}
-          aria-label="Open menu"
-          aria-expanded="false"
-        >
-          <span className={styles.hamburgerLine} />
-          <span className={styles.hamburgerLine} />
-          <span className={styles.hamburgerLine} />
-        </button>
-        <span className={styles.navText}>MENU</span>
-      </div>
-      <a ref={navContactRef} href="#contact" className={styles.navContact}>
-        CONTACT
-      </a>
-    </nav>
+    <>
+      <nav ref={navRef} className={`${styles.navbar} ${isMenuOpen ? styles.menuOpen : ''}`}>
+        <div ref={navLeftRef} className={styles.navLeft}>
+          <button
+            ref={hamburgerRef}
+            className={styles.hamburgerMenu}
+            onClick={toggleMenu}
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
+            aria-controls="main-menu"
+          >
+            <span
+              ref={(el) => { if (el) hamburgerLinesRef.current[0] = el; }}
+              className={styles.hamburgerLine}
+            />
+            <span
+              ref={(el) => { if (el) hamburgerLinesRef.current[1] = el; }}
+              className={styles.hamburgerLine}
+            />
+            <span
+              ref={(el) => { if (el) hamburgerLinesRef.current[2] = el; }}
+              className={styles.hamburgerLine}
+            />
+          </button>
+          <span className={styles.navText}>{isMenuOpen ? 'CLOSE' : 'MENU'}</span>
+        </div>
+        <a ref={navContactRef} href="#contact" className={styles.navContact}>
+          CONTACT
+        </a>
+      </nav>
+      <Menu isOpen={isMenuOpen} onClose={closeMenu} />
+    </>
   );
 }

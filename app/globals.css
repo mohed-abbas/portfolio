@@ -25,6 +25,13 @@ body {
     overflow-x: hidden;
 }
 
+/* Hide default cursor for custom cursor */
+@media (hover: hover) and (pointer: fine) {
+    * {
+        cursor: none !important;
+    }
+}
+
 html {
     scroll-behavior: smooth;
 }

@@ -1,0 +1,92 @@
+/* Custom Cursor Styles
+   - White base color for proper inversion via mix-blend-mode: difference
+   - Over white background → appears dark
+   - Over dark text → appears light (inverted)
+   - Smooth animations via GSAP
+   - Colorful trailing spheres that burst into main cursor
+*/
+
+.cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: var(--z-cursor);
+    will-change: transform;
+
+    /* Ensure cursor elements don't interfere with page interactions */
+    transform: translate(-50%, -50%);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Wrapper for isolation - enables clean blend mode for inversion */
+.cursorWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: var(--z-cursor);
+    mix-blend-mode: difference;
+}
+
+/* Trail container - no blend mode so colors stay vibrant */
+.trailContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: calc(var(--z-cursor) - 1);
+}
+
+/* Individual trail spheres - funky colorful orbs */
+.trailSphere {
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transform: translate(-50%, -50%);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+
+    /* Subtle glow effect for funky look */
+    box-shadow:
+        0 0 4px currentColor,
+        0 0 8px currentColor;
+    filter: brightness(1.1);
+}
+
+/* Responsive: Hide custom cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .cursor,
+    .cursorWrapper,
+    .trailContainer,
+    .trailSphere {
+        display: none !important;
+    }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .cursor,
+    .cursorWrapper,
+    .trailContainer,
+    .trailSphere {
+        transition: none !important;
+    }
+
+    /* Hide trail entirely for reduced motion */
+    .trailSphere {
+        display: none !important;
+    }
+}
