@@ -9,6 +9,17 @@
     height: 100%;
     z-index: 0;
     pointer-events: none; /* Mouse tracked globally via window events */
+
+    /* GPU acceleration for Chromium performance */
+    transform: translateZ(0);
+    will-change: contents;
+    contain: strict;
+
+    /* Optimize rendering */
+    image-rendering: -webkit-optimize-contrast;
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* Responsive adjustments */

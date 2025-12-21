@@ -27,6 +27,9 @@
     overflow: hidden;
     border-left: 0;
     border-right: 0;
+
+    /* Performance containment */
+    contain: content;
 }
 
 .skillsContent {
@@ -40,6 +43,13 @@
     white-space: nowrap;
     line-height: normal;
     animation: scroll-skills 20s linear infinite;
+
+    /* Performance: optimize animation for GPU */
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .skillsContent span {

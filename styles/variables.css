@@ -6,8 +6,9 @@
 :root {
     /* Colors */
     --color-background: #FFFFFF;
-    --color-primary-text: #3B3B3B;
-    --color-accent-purple: #A052FF;
+    --color-primary-text: #04080F;
+    --color-accent-purple: #62B6CB;
+    --color-accent-gold: #FFB800;
     --color-black: #000000;
     --color-gray-dark: #4C4C4C;
     --color-grid-line: #E5E5E5;

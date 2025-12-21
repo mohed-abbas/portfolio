@@ -17,6 +17,18 @@ interface MousePosition {
   y: number;
 }
 
+// Grid configuration matching the original bg.svg
+const GRID_SPACING = 24; // Space between plus signs
+const PLUS_SIZE = 10; // Size of each plus sign
+const STROKE_WIDTH = 1;
+
+// Physics constants
+const MOUSE_RADIUS = 120;
+const REPULSION_STRENGTH = 0.6;
+const RETURN_STRENGTH = 0.06;
+const FRICTION = 0.9;
+const MAX_VELOCITY = 8;
+
 export function InteractiveBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const plusSignsRef = useRef<PlusSign[]>([]);
@@ -24,17 +36,14 @@ export function InteractiveBackground() {
   const rafRef = useRef<number | null>(null);
   const isHoveringRef = useRef(false);
 
-  // Grid configuration matching the original bg.svg
-  const GRID_SPACING = 24; // Space between plus signs
-  const PLUS_SIZE = 10; // Size of each plus sign
-  const STROKE_WIDTH = 1;
+  // Performance optimization: idle state tracking
+  const isIdleRef = useRef(true);
+  const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastMousePosRef = useRef<MousePosition>({ x: -1000, y: -1000 });
+  const hasSettledRef = useRef(true); // Track if all elements have returned to origin
 
-  // Physics constants
-  const MOUSE_RADIUS = 120;
-  const REPULSION_STRENGTH = 0.6;
-  const RETURN_STRENGTH = 0.06;
-  const FRICTION = 0.9;
-  const MAX_VELOCITY = 8;
+  // Ref to hold the animate function for self-referencing
+  const animateRef = useRef<(() => void) | null>(null);
 
   const initializePlusSigns = useCallback(() => {
     const canvas = canvasRef.current;
@@ -93,64 +102,88 @@ export function InteractiveBackground() {
     ctx.stroke();
   }, []);
 
-  const animate = useCallback(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx) return;
+  // Set up animate function and store in ref for self-referencing
+  useEffect(() => {
+    const animate = () => {
+      const canvas = canvasRef.current;
+      const ctx = canvas?.getContext('2d');
+      if (!canvas || !ctx) return;
 
-    const mouse = mouseRef.current;
-    const plusSigns = plusSignsRef.current;
+      const mouse = mouseRef.current;
+      const plusSigns = plusSignsRef.current;
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    plusSigns.forEach((plus) => {
-      // Calculate distance from mouse
-      const dx = mouse.x - plus.x;
-      const dy = mouse.y - plus.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      // Apply repulsion force when mouse is near
-      if (distance < MOUSE_RADIUS && isHoveringRef.current) {
-        const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-        const angle = Math.atan2(dy, dx);
-
-        // Repel away from mouse
-        plus.vx -= Math.cos(angle) * force * REPULSION_STRENGTH;
-        plus.vy -= Math.sin(angle) * force * REPULSION_STRENGTH;
+      // Performance optimization: if idle and settled, just draw static grid
+      if (isIdleRef.current && hasSettledRef.current) {
+        plusSigns.forEach((plus) => {
+          drawPlusSign(ctx, plus.originX, plus.originY, PLUS_SIZE, 0.12);
+        });
+        rafRef.current = requestAnimationFrame(animate);
+        return;
       }
 
-      // Apply return force to original position (spring effect)
-      const returnDx = plus.originX - plus.x;
-      const returnDy = plus.originY - plus.y;
+      // Track if any element is still moving (for settle detection)
+      let maxMovement = 0;
 
-      plus.vx += returnDx * RETURN_STRENGTH;
-      plus.vy += returnDy * RETURN_STRENGTH;
+      plusSigns.forEach((plus) => {
+        // Calculate distance from mouse
+        const dx = mouse.x - plus.x;
+        const dy = mouse.y - plus.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-      // Apply friction
-      plus.vx *= FRICTION;
-      plus.vy *= FRICTION;
+        // Apply repulsion force when mouse is near
+        if (distance < MOUSE_RADIUS && isHoveringRef.current) {
+          const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
+          const angle = Math.atan2(dy, dx);
 
-      // Clamp velocity
-      plus.vx = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, plus.vx));
-      plus.vy = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, plus.vy));
+          // Repel away from mouse
+          plus.vx -= Math.cos(angle) * force * REPULSION_STRENGTH;
+          plus.vy -= Math.sin(angle) * force * REPULSION_STRENGTH;
+        }
 
-      // Update position
-      plus.x += plus.vx;
-      plus.y += plus.vy;
+        // Apply return force to original position (spring effect)
+        const returnDx = plus.originX - plus.x;
+        const returnDy = plus.originY - plus.y;
 
-      // Calculate opacity based on distance from mouse (glow effect)
-      let opacity = 0.12; // Base opacity
-      if (distance < MOUSE_RADIUS && isHoveringRef.current) {
-        const glowIntensity = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-        opacity = 0.12 + glowIntensity * 0.4; // Increase opacity near mouse
-      }
+        plus.vx += returnDx * RETURN_STRENGTH;
+        plus.vy += returnDy * RETURN_STRENGTH;
 
-      // Draw the plus sign
-      drawPlusSign(ctx, plus.x, plus.y, PLUS_SIZE, opacity);
-    });
+        // Apply friction
+        plus.vx *= FRICTION;
+        plus.vy *= FRICTION;
 
-    rafRef.current = requestAnimationFrame(animate);
+        // Clamp velocity
+        plus.vx = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, plus.vx));
+        plus.vy = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, plus.vy));
+
+        // Update position
+        plus.x += plus.vx;
+        plus.y += plus.vy;
+
+        // Track maximum movement for settle detection
+        const movement = Math.abs(plus.x - plus.originX) + Math.abs(plus.y - plus.originY);
+        if (movement > maxMovement) maxMovement = movement;
+
+        // Calculate opacity based on distance from mouse (glow effect)
+        let opacity = 0.12; // Base opacity
+        if (distance < MOUSE_RADIUS && isHoveringRef.current) {
+          const glowIntensity = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
+          opacity = 0.12 + glowIntensity * 0.4; // Increase opacity near mouse
+        }
+
+        // Draw the plus sign
+        drawPlusSign(ctx, plus.x, plus.y, PLUS_SIZE, opacity);
+      });
+
+      // Check if all elements have settled (within 0.5px of origin)
+      hasSettledRef.current = maxMovement < 0.5;
+
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    animateRef.current = animate;
   }, [drawPlusSign]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -166,6 +199,28 @@ export function InteractiveBackground() {
     // Check if mouse is within canvas bounds
     const isInBounds = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
 
+    // Performance optimization: detect actual mouse movement
+    const dx = x - lastMousePosRef.current.x;
+    const dy = y - lastMousePosRef.current.y;
+    const hasMoved = Math.abs(dx) > 2 || Math.abs(dy) > 2;
+
+    if (hasMoved && isInBounds) {
+      // Mouse is moving - exit idle state
+      isIdleRef.current = false;
+      hasSettledRef.current = false;
+      lastMousePosRef.current = { x, y };
+
+      // Clear existing timeout
+      if (idleTimeoutRef.current) {
+        clearTimeout(idleTimeoutRef.current);
+      }
+
+      // Set new idle timeout (enter idle after 150ms of no movement)
+      idleTimeoutRef.current = setTimeout(() => {
+        isIdleRef.current = true;
+      }, 150);
+    }
+
     isHoveringRef.current = isInBounds;
     mouseRef.current = { x, y };
   }, []);
@@ -180,8 +235,10 @@ export function InteractiveBackground() {
     // This allows text elements to have their own hover events
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Start animation loop
-    rafRef.current = requestAnimationFrame(animate);
+    // Start animation loop using the ref
+    if (animateRef.current) {
+      rafRef.current = requestAnimationFrame(animateRef.current);
+    }
 
     // Handle resize
     const handleResize = () => {
@@ -193,10 +250,13 @@ export function InteractiveBackground() {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
+      if (idleTimeoutRef.current) {
+        clearTimeout(idleTimeoutRef.current);
+      }
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
     };
-  }, [initializePlusSigns, animate, handleMouseMove]);
+  }, [initializePlusSigns, handleMouseMove]);
 
   return (
     <canvas

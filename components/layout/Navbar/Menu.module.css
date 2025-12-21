@@ -17,34 +17,51 @@
 .overlay {
     position: absolute;
     inset: 0;
-    background-color: var(--color-black);
+    background-color: var(--color-accent-purple);
     clip-path: inset(0% 0% 100% 0%);
     will-change: clip-path;
+    /* Performance: contain and GPU acceleration */
+    contain: strict;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 /* Background grid decoration */
 .gridDecoration {
     position: absolute;
     inset: 0;
-    opacity: 0.05;
+    opacity: 0.12;
     background-image:
-        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+        linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
     background-size: 100px 100px;
     pointer-events: none;
 }
 
-/* Purple glow decoration */
+/* Cool glow decoration - adds depth to teal background */
 .glowDecoration {
     position: absolute;
     top: 0;
     right: 0;
-    width: 50%;
+    width: 60%;
     height: 100%;
-    background: var(--color-accent-purple);
-    opacity: 0.1;
-    filter: blur(150px);
+    /* Cool cyan glow for depth on teal background */
+    background: radial-gradient(
+        ellipse 80% 60% at 70% 50%,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.06) 30%,
+        rgba(255, 255, 255, 0.02) 60%,
+        transparent 100%
+    );
     pointer-events: none;
+    /* Only render when menu is open */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Only show glow when menu is open */
+.menu.isOpen .glowDecoration {
+    opacity: 1;
 }
 
 /* Navigation container */
@@ -75,7 +92,7 @@
 /* Mask container for reveal animation */
 .linkMask {
     overflow: hidden;
-    padding: 1vw 0;
+    padding: 0.5vw 0;
 }
 
 .link {
@@ -90,15 +107,14 @@
 .linkNumber {
     font-family: var(--font-primary);
     font-size: clamp(12px, 1.2vw, 16px);
-    font-weight: 400;
-    color: var(--color-accent-purple);
-    opacity: 0.4;
-    transition: opacity 0.4s ease;
+    font-weight: 500;
+    color: rgba(4, 8, 15, 0.4);
+    transition: color 0.4s ease;
     will-change: opacity, transform;
 }
 
 .linkItem:hover .linkNumber {
-    opacity: 1;
+    color: rgba(4, 8, 15, 0.8);
 }
 
 /* Inner wrapper for the text - this is what animates */
@@ -113,62 +129,66 @@
     display: block;
     font-family: var(--font-primary);
     font-size: var(--font-size-menu);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: -0.02em;
     line-height: 1.1;
-    color: var(--color-background);
-    transition: text-shadow 0.3s var(--ease-out-expo);
+    color: var(--color-primary-text);
+    transition: transform 0.4s var(--ease-out-expo);
 }
 
-/* Fill layer for hover effect */
+/* Ghost layer - sits behind with offset to create depth */
 .linkFill {
     position: absolute;
     inset: 0;
     display: block;
     font-family: var(--font-primary);
     font-size: var(--font-size-menu);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: -0.02em;
     line-height: 1.1;
-    color: var(--color-accent-purple);
-    clip-path: inset(100% 0 0 0);
-    transition: clip-path 0.4s var(--ease-out-expo);
+    color: var(--color-background);
+    transform: translate(0, 0);
+    opacity: 0;
+    transition: transform 0.4s var(--ease-out-expo),
+                opacity 0.4s var(--ease-out-expo);
+    z-index: -1;
 }
 
-/* Hover effects - 3D layered shadow */
+/* Double-layer hover: ghost appears offset behind */
+.linkItem:hover .linkFill {
+    opacity: 1;
+    transform: translate(4px, 4px);
+}
+
+/* Hover: main text shifts slightly for enhanced depth */
 .linkItem:hover .linkText {
-    text-shadow:
-        1px 1px 0 var(--color-accent-purple),
-        2px 2px 0 var(--color-accent-purple),
-        3px 3px 0 var(--color-accent-purple),
-        4px 4px 0 var(--color-accent-purple),
-        5px 5px 0 var(--color-accent-purple),
-        6px 6px 0 var(--color-accent-purple),
-        7px 7px 0 var(--color-accent-purple),
-        8px 8px 0 var(--color-accent-purple);
+    transform: translate(-2px, -2px);
 }
 
-/* Link description */
+/* Link description - positioned absolutely to prevent layout shift */
 .linkDesc {
+    position: absolute;
+    left: calc(clamp(12px, 2vw, 24px) + clamp(24px, 3vw, 40px));
+    bottom: -1.2em;
     font-family: var(--font-primary);
     font-size: clamp(10px, 1vw, 14px);
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(4, 8, 15, 0.5);
     margin: 0;
-    padding-left: calc(clamp(12px, 2vw, 24px) + clamp(24px, 3vw, 40px));
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s var(--ease-out-expo),
-                padding-bottom 0.5s var(--ease-out-expo);
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.4s var(--ease-out-expo),
+                transform 0.4s var(--ease-out-expo);
+    pointer-events: none;
 }
 
 .linkItem:hover .linkDesc {
-    max-height: 40px;
-    padding-bottom: 1vw;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* Focus styles */
@@ -184,7 +204,7 @@
     }
 
     .linkMask {
-        padding: 2vw 0;
+        padding: 1vw 0;
     }
 }
 
@@ -196,7 +216,7 @@
     }
 
     .linkMask {
-        padding: 3vw 0;
+        padding: 1.5vw 0;
     }
 
     .linkNumber {
@@ -215,6 +235,6 @@
     }
 
     .linkMask {
-        padding: 4vw 0;
+        padding: 2vw 0;
     }
 }

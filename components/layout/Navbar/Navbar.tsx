@@ -66,7 +66,7 @@ export function Navbar() {
     const navTextEl = navLeftRef.current?.querySelector(`.${styles.navText}`);
 
     if (isMenuOpen) {
-      // Morph to X
+      // Morph to X - white for teal background
       gsap.to(line1, {
         rotation: 45,
         y: 7,
@@ -87,7 +87,7 @@ export function Navbar() {
         duration: 0.4,
         ease: 'power2.out',
       });
-      // Change nav text color
+      // Nav text white for teal background
       if (navTextEl) {
         gsap.to(navTextEl, {
           color: 'var(--color-background)',

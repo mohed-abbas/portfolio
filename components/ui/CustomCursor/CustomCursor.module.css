@@ -34,6 +34,10 @@
     pointer-events: none;
     z-index: var(--z-cursor);
     mix-blend-mode: difference;
+
+    /* Performance: isolate blend mode calculations */
+    isolation: isolate;
+    contain: layout style paint;
 }
 
 /* Trail container - no blend mode so colors stay vibrant */
@@ -45,6 +49,9 @@
     height: 100%;
     pointer-events: none;
     z-index: calc(var(--z-cursor) - 1);
+
+    /* Performance containment */
+    contain: layout style;
 }
 
 /* Individual trail spheres - funky colorful orbs */
@@ -54,16 +61,16 @@
     left: 0;
     border-radius: 50%;
     pointer-events: none;
-    will-change: transform, opacity;
+    will-change: transform;
     transform: translate(-50%, -50%);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 
-    /* Subtle glow effect for funky look */
-    box-shadow:
-        0 0 4px currentColor,
-        0 0 8px currentColor;
-    filter: brightness(1.1);
+    /* Simplified glow - reduced for Chromium performance */
+    box-shadow: 0 0 6px currentColor;
+
+    /* Performance containment */
+    contain: layout style;
 }
 
 /* Responsive: Hide custom cursor on touch devices */

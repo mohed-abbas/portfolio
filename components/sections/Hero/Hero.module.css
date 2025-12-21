@@ -10,4 +10,11 @@
     background-color: var(--color-background);
     overflow: hidden;
     padding-bottom: 60px;
+
+    /* Performance: contain layout and paint calculations */
+    contain: layout paint;
+
+    /* Force GPU layer for smoother compositing */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
