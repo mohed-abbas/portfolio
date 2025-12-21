@@ -4,28 +4,57 @@
     position: fixed;
     inset: 0;
     z-index: var(--z-nav);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     visibility: hidden;
+    pointer-events: none;
 }
 
-.menuOpen {
+.menu.isOpen {
     visibility: visible;
+    pointer-events: auto;
 }
 
+/* Overlay with clipPath animation */
 .overlay {
     position: absolute;
     inset: 0;
     background-color: var(--color-black);
-    opacity: 0;
+    clip-path: inset(0% 0% 100% 0%);
+    will-change: clip-path;
 }
 
+/* Background grid decoration */
+.gridDecoration {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 100px 100px;
+    pointer-events: none;
+}
+
+/* Purple glow decoration */
+.glowDecoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: var(--color-accent-purple);
+    opacity: 0.1;
+    filter: blur(150px);
+    pointer-events: none;
+}
+
+/* Navigation container */
 .nav {
-    position: relative;
-    z-index: 1;
-    width: 100%;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
     padding: var(--spacing-nav-side);
+    padding-top: calc(var(--spacing-nav-top) + 60px);
 }
 
 .linkList {
@@ -34,37 +63,62 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5vw;
+    gap: 0;
+    width: 100%;
+    max-width: 1200px;
 }
 
 .linkItem {
-    overflow: hidden;
+    position: relative;
 }
 
 /* Mask container for reveal animation */
 .linkMask {
     overflow: hidden;
-    line-height: 1;
+    padding: 1vw 0;
 }
 
 .link {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(12px, 2vw, 24px);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Link number (01, 02, etc.) */
+.linkNumber {
+    font-family: var(--font-primary);
+    font-size: clamp(12px, 1.2vw, 16px);
+    font-weight: 400;
+    color: var(--color-accent-purple);
+    opacity: 0.4;
+    transition: opacity 0.4s ease;
+    will-change: opacity, transform;
+}
+
+.linkItem:hover .linkNumber {
+    opacity: 1;
+}
+
+/* Inner wrapper for the text - this is what animates */
+.linkInner {
     display: block;
     position: relative;
+    will-change: transform;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+
+.linkText {
+    display: block;
     font-family: var(--font-primary);
     font-size: var(--font-size-menu);
     font-weight: 500;
-    text-decoration: none;
     text-transform: uppercase;
     letter-spacing: -0.02em;
+    line-height: 1.1;
     color: var(--color-background);
-    cursor: pointer;
-    will-change: transform, opacity;
-}
-
-/* Base text layer */
-.linkText {
-    display: block;
-    transition: transform 0.4s var(--ease-out-expo);
+    transition: text-shadow 0.3s var(--ease-out-expo);
 }
 
 /* Fill layer for hover effect */
@@ -72,18 +126,49 @@
     position: absolute;
     inset: 0;
     display: block;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-menu);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
     color: var(--color-accent-purple);
     clip-path: inset(100% 0 0 0);
     transition: clip-path 0.4s var(--ease-out-expo);
 }
 
-/* Hover effects */
-.link:hover .linkText {
-    transform: translateY(-10%);
+/* Hover effects - 3D layered shadow */
+.linkItem:hover .linkText {
+    text-shadow:
+        1px 1px 0 var(--color-accent-purple),
+        2px 2px 0 var(--color-accent-purple),
+        3px 3px 0 var(--color-accent-purple),
+        4px 4px 0 var(--color-accent-purple),
+        5px 5px 0 var(--color-accent-purple),
+        6px 6px 0 var(--color-accent-purple),
+        7px 7px 0 var(--color-accent-purple),
+        8px 8px 0 var(--color-accent-purple);
 }
 
-.link:hover .linkFill {
-    clip-path: inset(0 0 0 0);
+/* Link description */
+.linkDesc {
+    font-family: var(--font-primary);
+    font-size: clamp(10px, 1vw, 14px);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.3);
+    margin: 0;
+    padding-left: calc(clamp(12px, 2vw, 24px) + clamp(24px, 3vw, 40px));
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s var(--ease-out-expo),
+                padding-bottom 0.5s var(--ease-out-expo);
+}
+
+.linkItem:hover .linkDesc {
+    max-height: 40px;
+    padding-bottom: 1vw;
 }
 
 /* Focus styles */
@@ -93,22 +178,43 @@
 }
 
 /* Responsive adjustments */
+@media (max-width: 1024px) {
+    .linkDesc {
+        display: none;
+    }
+
+    .linkMask {
+        padding: 2vw 0;
+    }
+}
+
 @media (max-width: 768px) {
-    .linkList {
-        gap: 1vw;
+    .nav {
+        padding: 20px;
+        padding-top: 100px;
+        align-items: flex-start;
+    }
+
+    .linkMask {
+        padding: 3vw 0;
+    }
+
+    .linkNumber {
+        display: none;
     }
 
     .link {
-        font-weight: 500;
+        gap: 0;
     }
 }
 
 @media (max-width: 480px) {
     .nav {
-        padding: 20px;
+        padding: 16px;
+        padding-top: 80px;
     }
 
-    .linkList {
-        gap: 2vw;
+    .linkMask {
+        padding: 4vw 0;
     }
 }

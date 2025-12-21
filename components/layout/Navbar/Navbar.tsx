@@ -71,20 +71,20 @@ export function Navbar() {
         rotation: 45,
         y: 7,
         backgroundColor: 'var(--color-background)',
-        duration: 0.3,
+        duration: 0.4,
         ease: 'power2.out',
       });
       gsap.to(line2, {
         opacity: 0,
-        scaleX: 0,
-        duration: 0.2,
+        x: 20,
+        duration: 0.3,
         ease: 'power2.out',
       });
       gsap.to(line3, {
         rotation: -45,
         y: -7,
         backgroundColor: 'var(--color-background)',
-        duration: 0.3,
+        duration: 0.4,
         ease: 'power2.out',
       });
       // Change nav text color
@@ -106,13 +106,13 @@ export function Navbar() {
         rotation: 0,
         y: 0,
         backgroundColor: 'var(--color-black)',
-        duration: 0.3,
+        duration: 0.4,
         ease: 'power2.out',
       });
       gsap.to(line2, {
         opacity: 1,
-        scaleX: 1,
-        duration: 0.2,
+        x: 0,
+        duration: 0.3,
         ease: 'power2.out',
         delay: 0.1,
       });
@@ -120,7 +120,7 @@ export function Navbar() {
         rotation: 0,
         y: 0,
         backgroundColor: 'var(--color-black)',
-        duration: 0.3,
+        duration: 0.4,
         ease: 'power2.out',
       });
       // Reset nav text color
@@ -157,7 +157,7 @@ export function Navbar() {
             />
             <span
               ref={(el) => { if (el) hamburgerLinesRef.current[1] = el; }}
-              className={styles.hamburgerLine}
+              className={`${styles.hamburgerLine} ${styles.hamburgerLineAccent}`}
             />
             <span
               ref={(el) => { if (el) hamburgerLinesRef.current[2] = el; }}

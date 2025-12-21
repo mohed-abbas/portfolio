@@ -30,22 +30,30 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 5px;
-    width: 16px;
+    gap: 6px;
+    width: 32px;
     height: 25px;
     cursor: pointer;
     background: none;
     border: none;
     padding: 0;
+    overflow: hidden;
 }
 
 .hamburgerLine {
     display: block;
-    width: 16px;
+    width: 32px;
     height: 2px;
     background-color: var(--color-black);
     transform-origin: center center;
     will-change: transform, opacity, background-color;
+}
+
+/* Accent colored middle line (shorter, aligned right) */
+.hamburgerLineAccent {
+    width: 20px;
+    align-self: flex-end;
+    background-color: var(--color-accent-purple);
 }
 
 .navText {
