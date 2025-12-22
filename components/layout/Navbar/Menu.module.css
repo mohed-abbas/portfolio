@@ -64,14 +64,21 @@
     opacity: 1;
 }
 
-/* Navigation container */
-.nav {
+/* Menu content wrapper - two column layout */
+.menuContent {
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: center;
+    justify-content: space-between;
     padding: var(--spacing-nav-side);
     padding-top: calc(var(--spacing-nav-top) + 60px);
+}
+
+/* Navigation container - left side */
+.nav {
+    display: flex;
+    align-items: center;
+    flex: 1;
 }
 
 .linkList {
@@ -189,6 +196,135 @@
     outline-offset: 8px;
 }
 
+/* ===== Social Section - Right Side ===== */
+.socialSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding-bottom: 60px;
+    gap: 40px;
+    text-align: right;
+    will-change: opacity, transform;
+}
+
+.socialGroup,
+.locationGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.socialLabel {
+    font-family: var(--font-navbar);
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-accent-teal);
+    will-change: opacity, transform;
+}
+
+.socialList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.socialItem {
+    overflow: hidden;
+}
+
+.socialLink {
+    display: block;
+    font-family: var(--font-primary);
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--color-background);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    will-change: opacity, transform;
+}
+
+.socialLink:hover {
+    color: var(--color-accent-teal);
+}
+
+.socialLink:focus-visible {
+    outline: 2px solid var(--color-accent-teal);
+    outline-offset: 4px;
+}
+
+.locationText {
+    font-family: var(--font-primary);
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    color: var(--color-background);
+    margin: 0;
+    will-change: opacity, transform;
+}
+
+/* Back button */
+.backButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--color-accent-teal);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    margin-top: 20px;
+    will-change: opacity, transform;
+}
+
+.backButton:hover {
+    border-color: var(--color-background);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.backButton:focus-visible {
+    outline: 2px solid var(--color-background);
+    outline-offset: 4px;
+}
+
+.backArrow {
+    color: var(--color-accent-teal);
+    transition: color 0.3s ease;
+}
+
+.backButton:hover .backArrow {
+    color: var(--color-background);
+}
+
+.backText {
+    font-family: var(--font-navbar);
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent-teal);
+    transition: color 0.3s ease;
+}
+
+.backButton:hover .backText {
+    color: var(--color-background);
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
     .linkDesc {
@@ -198,12 +334,29 @@
     .linkMask {
         padding: 1vw 0;
     }
+
+    .socialSection {
+        gap: 30px;
+        padding-bottom: 40px;
+    }
+
+    .backButton {
+        width: 70px;
+        height: 70px;
+    }
 }
 
 @media (max-width: 768px) {
-    .nav {
-        padding: 20px;
+    /* Stack layout on mobile */
+    .menuContent {
+        flex-direction: column;
+        justify-content: flex-start;
         padding-top: 100px;
+        overflow-y: auto;
+    }
+
+    .nav {
+        flex: none;
         align-items: flex-start;
     }
 
@@ -218,15 +371,71 @@
     .link {
         gap: 0;
     }
+
+    /* Social section stacks below nav links */
+    .socialSection {
+        align-items: flex-start;
+        text-align: left;
+        padding-bottom: 40px;
+        margin-top: 40px;
+        gap: 24px;
+    }
+
+    .socialGroup,
+    .locationGroup {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .socialList {
+        align-items: flex-start;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px 24px;
+    }
+
+    .backButton {
+        align-self: flex-start;
+        width: 60px;
+        height: 60px;
+        margin-top: 10px;
+    }
+
+    .backArrow {
+        width: 20px;
+        height: 20px;
+    }
+
+    .backText {
+        font-size: 10px;
+    }
 }
 
 @media (max-width: 480px) {
-    .nav {
+    .menuContent {
         padding: 16px;
         padding-top: 80px;
     }
 
     .linkMask {
         padding: 2vw 0;
+    }
+
+    .socialSection {
+        margin-top: 32px;
+        gap: 20px;
+    }
+
+    .socialLink {
+        font-size: 14px;
+    }
+
+    .locationText {
+        font-size: 12px;
+    }
+
+    .backButton {
+        width: 56px;
+        height: 56px;
     }
 }

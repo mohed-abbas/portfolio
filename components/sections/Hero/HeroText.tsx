@@ -26,11 +26,11 @@ export function HeroText() {
   const taglineRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(() => {
-    if (!sectionRef.current || !mohedRef.current || !abbasRef.current) return;
+    if (!sectionRef.current || !mohedRef.current || !abbasRef.current || !taglineRef.current) return;
 
     const mohedLetters = mohedRef.current.querySelectorAll(`.${styles.letter}`);
     const abbasLetters = abbasRef.current.querySelectorAll(`.${styles.abbasLetter}`);
-    const taglineWords = taglineRef.current?.querySelectorAll(`.${styles.taglineWord}`);
+    const taglineWords = taglineRef.current.querySelectorAll(`.${styles.taglineWord}`);
 
     const tl = gsap.timeline({
       defaults: {
