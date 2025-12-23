@@ -235,11 +235,7 @@ export function Menu({ isOpen, onClose }: MenuProps) {
 
   return (
     <div ref={menuRef} className={`${styles.menu} ${isOpen ? styles.isOpen : ''}`}>
-      <div ref={overlayRef} className={styles.overlay}>
-        {/* Background grid decoration */}
-        <div className={styles.gridDecoration} />
-        <div className={styles.glowDecoration} />
-      </div>
+      <div ref={overlayRef} className={styles.overlay} />
 
       <div className={styles.menuContent}>
         <nav className={styles.nav} role="navigation" aria-label="Main menu">
@@ -279,7 +275,30 @@ export function Menu({ isOpen, onClose }: MenuProps) {
                     rel="noopener noreferrer"
                     tabIndex={isOpen ? 0 : -1}
                   >
-                    {social.label}
+                    {/* Base text - white, moves up on hover */}
+                    <span className={styles.socialTextBase}>
+                      {social.label.split('').map((char, index) => (
+                        <span
+                          key={index}
+                          className={styles.socialChar}
+                          style={{ transitionDelay: `${index * 0.025}s` }}
+                        >
+                          {char}
+                        </span>
+                      ))}
+                    </span>
+                    {/* Clone text - teal, reveals from below on hover */}
+                    <span className={styles.socialTextClone} aria-hidden="true">
+                      {social.label.split('').map((char, index) => (
+                        <span
+                          key={index}
+                          className={styles.socialChar}
+                          style={{ transitionDelay: `${index * 0.025}s` }}
+                        >
+                          {char}
+                        </span>
+                      ))}
+                    </span>
                   </a>
                 </li>
               ))}

@@ -66,9 +66,10 @@ export function Navbar() {
 
     if (isMenuOpen) {
       // Morph to X - white for teal background
+      // y offset = 8px to center (gap:6px + line:2px = 8px between line centers)
       gsap.to(line1, {
         rotation: 45,
-        y: 7,
+        y: 8,
         backgroundColor: 'var(--color-background)',
         duration: 0.4,
         ease: 'power2.out',
@@ -81,7 +82,7 @@ export function Navbar() {
       });
       gsap.to(line3, {
         rotation: -45,
-        y: -7,
+        y: -8,
         backgroundColor: 'var(--color-background)',
         duration: 0.4,
         ease: 'power2.out',

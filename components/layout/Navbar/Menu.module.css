@@ -26,44 +26,6 @@
     -webkit-transform: translateZ(0);
 }
 
-/* Background grid decoration */
-.gridDecoration {
-    position: absolute;
-    inset: 0;
-    opacity: 0.12;
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-    background-size: 100px 100px;
-    pointer-events: none;
-}
-
-/* Cool glow decoration - adds depth to teal background */
-.glowDecoration {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 60%;
-    height: 100%;
-    /* Cool cyan glow for depth on teal background */
-    background: radial-gradient(
-        ellipse 80% 60% at 70% 50%,
-        rgba(255, 255, 255, 0.12) 0%,
-        rgba(255, 255, 255, 0.06) 30%,
-        rgba(255, 255, 255, 0.02) 60%,
-        transparent 100%
-    );
-    pointer-events: none;
-    /* Only render when menu is open */
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-/* Only show glow when menu is open */
-.menu.isOpen .glowDecoration {
-    opacity: 1;
-}
-
 /* Menu content wrapper - two column layout */
 .menuContent {
     position: absolute;
@@ -219,7 +181,7 @@
 .socialLabel {
     font-family: var(--font-navbar);
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--color-accent-teal);
@@ -241,25 +203,64 @@
 }
 
 .socialLink {
-    display: block;
+    display: inline-block;
+    position: relative;
     font-family: var(--font-primary);
     font-size: clamp(16px, 2vw, 20px);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    color: var(--color-background);
     text-decoration: none;
-    transition: color 0.3s ease;
-    will-change: opacity, transform;
+    overflow: hidden;
 }
 
-.socialLink:hover {
+/* Base text layer - white, visible by default */
+.socialTextBase {
+    display: flex;
+    color: var(--color-background);
+}
+
+/* Clone text layer - teal, positioned below, reveals on hover */
+.socialTextClone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
     color: var(--color-accent-teal);
 }
 
+/* Individual character for stagger animation */
+.socialChar {
+    display: inline-block;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+
+/* Clone characters start below */
+.socialTextClone .socialChar {
+    transform: translateY(100%);
+}
+
+/* On hover: base text moves up, clone text moves into place */
+.socialLink:hover .socialTextBase .socialChar {
+    transform: translateY(-100%);
+}
+
+.socialLink:hover .socialTextClone .socialChar {
+    transform: translateY(0);
+}
+
+/* Focus states */
 .socialLink:focus-visible {
     outline: 2px solid var(--color-accent-teal);
-    outline-offset: 4px;
+    outline-offset: 8px;
+}
+
+.socialLink:focus-visible .socialTextBase .socialChar {
+    transform: translateY(-100%);
+}
+
+.socialLink:focus-visible .socialTextClone .socialChar {
+    transform: translateY(0);
 }
 
 .locationText {
