@@ -14,9 +14,24 @@ export const WelcomeScreen = () => {
   const aRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(() => {
+    // Helper to handle scrollbar lock without layout shift
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    
+    const lockScroll = () => {
+        document.body.style.overflow = 'hidden';
+        if (scrollbarWidth > 0) {
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
+        }
+    };
+
+    const unlockScroll = () => {
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    };
+
     const tl = gsap.timeline({
       onComplete: () => {
-        document.body.style.overflow = '';
+        unlockScroll(); // Restore scrollbar without jump (if we handled padding correctly, jump is minimized)
         if (containerRef.current) {
           containerRef.current.style.display = 'none';
         }
@@ -24,7 +39,7 @@ export const WelcomeScreen = () => {
       }
     });
 
-    document.body.style.overflow = 'hidden';
+    lockScroll(); // Lock immediately
 
     const greetingElements = containerRef.current?.querySelectorAll(`.${styles.greeting}`);
 
@@ -85,7 +100,7 @@ export const WelcomeScreen = () => {
         ); 
     }
 
-    // 4. The Travel Transition
+      // 4. The Travel Transition
     tl.add(() => {
       const targetM = document.getElementById('target-m');
       const targetA = document.getElementById('target-a');
@@ -102,20 +117,44 @@ export const WelcomeScreen = () => {
       const deltaAx = rectA.left - currentA.left;
       const deltaAy = rectA.top - currentA.top;
 
-      const flightTl = gsap.timeline();
+      const flightTl = gsap.timeline({
+        onComplete: () => {
+             // Cleanup handled by parent timeline
+        }
+      });
 
+      const flightDuration = 1.2;
+      const handoffDuration = 0.3; // Duration of the cross-fade
+
+      // A. Fly to destination
       flightTl.to(mRef.current, {
         x: deltaMx,
         y: deltaMy,
-        duration: 1.2,
+        duration: flightDuration,
         ease: "power4.inOut"
       })
       .to(aRef.current, {
         x: deltaAx,
         y: deltaAy,
-        duration: 1.2,
+        duration: flightDuration,
         ease: "power4.inOut"
       }, 0)
+      
+      // B. Cross-Dissolve: Fade OUT flying letters as they arrive
+      // Starts 'handoffDuration' before the end
+      .to([mRef.current, aRef.current], {
+        opacity: 0,
+        duration: handoffDuration,
+        ease: "power1.in"
+      }, `-=${handoffDuration}`)
+
+      // C. Trigger HeroText Fade IN
+      // Dispatched exactly when the cross-fade starts
+      .call(() => {
+        window.dispatchEvent(new CustomEvent('welcome-handoff'));
+      }, null, `-=${handoffDuration}`)
+
+      // D. Fade out background (optional, keeps it clean)
       .to(containerRef.current, {
         backgroundColor: "rgba(255, 255, 255, 0)",
         duration: 0.8,
@@ -124,7 +163,11 @@ export const WelcomeScreen = () => {
 
     }, "+=0.1");
 
-    tl.to({}, { duration: 1.2 });
+    // Add a buffer at the end of the main timeline to ensure flight finishes
+    // The flightTl inside 'add' runs asynchronously to the main tl unless we return it, 
+    // but 'add' with callback doesn't wait. We just pad the main timeline.
+    tl.to({}, { duration: 1.4 }); 
+
 
   }, { scope: containerRef });
 

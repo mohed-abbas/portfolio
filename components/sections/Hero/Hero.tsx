@@ -21,7 +21,7 @@ export function Hero() {
       {/* <Portrait /> */}
 
       {/* Skills Bar (Diagonal) */}
-      <SkillsBar />
+      {/* <SkillsBar /> */}
     </main>
   );
 }

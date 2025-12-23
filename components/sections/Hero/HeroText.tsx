@@ -6,8 +6,6 @@ import { gsap } from '@/lib/gsap';
 import styles from './HeroText.module.css';
 
 const MOHED_LETTERS = ['M', 'O', 'H', 'E', 'D'];
-
-// ABBAS letters with their color classes
 const ABBAS_LETTERS = [
   { letter: 'A', color: 'dark' },
   { letter: 'B', color: 'purple' },
@@ -15,8 +13,6 @@ const ABBAS_LETTERS = [
   { letter: 'A', color: 'dark' },
   { letter: 'S', color: 'purple' },
 ];
-
-// Tagline words for staggered animation
 const TAGLINE_WORDS = ['I', 'design', 'solutions', 'for', 'people,', 'brands', '&', 'digital', 'products'];
 
 export function HeroText() {
@@ -28,22 +24,57 @@ export function HeroText() {
   useGSAP(() => {
     if (!sectionRef.current || !mohedRef.current || !abbasRef.current || !taglineRef.current) return;
 
+    // 1. Select Elements
+    // Mohed: M is index 0 (Target), OHED are indices 1-4 (Expansion)
+    const mohedExpansion = mohedRef.current.querySelectorAll(`.${styles.letter}:not(#target-m)`);
+    
+    // Abbas: A is index 0 (Target), BBAS are indices 1-4 (Expansion)
+    const abbasExpansion = abbasRef.current.querySelectorAll(`.${styles.abbasLetter}:not(#target-a)`);
+
     const taglineWords = taglineRef.current.querySelectorAll(`.${styles.taglineWord}`);
 
-    // Set initial state for tagline only
+    // 2. Initial States
+    // Hide expansion letters so they can "grow" from the initials
+    gsap.set([mohedExpansion, abbasExpansion], { 
+      opacity: 0, 
+      x: -30, // Start slightly to the left (inside the initial)
+      filter: 'blur(5px)'
+    });
+
+    // Hide Tagline
     gsap.set(taglineWords, { opacity: 0 });
 
-    // The Mohed and Abbas text are now static (opacity 1 by CSS/default) so they are ready for the "Travel" handoff.
+    // HIDE TARGETS INITIALLY for Soft Handoff
+    // The targets (M and A) are now hidden until the flying letters "deliver" them.
+    const targetM = mohedRef.current.querySelector('#target-m');
+    const targetA = abbasRef.current.querySelector('#target-a');
+    gsap.set([targetM, targetA], { opacity: 0 });
 
     const startAnimation = () => {
       const tl = gsap.timeline({
-        defaults: {
-          ease: 'power3.out',
-        },
+        defaults: { ease: 'power3.out' },
       });
 
-      // Only animate the tagline now
-      tl.fromTo(
+      // 1. Soft Handoff (Cross-Dissolve)
+      // Fade IN the static targets as the flying ones fade OUT (handled in WelcomeScreen)
+      tl.to([targetM, targetA], {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power1.inOut" // Linear-ish for smooth blend
+      })
+
+      // 2. Expansion Animation (The Seamless Handoff)
+      // M and A have landed. Now reveal OHED and BBAS.
+      .to([mohedExpansion, abbasExpansion], {
+        opacity: 1,
+        x: 0,
+        filter: 'blur(0px)',
+        duration: 0.8,
+        stagger: 0.05, // Domino effect
+      }, ">-0.1") // Start expansion just as the handoff finishes
+
+      // 3. Tagline Animation
+      .fromTo(
         taglineWords,
         {
           opacity: 0,
@@ -64,17 +95,19 @@ export function HeroText() {
             ease: 'power2.out',
           },
           ease: 'back.out(1.2)',
-        }
+        },
+        "-=0.4" // Overlap slightly with the end of the name expansion
       );
     };
 
-    window.addEventListener('welcome-complete', startAnimation);
-    return () => window.removeEventListener('welcome-complete', startAnimation);
+    // Listen for 'welcome-handoff' instead of 'welcome-complete' to start the blend earlier
+    window.addEventListener('welcome-handoff', startAnimation);
+    return () => window.removeEventListener('welcome-handoff', startAnimation);
   }, { scope: sectionRef });
 
   return (
     <section ref={sectionRef} className={styles.textAndArm}>
-      {/* MOHED Text - Split into letters for stagger animation */}
+      {/* MOHED Text */}
       <h1 ref={mohedRef} className={`${styles.heroText} ${styles.heroTextMohed}`}>
         {MOHED_LETTERS.map((letter, index) => (
           <span 
@@ -87,7 +120,7 @@ export function HeroText() {
         ))}
       </h1>
 
-      {/* ABBAS Text - Letter by letter with colors */}
+      {/* ABBAS Text */}
       <h1 ref={abbasRef} className={`${styles.heroText} ${styles.heroTextAbbas}`}>
         {ABBAS_LETTERS.map((item, index) => (
           <span
@@ -102,7 +135,7 @@ export function HeroText() {
         ))}
       </h1>
 
-      {/* Tagline - Word by word for stagger animation */}
+      {/* Tagline */}
       <p ref={taglineRef} className={styles.tagline}>
         {TAGLINE_WORDS.map((word, index) => (
           <span key={index} className={styles.taglineWord}>
