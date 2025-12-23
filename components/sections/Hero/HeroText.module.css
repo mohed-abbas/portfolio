@@ -32,6 +32,33 @@
     transform-style: preserve-3d;
 }
 
+/* ============================================
+   PORTAL ANIMATION SYSTEM
+   Each letter is a masked window for the infinite loop effect
+   ============================================ */
+
+/* The clipping mask - acts as the "window frame" */
+.portalMask {
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    /* Ensure the mask tightly wraps the letter */
+    vertical-align: baseline;
+    /* Cursor to indicate interactivity */
+    cursor: pointer;
+}
+
+/* The inner letter that moves within the mask */
+.portalLetter {
+    display: inline-block;
+    position: relative;
+    /* will-change for GPU acceleration during animation */
+    will-change: transform;
+    /* Ensure smooth sub-pixel rendering */
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
 /* ABBAS Text */
 .heroTextAbbas {
     display: block;
