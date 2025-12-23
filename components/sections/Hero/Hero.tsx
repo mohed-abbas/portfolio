@@ -1,7 +1,6 @@
 import { Navbar } from '@/components/layout/Navbar';
 import { InteractiveBackground } from './InteractiveBackground';
 import { HeroText } from './HeroText';
-import { Portrait } from './Portrait';
 import { SkillsBar } from './SkillsBar';
 import styles from './Hero.module.css';
 
@@ -21,7 +20,7 @@ export function Hero() {
       {/* <Portrait /> */}
 
       {/* Skills Bar (Diagonal) */}
-      {/* <SkillsBar /> */}
+      <SkillsBar />
     </main>
   );
 }

@@ -72,7 +72,7 @@ export const WelcomeScreen = () => {
         // Show each greeting for a short burst
         const flashDuration = 0.25; // Increased to 250ms per word for better readability
 
-        greetingElements.forEach((el, i) => {
+        greetingElements.forEach((el) => {
             tl.to(el, {
                 opacity: 1,
                 duration: 0, // Instant ON

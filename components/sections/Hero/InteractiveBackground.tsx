@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
+import { useAccentColor } from '@/lib/AccentColorContext';
+import { hexToRgba } from '@/lib/colorUtils';
 import styles from './InteractiveBackground.module.css';
 
 interface PlusSign {
@@ -35,6 +37,7 @@ export function InteractiveBackground() {
   const mouseRef = useRef<MousePosition>({ x: -1000, y: -1000 });
   const rafRef = useRef<number | null>(null);
   const isHoveringRef = useRef(false);
+  const { color: accentColor } = useAccentColor();
 
   // Performance optimization: idle state tracking
   const isIdleRef = useRef(true);
@@ -85,7 +88,7 @@ export function InteractiveBackground() {
   ) => {
     const halfSize = size / 2;
 
-    ctx.strokeStyle = `rgba(98, 182, 203, ${opacity})`; // --color-accent-purple: #62B6CB
+    ctx.strokeStyle = hexToRgba(accentColor, opacity);
     ctx.lineWidth = STROKE_WIDTH;
     ctx.lineCap = 'round';
 
@@ -100,7 +103,7 @@ export function InteractiveBackground() {
     ctx.moveTo(x, y - halfSize);
     ctx.lineTo(x, y + halfSize);
     ctx.stroke();
-  }, []);
+  }, [accentColor]);
 
   // Set up animate function and store in ref for self-referencing
   useEffect(() => {

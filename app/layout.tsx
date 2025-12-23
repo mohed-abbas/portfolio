@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Doppio_One } from "next/font/google";
 import "./globals.css";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { AccentColorProvider } from "@/lib/AccentColorContext";
 
 const doppioOne = Doppio_One({
   weight: "400",
@@ -39,8 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={doppioOne.variable}>
-        <CustomCursor />
-        {children}
+        <AccentColorProvider>
+          <CustomCursor />
+          {children}
+        </AccentColorProvider>
       </body>
     </html>
   );

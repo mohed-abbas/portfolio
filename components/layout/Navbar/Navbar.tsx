@@ -4,6 +4,7 @@ import { useRef, useState, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import { Menu } from './Menu';
+import { useAccentColor } from '@/lib/AccentColorContext';
 import styles from './Navbar.module.css';
 
 export function Navbar() {
@@ -12,6 +13,7 @@ export function Navbar() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const navContactRef = useRef<HTMLAnchorElement>(null);
   const hamburgerLinesRef = useRef<HTMLSpanElement[]>([]);
+  const { cycleColor } = useAccentColor();
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -168,7 +170,7 @@ export function Navbar() {
         </button>
         
       </nav>
-      <Menu isOpen={isMenuOpen} onClose={closeMenu} />
+      <Menu isOpen={isMenuOpen} onClose={closeMenu} onRevealStart={cycleColor} />
     </>
   );
 }

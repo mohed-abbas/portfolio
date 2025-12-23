@@ -7,6 +7,8 @@ import styles from './Menu.module.css';
 interface MenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onCloseComplete?: () => void;
+  onRevealStart?: () => void;
 }
 
 const menuLinks = [
@@ -26,7 +28,7 @@ const socialLinks = [
 // Custom easing matching Framer Motion [0.76, 0, 0.24, 1]
 const MENU_EASE = 'power4.inOut';
 
-export function Menu({ isOpen, onClose }: MenuProps) {
+export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const linksContainerRef = useRef<HTMLUListElement>(null);
@@ -157,12 +159,28 @@ export function Menu({ isOpen, onClose }: MenuProps) {
     } else {
       // === CLOSE ANIMATION ===
 
+      // Freeze the current accent color on the overlay before changing CSS variable
+      // This ensures the curtain keeps its color while hero text gets the new color
+      const currentColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-accent-purple').trim();
+      overlayRef.current.style.backgroundColor = currentColor;
+
+      // Trigger color change NOW - hero text will have new color when revealed
+      // But curtain keeps old color via inline style above
+      onRevealStart?.();
+
       const tl = gsap.timeline({
         onComplete: () => {
           if (menuRef.current) {
             gsap.set(menuRef.current, { visibility: 'hidden' });
           }
+          // Clear the inline style so it uses CSS variable again on next open
+          if (overlayRef.current) {
+            overlayRef.current.style.backgroundColor = '';
+          }
           isAnimating.current = false;
+          // Trigger callback after close animation completes
+          onCloseComplete?.();
         }
       });
 
@@ -217,7 +235,7 @@ export function Menu({ isOpen, onClose }: MenuProps) {
         ease: MENU_EASE,
       }, 0.5);
     }
-  }, [isOpen]);
+  }, [isOpen, onCloseComplete, onRevealStart]);
 
   const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
