@@ -102,3 +102,52 @@ img {
 :focus:not(:focus-visible) {
     outline: none;
 }
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   Modern, minimal scrollbar matching theme
+   ============================================ */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-grid-line);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-purple);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--color-primary-text);
+}
+
+/* Hide scrollbar corner */
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-grid-line) transparent;
+}
+
+/* Firefox hover state via container */
+html {
+    scrollbar-color: var(--color-grid-line) transparent;
+}
+
+html:hover {
+    scrollbar-color: var(--color-accent-purple) transparent;
+}
