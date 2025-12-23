@@ -5,7 +5,7 @@ import { gsap } from '@/lib/gsap';
 import { useGSAP } from '@gsap/react';
 import styles from './WelcomeScreen.module.css';
 
-const GREETINGS = ["Hello", "Bonjour", "Ola", "سلام"];
+const GREETINGS = ["Hello", "Bonjour", "Hallo", "Ola", "नमस्ते", "سلام"];
 
 export const WelcomeScreen = () => {
   const containerRef = useRef<HTMLDivElement>(null);
