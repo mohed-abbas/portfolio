@@ -123,7 +123,7 @@ export function InteractiveBackground() {
         plusSigns.forEach((plus) => {
           drawPlusSign(ctx, plus.originX, plus.originY, PLUS_SIZE, 0.12);
         });
-        rafRef.current = requestAnimationFrame(animate);
+        rafRef.current = requestAnimationFrame(() => animateRef.current?.());
         return;
       }
 
@@ -183,7 +183,7 @@ export function InteractiveBackground() {
       // Check if all elements have settled (within 0.5px of origin)
       hasSettledRef.current = maxMovement < 0.5;
 
-      rafRef.current = requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(() => animateRef.current?.());
     };
 
     animateRef.current = animate;
