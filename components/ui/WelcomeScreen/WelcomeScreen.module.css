@@ -58,11 +58,11 @@
 .letterM {
   color: var(--color-primary-text);
   display: inline-block;
-  line-height: 1;
+  line-height: 0.85; /* Match HeroText to prevent jitter during handoff */
 }
 
 .letterA {
   color: var(--color-primary-text);
   display: inline-block;
-  line-height: 1;
+  line-height: 0.85; /* Match HeroText to prevent jitter during handoff */
 }

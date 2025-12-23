@@ -16,7 +16,7 @@ export const WelcomeScreen = () => {
   useGSAP(() => {
     // Helper to handle scrollbar lock without layout shift
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    
+
     const lockScroll = () => {
         document.body.style.overflow = 'hidden';
         if (scrollbarWidth > 0) {
@@ -29,9 +29,14 @@ export const WelcomeScreen = () => {
         document.body.style.paddingRight = '';
     };
 
+    // Context for flight tweens to ensure proper cleanup
+    const flightCtx = gsap.context(() => {});
+
     const tl = gsap.timeline({
       onComplete: () => {
-        unlockScroll(); // Restore scrollbar without jump (if we handled padding correctly, jump is minimized)
+        unlockScroll();
+        // Note: Don't call flightCtx.revert() here - animations are done
+        // revert() would reset elements to pre-animation state causing visual glitch
         if (containerRef.current) {
           containerRef.current.style.display = 'none';
         }
@@ -101,74 +106,96 @@ export const WelcomeScreen = () => {
     }
 
       // 4. The Travel Transition
-    tl.add(() => {
-      const targetM = document.getElementById('target-m');
-      const targetA = document.getElementById('target-a');
+      // Using a label to properly sequence the flight animation
+      tl.addLabel("flightStart", "+=0.1");
 
-      if (!targetM || !targetA || !mRef.current || !aRef.current) return;
+      // Calculate positions at the right moment, then animate
+      tl.call(() => {
+        const targetM = document.getElementById('target-m');
+        const targetA = document.getElementById('target-a');
 
-      const rectM = targetM.getBoundingClientRect();
-      const rectA = targetA.getBoundingClientRect();
-      const currentM = mRef.current.getBoundingClientRect();
-      const currentA = aRef.current.getBoundingClientRect();
-
-      const deltaMx = rectM.left - currentM.left;
-      const deltaMy = rectM.top - currentM.top;
-      const deltaAx = rectA.left - currentA.left;
-      const deltaAy = rectA.top - currentA.top;
-
-      const flightTl = gsap.timeline({
-        onComplete: () => {
-             // Cleanup handled by parent timeline
+        // Validate targets exist with helpful error message
+        if (!targetM || !targetA) {
+          console.warn('[WelcomeScreen] Target elements not found:', {
+            targetM: !!targetM,
+            targetA: !!targetA
+          });
+          // Dispatch handoff anyway to prevent UI from being stuck
+          window.dispatchEvent(new CustomEvent('welcome-handoff'));
+          return;
         }
-      });
 
-      const flightDuration = 1.2;
-      const handoffDuration = 0.3; // Duration of the cross-fade
+        if (!mRef.current || !aRef.current) {
+          console.warn('[WelcomeScreen] Letter refs not available');
+          window.dispatchEvent(new CustomEvent('welcome-handoff'));
+          return;
+        }
 
-      // A. Fly to destination
-      flightTl.to(mRef.current, {
-        x: deltaMx,
-        y: deltaMy,
-        duration: flightDuration,
-        ease: "power4.inOut"
-      })
-      .to(aRef.current, {
-        x: deltaAx,
-        y: deltaAy,
-        duration: flightDuration,
-        ease: "power4.inOut"
-      }, 0)
-      
-      // B. Cross-Dissolve: Fade OUT flying letters as they arrive
-      // Starts 'handoffDuration' before the end
-      .to([mRef.current, aRef.current], {
-        opacity: 0,
-        duration: handoffDuration,
-        ease: "power1.in"
-      }, `-=${handoffDuration}`)
+        // Batch all getBoundingClientRect calls together to minimize reflow
+        const rects = {
+          targetM: targetM.getBoundingClientRect(),
+          targetA: targetA.getBoundingClientRect(),
+          currentM: mRef.current.getBoundingClientRect(),
+          currentA: aRef.current.getBoundingClientRect()
+        };
 
-      // C. Trigger HeroText Fade IN
-      // Dispatched exactly when the cross-fade starts
-      .call(() => {
-        window.dispatchEvent(new CustomEvent('welcome-handoff'));
-      }, null, `-=${handoffDuration}`)
+        const deltaMx = rects.targetM.left - rects.currentM.left;
+        const deltaMy = rects.targetM.top - rects.currentM.top;
+        const deltaAx = rects.targetA.left - rects.currentA.left;
+        const deltaAy = rects.targetA.top - rects.currentA.top;
 
-      // D. Fade out background (optional, keeps it clean)
-      .to(containerRef.current, {
-        backgroundColor: "rgba(255, 255, 255, 0)",
-        duration: 0.8,
-        ease: "power2.inOut"
-      }, 0.4);
+        const flightDuration = 1.2;
+        const handoffDuration = 0.3;
 
-    }, "+=0.1");
+        // Add flight tweens to context for proper cleanup
+        flightCtx.add(() => {
+          // A. Fly both letters to destination (parallel)
+          gsap.to(mRef.current, {
+            x: deltaMx,
+            y: deltaMy,
+            duration: flightDuration,
+            ease: "power4.inOut"
+          });
 
-    // Add a buffer at the end of the main timeline to ensure flight finishes
-    // The flightTl inside 'add' runs asynchronously to the main tl unless we return it, 
-    // but 'add' with callback doesn't wait. We just pad the main timeline.
-    tl.to({}, { duration: 1.4 }); 
+          gsap.to(aRef.current, {
+            x: deltaAx,
+            y: deltaAy,
+            duration: flightDuration,
+            ease: "power4.inOut"
+          });
 
+          // B. Cross-Dissolve: Fade OUT flying letters as they arrive
+          gsap.to([mRef.current, aRef.current], {
+            opacity: 0,
+            duration: handoffDuration,
+            ease: "power1.in",
+            delay: flightDuration - handoffDuration
+          });
 
+          // D. Fade out background
+          gsap.to(containerRef.current, {
+            backgroundColor: "rgba(255, 255, 255, 0)",
+            duration: 0.8,
+            ease: "power2.inOut",
+            delay: 0.4
+          });
+        });
+
+        // C. Trigger HeroText Fade IN when cross-fade starts
+        // Keep this OUTSIDE flightCtx so it's not killed by revert()
+        gsap.delayedCall(flightDuration - handoffDuration, () => {
+          window.dispatchEvent(new CustomEvent('welcome-handoff'));
+        });
+      }, [], "flightStart");
+
+      // Wait for flight animation to complete (matches flightDuration + buffer)
+      tl.to({}, { duration: 1.3 }, "flightStart");
+
+      // Cleanup on unmount
+      return () => {
+        flightCtx.revert();
+        unlockScroll();
+      };
   }, { scope: containerRef });
 
   return (
