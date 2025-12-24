@@ -68,14 +68,41 @@
 }
 
 /* ============================================
-   MOBILE RESPONSIVE MATCHING
+
+   RESPONSIVE MATCHING
+
    Must match HeroText.module.css overrides
+
    ============================================ */
 
-@media (max-width: 768px) {
+
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
     .greeting,
+
     .initialsContainer {
-        font-size: 24vw; /* Matched to HeroText mobile size */
-        line-height: 0.8;
+
+        font-size: clamp(80px, 18vw, 20vw);
+
+        line-height: 0.82;
+
     }
+
+}
+
+
+
+@media (max-width: 768px) {
+
+    .greeting,
+
+    .initialsContainer {
+
+        font-size: 24vw; /* Matched to HeroText mobile size */
+
+        line-height: 0.8;
+
+    }
+
 }

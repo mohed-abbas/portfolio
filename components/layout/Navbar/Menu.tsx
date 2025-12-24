@@ -72,11 +72,14 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
     const socialLinks = socialSectionRef.current.querySelectorAll(`.${styles.socialLink}`);
     const locationText = socialSectionRef.current.querySelector(`.${styles.locationText}`);
     const backButton = socialSectionRef.current.querySelector(`.${styles.backButton}`);
+    const backCharsBase = socialSectionRef.current.querySelectorAll(`.${styles.backTextBase} .${styles.backChar}`);
+    const backCharsClone = socialSectionRef.current.querySelectorAll(`.${styles.backTextClone} .${styles.backChar}`);
 
     // Kill any running animations
     gsap.killTweensOf([
       menuRef.current, overlayRef.current, links, linkNumbers,
-      socialLabels, socialLinks, locationText, backButton
+      socialLabels, socialLinks, locationText, backButton,
+      backCharsBase, backCharsClone
     ]);
 
     isAnimating.current = true;
@@ -97,10 +100,16 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
       gsap.set(socialLinks, { opacity: 0, y: 30 });
       gsap.set(locationText, { opacity: 0 });
       gsap.set(backButton, { opacity: 0, scale: 0.8 });
+      
+      // Ensure characters are in default state and transitions are off during setup
+      gsap.set(backCharsBase, { y: '0%', transition: 'none' });
+      gsap.set(backCharsClone, { y: '100%', transition: 'none' });
 
       // Create timeline
       const tl = gsap.timeline({
         onComplete: () => {
+          // Restore CSS transitions for hover effects
+          gsap.set([backCharsBase, backCharsClone], { transition: '' });
           isAnimating.current = false;
         }
       });
@@ -178,19 +187,40 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
           if (overlayRef.current) {
             overlayRef.current.style.backgroundColor = '';
           }
+          // Reset back button characters to initial state for next open
+          gsap.set(backCharsBase, { y: '0%' });
+          gsap.set(backCharsClone, { y: '100%' });
+          // Restore CSS transitions for hover effects
+          gsap.set([backCharsBase, backCharsClone], { transition: '' });
+
           isAnimating.current = false;
           // Trigger callback after close animation completes
           onCloseComplete?.();
         }
       });
 
-      // 1. Back button scales down first
-      tl.to(backButton, {
+      // Disable CSS transitions during GSAP animation to avoid conflicts
+      gsap.set([backCharsBase, backCharsClone], { transition: 'none' });
+
+      // 1. Back button characters roll over + scale down
+      tl.to(backCharsBase, {
+        y: '-100%',
+        duration: 0.4,
+        stagger: 0.03,
+        ease: 'power2.inOut'
+      })
+      .to(backCharsClone, {
+        y: '0%',
+        duration: 0.4,
+        stagger: 0.03,
+        ease: 'power2.inOut'
+      }, 0)
+      .to(backButton, {
         opacity: 0,
         scale: 0.8,
-        duration: 0.25,
+        duration: 0.4,
         ease: 'power2.in',
-      })
+      }, 0.1)
       // 2. Location text fades out
       .to(locationText, {
         opacity: 0,
@@ -348,7 +378,30 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
               <line x1="7" y1="17" x2="17" y2="7" />
               <polyline points="7 7 17 7 17 17" />
             </svg>
-            <span className={styles.backText}>Back</span>
+            <div className={styles.backText}>
+              <span className={styles.backTextBase}>
+                {"Back".split('').map((char, index) => (
+                  <span
+                    key={index}
+                    className={styles.backChar}
+                    style={{ transitionDelay: `${index * 0.025}s` }}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </span>
+              <span className={styles.backTextClone} aria-hidden="true">
+                {"Back".split('').map((char, index) => (
+                  <span
+                    key={index}
+                    className={styles.backChar}
+                    style={{ transitionDelay: `${index * 0.025}s` }}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </span>
+            </div>
           </button>
         </aside>
       </div>

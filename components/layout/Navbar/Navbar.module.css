@@ -54,13 +54,38 @@
     background-color: var(--color-accent-purple);
 }
 
-.navText {
+.navTextContainer {
+    display: grid;
+    grid-template-areas: "stack";
+    align-items: center;
+    overflow: hidden;
+    margin-top: 2px; /* Slight alignment adjustment */
+}
+
+.navTextItem {
+    grid-area: stack;
+    display: flex;
     font-family: var(--font-navbar);
     font-size: var(--font-size-nav);
     font-weight: 400;
-    color: var(--color-black);
     text-transform: uppercase;
     line-height: normal;
+    white-space: nowrap;
+    will-change: transform, opacity;
+}
+
+.navTextMenu {
+    color: var(--color-black);
+}
+
+.navTextClose {
+    color: var(--color-background); /* White when on teal overlay */
+    visibility: hidden; /* Start hidden */
+}
+
+.navChar {
+    display: inline-block;
+    will-change: transform, opacity;
 }
 
 .navContact {

@@ -134,6 +134,35 @@
 }
 
 /* ============================================
+   TABLET RESPONSIVE LAYOUT (Portrait/Small Landscape)
+   Strategy: Balanced Stagger
+   ============================================ */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .textAndArm {
+        padding-top: 100px;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    .heroText {
+        /* Slightly smaller than full desktop to fit portrait aspect ratios */
+        font-size: clamp(80px, 18vw, 20vw);
+        line-height: 0.82;
+    }
+
+    .heroTextAbbas {
+        margin-top: 20px;
+    }
+
+    .tagline {
+        margin-top: 60px;
+        max-width: 340px;
+        font-size: 18px;
+    }
+}
+
+/* ============================================
    MOBILE RESPONSIVE LAYOUT
    Strategy: Maximized Vertical Stack
    ============================================ */

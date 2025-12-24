@@ -65,6 +65,18 @@
     }
 }
 
+@media (min-width: 769px) and (max-width: 1024px) {
+    .skillsBar {
+        bottom: 8vw;
+        width: 160vw;
+    }
+
+    .skillsContent {
+        font-size: 28px;
+        gap: 50px;
+    }
+}
+
 @media (max-width: 768px) {
     .skillsBar {
         /* Move slightly higher on mobile to clear safe areas */

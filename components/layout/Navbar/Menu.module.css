@@ -313,16 +313,49 @@
 }
 
 .backText {
+    position: relative;
     font-family: var(--font-navbar);
     font-size: 11px;
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    overflow: hidden;
+    height: 1.2em;
+}
+
+.backTextBase {
+    display: flex;
     color: var(--color-accent-teal);
     transition: color 0.3s ease;
 }
 
-.backButton:hover .backText {
+.backTextClone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    color: var(--color-background);
+}
+
+.backChar {
+    display: inline-block;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+
+.backTextClone .backChar {
+    transform: translateY(100%);
+}
+
+/* Hover effect */
+.backButton:hover .backTextBase .backChar {
+    transform: translateY(-100%);
+}
+
+.backButton:hover .backTextClone .backChar {
+    transform: translateY(0);
+}
+
+.backButton:hover .backTextBase {
     color: var(--color-background);
 }
 

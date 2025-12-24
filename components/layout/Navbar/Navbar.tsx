@@ -9,17 +9,31 @@ import styles from './Navbar.module.css';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Separate state for z-index to keep navbar visible during close animation
+  const [keepElevated, setKeepElevated] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const hamburgerLinesRef = useRef<HTMLSpanElement[]>([]);
   const { cycleColor } = useAccentColor();
 
   const toggleMenu = useCallback(() => {
-    setIsMenuOpen((prev) => !prev);
+    setIsMenuOpen((prev) => {
+      if (!prev) {
+        // Opening menu - elevate navbar immediately
+        setKeepElevated(true);
+      }
+      return !prev;
+    });
   }, []);
 
   const closeMenu = useCallback(() => {
     setIsMenuOpen(false);
+    // Keep navbar elevated - will be lowered by onCloseComplete
+  }, []);
+
+  const handleCloseComplete = useCallback(() => {
+    // Menu close animation is done, safe to lower z-index
+    setKeepElevated(false);
   }, []);
 
   // Initial navbar animation
@@ -51,11 +65,19 @@ export function Navbar() {
     if (!menuButtonRef.current || hamburgerLinesRef.current.length < 3) return;
 
     const [line1, line2, line3] = hamburgerLinesRef.current;
-    const navTextEl = menuButtonRef.current.querySelector(`.${styles.navText}`);
+    
+    // Select text elements
+    const menuChars = menuButtonRef.current.querySelectorAll(`.${styles.navTextMenu} .${styles.navChar}`);
+    const closeChars = menuButtonRef.current.querySelectorAll(`.${styles.navTextClose} .${styles.navChar}`);
+    const closeTextItem = menuButtonRef.current.querySelector(`.${styles.navTextClose}`);
+
+    // Kill any running animations to prevent conflicts
+    gsap.killTweensOf([line1, line2, line3, menuChars, closeChars, closeTextItem]);
 
     if (isMenuOpen) {
-      // Morph to X - white for teal background
-      // y offset = 8px to center (gap:6px + line:2px = 8px between line centers)
+      // === OPEN STATE ===
+      
+      // 1. Hamburger Morph to X
       gsap.to(line1, {
         rotation: 45,
         y: 8,
@@ -76,15 +98,34 @@ export function Navbar() {
         duration: 0.4,
         ease: 'power2.out',
       });
-      // Nav text white for teal background
-      if (navTextEl) {
-        gsap.to(navTextEl, {
-          color: 'var(--color-background)',
-          duration: 0.3,
-        });
-      }
+
+      // 2. Text Animation: MENU exits up, CLOSE enters from down
+      if (closeTextItem) gsap.set(closeTextItem, { visibility: 'visible' });
+      
+      gsap.to(menuChars, {
+        y: '-100%',
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.05,
+        ease: 'power2.in',
+      });
+      
+      gsap.fromTo(closeChars, 
+        { y: '100%', opacity: 0 },
+        {
+          y: '0%',
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: 'power2.out',
+          delay: 0.1, // Slight delay to sync with hamburger
+        }
+      );
+
     } else {
-      // Morph back to hamburger
+      // === CLOSED STATE ===
+
+      // 1. Hamburger Morph back to parallel lines
       gsap.to(line1, {
         rotation: 0,
         y: 0,
@@ -106,19 +147,39 @@ export function Navbar() {
         duration: 0.4,
         ease: 'power2.out',
       });
-      // Reset nav text color
-      if (navTextEl) {
-        gsap.to(navTextEl, {
-          color: 'var(--color-black)',
-          duration: 0.3,
-        });
-      }
+
+      // 2. Text Animation: CLOSE exits down, MENU enters from up
+      // Ensure CLOSE text remains visible for the exit animation
+      if (closeTextItem) gsap.set(closeTextItem, { visibility: 'visible' });
+
+      gsap.to(closeChars, {
+        y: '100%',
+        opacity: 0,
+        duration: 0.4,
+        stagger: 0.05,
+        ease: 'power2.in',
+        onComplete: () => {
+          if (closeTextItem) gsap.set(closeTextItem, { visibility: 'hidden' });
+        }
+      });
+      
+      gsap.fromTo(menuChars,
+        { y: '-100%', opacity: 0 },
+        {
+          y: '0%',
+          opacity: 1,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: 'power2.out',
+          delay: 0.1,
+        }
+      );
     }
   }, { dependencies: [isMenuOpen] });
 
   return (
     <>
-      <nav ref={navRef} className={`${styles.navbar} ${isMenuOpen ? styles.menuOpen : ''}`}>
+      <nav ref={navRef} className={`${styles.navbar} ${(isMenuOpen || keepElevated) ? styles.menuOpen : ''}`}>
         <button
           ref={menuButtonRef}
           className={styles.navLeft}
@@ -141,11 +202,22 @@ export function Navbar() {
               className={styles.hamburgerLine}
             />
           </span>
-          <span className={styles.navText}>{isMenuOpen ? 'CLOSE' : 'MENU'}</span>
+          <div className={styles.navTextContainer}>
+            <span className={`${styles.navTextItem} ${styles.navTextMenu}`}>
+              {'MENU'.split('').map((char, i) => (
+                <span key={`m-${i}`} className={styles.navChar}>{char}</span>
+              ))}
+            </span>
+            <span className={`${styles.navTextItem} ${styles.navTextClose}`}>
+              {'CLOSE'.split('').map((char, i) => (
+                <span key={`c-${i}`} className={styles.navChar}>{char}</span>
+              ))}
+            </span>
+          </div>
         </button>
         
       </nav>
-      <Menu isOpen={isMenuOpen} onClose={closeMenu} onRevealStart={cycleColor} />
+      <Menu isOpen={isMenuOpen} onClose={closeMenu} onCloseComplete={handleCloseComplete} onRevealStart={cycleColor} />
     </>
   );
 }
