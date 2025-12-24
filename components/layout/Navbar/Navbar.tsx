@@ -11,7 +11,6 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const navContactRef = useRef<HTMLAnchorElement>(null);
   const hamburgerLinesRef = useRef<HTMLSpanElement[]>([]);
   const { cycleColor } = useAccentColor();
 
@@ -44,18 +43,6 @@ export function Navbar() {
         y: 0,
         duration: 0.8,
       }
-    ).fromTo(
-      navContactRef.current,
-      {
-        opacity: 0,
-        y: -30,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-      },
-      '-=0.6'
     );
   }, { scope: navRef });
 
@@ -96,12 +83,6 @@ export function Navbar() {
           duration: 0.3,
         });
       }
-      if (navContactRef.current) {
-        gsap.to(navContactRef.current, {
-          color: 'var(--color-background)',
-          duration: 0.3,
-        });
-      }
     } else {
       // Morph back to hamburger
       gsap.to(line1, {
@@ -129,12 +110,6 @@ export function Navbar() {
       if (navTextEl) {
         gsap.to(navTextEl, {
           color: 'var(--color-black)',
-          duration: 0.3,
-        });
-      }
-      if (navContactRef.current) {
-        gsap.to(navContactRef.current, {
-          color: 'var(--color-primary-text)',
           duration: 0.3,
         });
       }
