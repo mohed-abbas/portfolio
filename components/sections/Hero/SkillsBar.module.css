@@ -64,3 +64,16 @@
         transform: translateX(-50%);
     }
 }
+
+@media (max-width: 768px) {
+    .skillsBar {
+        /* Move slightly higher on mobile to clear safe areas */
+        bottom: 80px;
+        width: 200vw; /* Make it even wider to ensure smooth diagonal if needed later */
+    }
+
+    .skillsContent {
+        font-size: 24px; /* Fixed readable size for mobile */
+        gap: 40px;
+    }
+}

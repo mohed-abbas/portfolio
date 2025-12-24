@@ -66,3 +66,16 @@
   display: inline-block;
   line-height: 0.85; /* Match HeroText to prevent jitter during handoff */
 }
+
+/* ============================================
+   MOBILE RESPONSIVE MATCHING
+   Must match HeroText.module.css overrides
+   ============================================ */
+
+@media (max-width: 768px) {
+    .greeting,
+    .initialsContainer {
+        font-size: 24vw; /* Matched to HeroText mobile size */
+        line-height: 0.8;
+    }
+}
