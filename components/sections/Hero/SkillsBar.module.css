@@ -2,8 +2,8 @@
    Reference: styles.css lines 285-337 */
 
 .skillsBar {
-    position: absolute;
-    bottom: 5vw;
+    /* position: absolute;
+    bottom: 5vw; */
     width: 150vw;
     display: flex;
     align-items: center;
@@ -11,6 +11,7 @@
     z-index: 4;
     pointer-events: none;
     overflow: visible;
+    margin-top: clamp(40px, 5%, 10%);
 }
 
 .skillsBarInner {
@@ -42,7 +43,10 @@
     color: var(--color-accent-purple);
     white-space: nowrap;
     line-height: normal;
-    animation: scroll-skills 20s linear infinite;
+    animation: scroll-skills-seamless 20s linear infinite;
+
+    /* CSS custom property set by JS for exact scroll distance */
+    --scroll-width: 0px;
 
     /* Performance: optimize animation for GPU */
     will-change: transform;
@@ -56,12 +60,13 @@
     flex-shrink: 0;
 }
 
-@keyframes scroll-skills {
+/* Seamless scroll using exact pixel width calculated by JS */
+@keyframes scroll-skills-seamless {
     0% {
         transform: translateX(0);
     }
     100% {
-        transform: translateX(-50%);
+        transform: translateX(calc(var(--scroll-width) * -1));
     }
 }
 
