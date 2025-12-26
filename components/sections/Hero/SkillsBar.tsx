@@ -1,16 +1,17 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
+import { content } from '@/data';
 import styles from './SkillsBar.module.css';
 
+// Build repeating skills array from base items
+const baseSkills = content.skills.marqueeItems;
 const skills = [
-  'INTERACTIVE',
-  'UI/UX',
-  'BRAND STRATEGY',
-  'UI/UX',
-  'INTERACTIVE',
-  'BRAND STRATEGY',
-  'UI/UX',
+  ...baseSkills,
+  baseSkills[1], // UI/UX
+  baseSkills[0], // INTERACTIVE
+  baseSkills[2], // BRAND STRATEGY
+  baseSkills[1], // UI/UX
 ];
 
 export function SkillsBar() {

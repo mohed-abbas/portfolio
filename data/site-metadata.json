@@ -1,0 +1,23 @@
+{
+  "title": "MOHED ABBAS - Designer",
+  "description": "Portfolio of Mohed Abbas - UI/UX Designer specializing in brand strategy, interactive design, and digital products.",
+  "author": "Mohed Abbas",
+  "keywords": [
+    "UI/UX Designer",
+    "Brand Strategy",
+    "Interactive Design",
+    "Portfolio",
+    "Mohed Abbas"
+  ],
+  "openGraph": {
+    "title": "MOHED ABBAS - Designer",
+    "description": "Portfolio of Mohed Abbas - UI/UX Designer specializing in brand strategy, interactive design, and digital products.",
+    "type": "website",
+    "locale": "en_US",
+    "siteName": "Mohed Abbas Portfolio"
+  },
+  "twitter": {
+    "card": "summary_large_image",
+    "creator": "@mohedabbas"
+  }
+}

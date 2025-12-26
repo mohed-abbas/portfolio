@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import animationConfig from "@/data/animation-config.json";
 
 // Register GSAP plugins
 // Note: Registration happens client-side only
@@ -10,23 +11,16 @@ if (typeof window !== "undefined") {
 // Default GSAP configuration
 gsap.defaults({
   ease: "power3.out",
-  duration: 0.8,
+  duration: animationConfig.durations.slow,
 });
 
 // Export configured gsap and plugins
 export { gsap, ScrollTrigger };
 
-// Animation configuration constants
+// Animation configuration constants (from data)
 export const ANIMATION_CONFIG = {
-  duration: {
-    fast: 0.2,
-    normal: 0.4,
-    slow: 0.8,
-    slower: 1.2,
-  },
-  ease: {
-    outExpo: "expo.out",
-    outQuart: "power4.out",
-    inOutQuart: "power4.inOut",
-  },
+  duration: animationConfig.durations,
+  ease: animationConfig.easing.gsap,
+  stagger: animationConfig.stagger,
+  delays: animationConfig.delays,
 } as const;

@@ -8,6 +8,7 @@ import {
   useCallback,
   type ReactNode,
 } from 'react';
+import { designTokens, features } from '@/data';
 
 /**
  * Accent Color Cycling System
@@ -19,17 +20,12 @@ import {
  * - Close tab & reopen → Reset to default
  */
 
-// Color palette
-const ACCENT_COLORS = [
-  '#62b6cb', // Default (teal)
-  '#da3036', // Red
-  '#ff990a', // Orange
-  '#93b99e', // Green
-] as const;
+// Color palette from design tokens
+const ACCENT_COLORS = designTokens.colors.accentPalette;
 
-const DEFAULT_INDEX = 0;
-const STORAGE_KEY = 'portfolio_hasLoaded';
-const CSS_VAR_NAME = '--color-accent-purple';
+const DEFAULT_INDEX = features.accentColorRotation.defaultColorIndex;
+const STORAGE_KEY = features.welcomeScreen.storageKey;
+const CSS_VAR_NAME = features.accentColorRotation.cssVariableName;
 
 // Context type
 interface AccentColorContextType {

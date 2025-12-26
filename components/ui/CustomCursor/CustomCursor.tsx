@@ -2,20 +2,21 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from '@/lib/gsap';
+import { features } from '@/data';
 import styles from './CustomCursor.module.css';
 
-// Trail sphere configuration using palette colors
-// Colors: primary-text (via CSS var), accent-purple, orange, green
+// Trail sphere configuration from features data
+const cursorConfig = features.customCursor;
 const TRAIL_CONFIG = {
-  count: 4,
+  count: cursorConfig.trail.count,
   colors: [
-    'var(--color-primary-text)', // Main: primary text color
-    'var(--color-accent-purple)', // Secondary: #A052FF
-    '#ffb224', // Third: orange
-    '#388e4a', // Fourth: green
+    cursorConfig.trail.colors.primary,
+    'var(--color-accent-purple)', // Uses CSS variable for dynamic accent
+    cursorConfig.trail.colors.secondary,
+    cursorConfig.trail.colors.tertiary,
   ],
-  sizes: [28, 20, 14, 8], // Decreasing sizes for 4 spheres
-  lerpFactors: [0.12, 0.09, 0.06, 0.04], // Slower follow = longer trail
+  sizes: cursorConfig.trail.sizes,
+  lerpFactors: cursorConfig.trail.lerpFactors,
 };
 
 interface TrailSphere {

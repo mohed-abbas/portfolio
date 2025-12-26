@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useAccentColor } from '@/lib/AccentColorContext';
 import { hexToRgba } from '@/lib/colorUtils';
+import { features } from '@/data';
 import styles from './InteractiveBackground.module.css';
 
 interface PlusSign {
@@ -19,17 +20,18 @@ interface MousePosition {
   y: number;
 }
 
-// Grid configuration matching the original bg.svg
-const GRID_SPACING = 24; // Space between plus signs
-const PLUS_SIZE = 10; // Size of each plus sign
-const STROKE_WIDTH = 1;
+// Grid configuration from features data
+const bgConfig = features.interactiveBackground;
+const GRID_SPACING = bgConfig.grid.spacing;
+const PLUS_SIZE = bgConfig.grid.plusSignSize;
+const STROKE_WIDTH = bgConfig.grid.strokeWidth;
 
-// Physics constants
-const MOUSE_RADIUS = 120;
-const REPULSION_STRENGTH = 0.6;
-const RETURN_STRENGTH = 0.06;
-const FRICTION = 0.9;
-const MAX_VELOCITY = 8;
+// Physics constants from features data
+const MOUSE_RADIUS = bgConfig.physics.mouseRadius;
+const REPULSION_STRENGTH = bgConfig.physics.repulsionStrength;
+const RETURN_STRENGTH = bgConfig.physics.returnStrength;
+const FRICTION = bgConfig.physics.friction;
+const MAX_VELOCITY = bgConfig.physics.maxVelocity;
 
 export function InteractiveBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

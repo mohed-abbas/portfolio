@@ -1,0 +1,40 @@
+{
+  "durations": {
+    "fast": 0.2,
+    "normal": 0.4,
+    "slow": 0.8,
+    "slower": 1.2,
+    "slowest": 1.6
+  },
+  "easing": {
+    "gsap": {
+      "outExpo": "expo.out",
+      "outQuart": "power4.out",
+      "inOutQuart": "power4.inOut",
+      "outBack": "back.out(1.7)",
+      "inOutBack": "back.inOut(1.7)"
+    },
+    "css": {
+      "outExpo": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "outQuart": "cubic-bezier(0.25, 1, 0.5, 1)",
+      "inOutQuart": "cubic-bezier(0.76, 0, 0.24, 1)"
+    },
+    "framerMotion": {
+      "outExpo": [0.16, 1, 0.3, 1],
+      "outQuart": [0.25, 1, 0.5, 1],
+      "inOutQuart": [0.76, 0, 0.24, 1]
+    }
+  },
+  "stagger": {
+    "fast": 0.02,
+    "normal": 0.05,
+    "slow": 0.08,
+    "letters": 0.03,
+    "words": 0.1
+  },
+  "delays": {
+    "short": 0.1,
+    "medium": 0.3,
+    "long": 0.5
+  }
+}

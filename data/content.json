@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "firstName": "MOHED",
+    "lastName": "ABBAS",
+    "title": "Designer",
+    "tagline": ["I", "design", "solutions", "for", "people,", "brands", "&", "digital", "products"]
+  },
+  "skills": {
+    "marqueeItems": ["INTERACTIVE", "UI/UX", "BRAND STRATEGY"],
+    "separator": "✦"
+  },
+  "welcomeScreen": {
+    "greetings": ["Hello", "Bonjour", "Hallo", "Ola", "नमस्ते", "سلام"],
+    "initials": {
+      "first": "M",
+      "last": "A"
+    },
+    "greetingDuration": 400,
+    "totalGreetingTime": 2400
+  },
+  "ui": {
+    "buttons": {
+      "menu": "Menu",
+      "close": "Close",
+      "back": "Back"
+    }
+  }
+}

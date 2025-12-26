@@ -3,21 +3,23 @@
 import { useRef, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
+import { content, getHeroLetters } from '@/data';
 import styles from './HeroText.module.css';
 
 // ============================================
-// CONSTANTS
+// CONSTANTS (from data)
 // ============================================
 
-const MOHED_LETTERS = ['M', 'O', 'H', 'E', 'D'];
-const ABBAS_LETTERS = [
-  { letter: 'A', color: 'dark' },
-  { letter: 'B', color: 'purple' },
-  { letter: 'B', color: 'dark' },
-  { letter: 'A', color: 'dark' },
-  { letter: 'S', color: 'purple' },
+const { firstName, lastName } = getHeroLetters();
+const MOHED_LETTERS = firstName;
+const ABBAS_LETTERS_CONFIG = [
+  { letter: lastName[0], color: 'dark' },
+  { letter: lastName[1], color: 'purple' },
+  { letter: lastName[2], color: 'dark' },
+  { letter: lastName[3], color: 'dark' },
+  { letter: lastName[4], color: 'purple' },
 ];
-const TAGLINE_WORDS = ['I', 'design', 'solutions', 'for', 'people,', 'brands', '&', 'digital', 'products'];
+const TAGLINE_WORDS = content.hero.tagline;
 
 // Portal animation directions
 type Direction = 'up' | 'down' | 'left' | 'right';
@@ -278,7 +280,7 @@ export function HeroText() {
 
       {/* ABBAS Text */}
       <h1 ref={abbasRef} className={`${styles.heroText} ${styles.heroTextAbbas}`}>
-        {ABBAS_LETTERS.map((item, index) => {
+        {ABBAS_LETTERS_CONFIG.map((item, index) => {
           const isTarget = index === 0;
           const colorClass = item.color === 'purple' ? styles.textPurple : styles.textDark;
 

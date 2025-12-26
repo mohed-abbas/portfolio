@@ -3,6 +3,7 @@ import { Doppio_One } from "next/font/google";
 import "./globals.css";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { AccentColorProvider } from "@/lib/AccentColorContext";
+import siteMetadata from "@/data/site-metadata.json";
 
 const doppioOne = Doppio_One({
   weight: "400",
@@ -12,23 +13,15 @@ const doppioOne = Doppio_One({
 });
 
 export const metadata: Metadata = {
-  title: "MOHED ABBAS - Designer",
-  description:
-    "Portfolio of Mohed Abbas - UI/UX Designer specializing in brand strategy, interactive design, and digital products.",
-  keywords: [
-    "UI/UX Designer",
-    "Brand Strategy",
-    "Interactive Design",
-    "Portfolio",
-    "Mohed Abbas",
-  ],
-  authors: [{ name: "Mohed Abbas" }],
+  title: siteMetadata.title,
+  description: siteMetadata.description,
+  keywords: siteMetadata.keywords,
+  authors: [{ name: siteMetadata.author }],
   openGraph: {
-    title: "MOHED ABBAS - Designer",
-    description:
-      "Portfolio of Mohed Abbas - UI/UX Designer specializing in brand strategy, interactive design, and digital products.",
-    type: "website",
-    locale: "en_US",
+    title: siteMetadata.openGraph.title,
+    description: siteMetadata.openGraph.description,
+    type: siteMetadata.openGraph.type as "website",
+    locale: siteMetadata.openGraph.locale,
   },
 };
 

@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useCallback } from 'react';
 import { gsap } from '@/lib/gsap';
+import { navigation, content } from '@/data';
 import styles from './Menu.module.css';
 
 interface MenuProps {
@@ -11,19 +12,19 @@ interface MenuProps {
   onRevealStart?: () => void;
 }
 
-const menuLinks = [
-  { label: 'Work', href: '#work', desc: 'Selected projects and case studies' },
-  { label: 'About', href: '#about', desc: 'The story behind the craft' },
-  { label: 'Services', href: '#services', desc: 'Expert solutions for your needs' },
-  { label: 'Contact', href: '#contact', desc: 'Start a conversation today' },
-];
+// Map navigation data to component format
+const menuLinks = navigation.mainLinks.map(link => ({
+  label: link.label,
+  href: link.href,
+  desc: link.description,
+}));
 
-const socialLinks = [
-  { label: 'Instagram', href: 'https://instagram.com/' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/' },
-  { label: 'GitHub', href: 'https://github.com/' },
-  { label: 'Twitter', href: 'https://twitter.com/' },
-];
+const socialLinks = navigation.socialLinks.map(link => ({
+  label: link.label,
+  href: link.href,
+}));
+
+const BACK_BUTTON_TEXT = content.ui.buttons.back;
 
 // Custom easing matching Framer Motion [0.76, 0, 0.24, 1]
 const MENU_EASE = 'power4.inOut';
@@ -355,7 +356,9 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
 
           <div className={styles.locationGroup}>
             <span className={styles.socialLabel}>Location</span>
-            <p className={styles.locationText}>Based in Europe,<br />Working Worldwide</p>
+            <p className={styles.locationText}>{navigation.location.split(',').map((part, i) => (
+              <span key={i}>{part.trim()}{i === 0 && <br />}</span>
+            ))}</p>
           </div>
 
           <button
@@ -380,7 +383,7 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
             </svg>
             <div className={styles.backText}>
               <span className={styles.backTextBase}>
-                {"Back".split('').map((char, index) => (
+                {BACK_BUTTON_TEXT.split('').map((char, index) => (
                   <span
                     key={index}
                     className={styles.backChar}
@@ -391,7 +394,7 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
                 ))}
               </span>
               <span className={styles.backTextClone} aria-hidden="true">
-                {"Back".split('').map((char, index) => (
+                {BACK_BUTTON_TEXT.split('').map((char, index) => (
                   <span
                     key={index}
                     className={styles.backChar}

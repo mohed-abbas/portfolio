@@ -1,0 +1,55 @@
+{
+  "mainLinks": [
+    {
+      "id": "work",
+      "label": "Work",
+      "href": "#work",
+      "description": "Selected projects and case studies"
+    },
+    {
+      "id": "about",
+      "label": "About",
+      "href": "#about",
+      "description": "The story behind the craft"
+    },
+    {
+      "id": "services",
+      "label": "Services",
+      "href": "#services",
+      "description": "Expert solutions for your needs"
+    },
+    {
+      "id": "contact",
+      "label": "Contact",
+      "href": "#contact",
+      "description": "Start a conversation today"
+    }
+  ],
+  "socialLinks": [
+    {
+      "id": "instagram",
+      "label": "Instagram",
+      "href": "https://instagram.com/",
+      "platform": "instagram"
+    },
+    {
+      "id": "linkedin",
+      "label": "LinkedIn",
+      "href": "https://linkedin.com/",
+      "platform": "linkedin"
+    },
+    {
+      "id": "github",
+      "label": "GitHub",
+      "href": "https://github.com/",
+      "platform": "github"
+    },
+    {
+      "id": "twitter",
+      "label": "Twitter",
+      "href": "https://twitter.com/",
+      "platform": "twitter"
+    }
+  ],
+  "location": "Based in Europe, Working Worldwide"
+}

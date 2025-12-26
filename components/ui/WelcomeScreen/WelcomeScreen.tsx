@@ -3,9 +3,11 @@
 import { useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { useGSAP } from '@gsap/react';
+import { content } from '@/data';
 import styles from './WelcomeScreen.module.css';
 
-const GREETINGS = ["Hello", "Bonjour", "Hallo", "Ola", "नमस्ते", "سلام"];
+const GREETINGS = content.welcomeScreen.greetings;
+const INITIALS = content.welcomeScreen.initials;
 
 export const WelcomeScreen = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -210,9 +212,9 @@ export const WelcomeScreen = () => {
 
         {/* Initials (Center Target) */}
         <div ref={initialsRef} className={styles.initialsContainer}>
-          <span ref={mRef} className={styles.letterM}>M</span>
+          <span ref={mRef} className={styles.letterM}>{INITIALS.first}</span>
           <span style={{ width: '0.1em' }}></span> {/* Spacer */}
-          <span ref={aRef} className={styles.letterA}>A</span>
+          <span ref={aRef} className={styles.letterA}>{INITIALS.last}</span>
         </div>
       </div>
     </div>

@@ -1,0 +1,300 @@
+// Type definitions for portfolio data files
+
+// ============================================
+// Site Metadata Types
+// ============================================
+export interface OpenGraphData {
+  title: string;
+  description: string;
+  type: string;
+  locale: string;
+  siteName: string;
+}
+
+export interface TwitterData {
+  card: string;
+  creator: string;
+}
+
+export interface SiteMetadata {
+  title: string;
+  description: string;
+  author: string;
+  keywords: string[];
+  openGraph: OpenGraphData;
+  twitter: TwitterData;
+}
+
+// ============================================
+// Content Types
+// ============================================
+export interface HeroContent {
+  firstName: string;
+  lastName: string;
+  title: string;
+  tagline: string[];
+}
+
+export interface SkillsContent {
+  marqueeItems: string[];
+  separator: string;
+}
+
+export interface WelcomeScreenContent {
+  greetings: string[];
+  initials: {
+    first: string;
+    last: string;
+  };
+  greetingDuration: number;
+  totalGreetingTime: number;
+}
+
+export interface UIContent {
+  buttons: {
+    menu: string;
+    close: string;
+    back: string;
+  };
+}
+
+export interface Content {
+  hero: HeroContent;
+  skills: SkillsContent;
+  welcomeScreen: WelcomeScreenContent;
+  ui: UIContent;
+}
+
+// ============================================
+// Navigation Types
+// ============================================
+export interface NavLink {
+  id: string;
+  label: string;
+  href: string;
+  description: string;
+}
+
+export interface SocialLink {
+  id: string;
+  label: string;
+  href: string;
+  platform: string;
+}
+
+export interface Navigation {
+  mainLinks: NavLink[];
+  socialLinks: SocialLink[];
+  location: string;
+}
+
+// ============================================
+// Design Tokens Types
+// ============================================
+export interface ColorTokens {
+  background: string;
+  text: {
+    primary: string;
+    dark: string;
+  };
+  accent: {
+    teal: string;
+    gold: string;
+    red: string;
+    orange: string;
+    green: string;
+    black: string;
+  };
+  ui: {
+    gridLine: string;
+  };
+  accentPalette: string[];
+}
+
+export interface TypographyTokens {
+  families: {
+    primary: string;
+    navbar: string;
+  };
+  sizes: {
+    hero: string;
+    nav: string;
+    tagline: string;
+    menu: string;
+    works: string;
+    skills: string;
+  };
+  weights: {
+    regular: number;
+    medium: number;
+    semibold: number;
+    bold: number;
+  };
+}
+
+export interface SpacingTokens {
+  navTop: string;
+  navSide: string;
+}
+
+export interface LayoutTokens {
+  maxWidth: string;
+  minHeight: string;
+}
+
+export interface BorderRadiusTokens {
+  portrait: string;
+  small: string;
+  medium: string;
+  large: string;
+}
+
+export interface ZIndexTokens {
+  base: number;
+  above: number;
+  nav: number;
+  modal: number;
+  cursor: number;
+}
+
+export interface DesignTokens {
+  colors: ColorTokens;
+  typography: TypographyTokens;
+  spacing: SpacingTokens;
+  layout: LayoutTokens;
+  borderRadius: BorderRadiusTokens;
+  zIndex: ZIndexTokens;
+}
+
+// ============================================
+// Animation Config Types
+// ============================================
+export interface DurationConfig {
+  fast: number;
+  normal: number;
+  slow: number;
+  slower: number;
+  slowest: number;
+}
+
+export interface EasingConfig {
+  gsap: {
+    outExpo: string;
+    outQuart: string;
+    inOutQuart: string;
+    outBack: string;
+    inOutBack: string;
+  };
+  css: {
+    outExpo: string;
+    outQuart: string;
+    inOutQuart: string;
+  };
+  framerMotion: {
+    outExpo: number[];
+    outQuart: number[];
+    inOutQuart: number[];
+  };
+}
+
+export interface StaggerConfig {
+  fast: number;
+  normal: number;
+  slow: number;
+  letters: number;
+  words: number;
+}
+
+export interface DelayConfig {
+  short: number;
+  medium: number;
+  long: number;
+}
+
+export interface AnimationConfig {
+  durations: DurationConfig;
+  easing: EasingConfig;
+  stagger: StaggerConfig;
+  delays: DelayConfig;
+}
+
+// ============================================
+// Feature Config Types
+// ============================================
+export interface CursorTrailConfig {
+  count: number;
+  sizes: number[];
+  lerpFactors: number[];
+  colors: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+  };
+}
+
+export interface CursorBurstConfig {
+  enabled: boolean;
+  scale: number;
+  duration: number;
+}
+
+export interface CustomCursorConfig {
+  enabled: boolean;
+  hideOnTouch: boolean;
+  trail: CursorTrailConfig;
+  burst: CursorBurstConfig;
+}
+
+export interface BackgroundGridConfig {
+  spacing: number;
+  plusSignSize: number;
+  strokeWidth: number;
+}
+
+export interface BackgroundPhysicsConfig {
+  mouseRadius: number;
+  repulsionStrength: number;
+  returnStrength: number;
+  friction: number;
+  maxVelocity: number;
+}
+
+export interface InteractiveBackgroundConfig {
+  enabled: boolean;
+  grid: BackgroundGridConfig;
+  physics: BackgroundPhysicsConfig;
+}
+
+export interface WelcomeScreenConfig {
+  enabled: boolean;
+  skipOnReturn: boolean;
+  storageKey: string;
+}
+
+export interface SmoothScrollConfig {
+  enabled: boolean;
+  lerp: number;
+  duration: number;
+  smoothWheel: boolean;
+}
+
+export interface MenuConfig {
+  enabled: boolean;
+  animateOnHover: boolean;
+  showDescriptions: boolean;
+}
+
+export interface AccentColorConfig {
+  enabled: boolean;
+  defaultColorIndex: number;
+  cssVariableName: string;
+}
+
+export interface Features {
+  customCursor: CustomCursorConfig;
+  interactiveBackground: InteractiveBackgroundConfig;
+  welcomeScreen: WelcomeScreenConfig;
+  smoothScroll: SmoothScrollConfig;
+  menu: MenuConfig;
+  accentColorRotation: AccentColorConfig;
+}
