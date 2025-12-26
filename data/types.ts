@@ -33,6 +33,7 @@ export interface HeroContent {
   lastName: string;
   title: string;
   tagline: string[];
+  taglineHidden: string[];
 }
 
 export interface SkillsContent {

@@ -3,7 +3,27 @@
     "firstName": "MOHED",
     "lastName": "ABBAS",
     "title": "Designer",
-    "tagline": ["I", "design", "solutions", "for", "people,", "brands", "&", "digital", "products"]
+    "tagline": [
+      "I",
+      "design",
+      "solutions",
+      "for",
+      "people,",
+      "brands",
+      "& digital",
+      "products."
+    ],
+    "taglineHidden": [
+      "I",
+      "turn",
+      "your",
+      "complex",
+      "ideas",
+      " ",
+      "into",
+      "elegant",
+      "reality."
+    ]
   },
   "skills": {
     "marqueeItems": ["INTERACTIVE", "UI/UX", "BRAND STRATEGY"],

@@ -86,27 +86,99 @@
     color: var(--color-primary-text);
 }
 
-/* Tagline */
-.tagline {
+/* ============================================
+   TAGLINE SPOTLIGHT SYSTEM
+   CSS Grid stacking with clip-path reveal
+   Inspired by spotlight.html reference
+   ============================================ */
+
+/* Container for both tagline layers - CSS Grid for perfect stacking */
+.taglineContainer {
+    display: grid;
+    /* Removed place-items: end to allow stretch (default) so layers align perfectly */
     position: relative;
     margin-top: clamp(40px, 6vw, 80px);
     max-width: clamp(280px, 28vw, 420px);
     margin-left: auto;
     margin-right: 0;
-    padding-right: 0;
+    /* Hide default cursor in spotlight zone */
+    cursor: none;
+    /* Allow spotlight background to bleed out */
+    overflow: visible; 
+}
+
+/* LAYER 0: BACKGROUND SPOTLIGHT (UNBOUNDED) */
+/* Physically large div to allow clip-path to move outside text bounds */
+.spotlightBg {
+    position: absolute;
+    /* Large negative values to expand "canvas" */
+    top: -1000px;
+    left: -1000px;
+    width: 3000px; /* Huge width */
+    height: 3000px; /* Huge height */
+    background-color: var(--color-accent-purple);
+    z-index: 2; /* Between Base (1) and Reveal (3) */
+    pointer-events: none;
+    
+    /* 
+       The clip-path center needs to be offset by the top/left shift.
+       Since we shifted -1000px, (0,0) of container is at (1000, 1000) of this div.
+       So we add 1000px to the coordinates.
+    */
+    --offset: 1000px;
+    clip-path: circle(var(--spotlight-size, 0px) at calc(var(--spotlight-x, 50%) + var(--offset)) calc(var(--spotlight-y, 50%) + var(--offset)));
+    
+    /* Smooth transition matching text layer */
+    transition: clip-path 0.05s linear;
+}
+
+/* Base tagline styles (shared) */
+.tagline,
+.taglineHidden {
     font-family: var(--font-primary);
     font-weight: 700;
     font-size: var(--font-size-tagline);
-    color: var(--color-primary-text);
     text-align: right;
     text-transform: uppercase;
     line-height: 1.4;
-    /* Enable 3D transforms for word animation */
     perspective: 800px;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
+    /* Ensure texts align to bottom if heights differ */
+    align-content: flex-end;
     gap: 0.25em;
+    margin: 0;
+    padding: 0;
+    /* Both layers sit in the exact same grid cell */
+    grid-area: 1 / 1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* LAYER 1: BOTTOM (DEFAULT) - Dark text on transparent */
+.tagline {
+    color: var(--color-primary-text);
+    background-color: transparent;
+    z-index: 1; /* Below spotlight background */
+    position: relative;
+}
+
+/* LAYER 2: TOP (REVEAL) - Light text on accent background */
+.taglineHidden {
+    /* Text color inside the spotlight circle */
+    color: var(--color-background);
+    /* BACKGROUND REMOVED - handled by .spotlightBg */
+    background-color: transparent;
+    z-index: 3; /* Topmost layer */
+    /* THE MASK LOGIC - clip into circle shape */
+    /* Uses standard coordinates relative to container */
+    clip-path: circle(var(--spotlight-size, 0px) at var(--spotlight-x, 50%) var(--spotlight-y, 50%));
+    /* Disable pointer events so hover passes through */
+    pointer-events: none;
+    user-select: none;
+    /* Smooth transition */
+    transition: clip-path 0.05s linear;
 }
 
 /* Individual tagline word for stagger animation */
@@ -119,7 +191,7 @@
 
 /* Responsive adjustments for MacBook 14" and similar screens */
 @media (min-width: 1200px) and (max-width: 1600px) {
-    .tagline {
+    .taglineContainer {
         margin-top: clamp(50px, 5vw, 70px);
         max-width: 380px;
     }
@@ -127,7 +199,7 @@
 
 /* Larger desktop adjustments */
 @media (min-width: 1600px) {
-    .tagline {
+    .taglineContainer {
         margin-top: 80px;
         max-width: 420px;
     }
@@ -155,9 +227,13 @@
         margin-top: 20px;
     }
 
-    .tagline {
+    .taglineContainer {
         margin-top: 60px;
         max-width: 340px;
+    }
+
+    .tagline,
+    .taglineHidden {
         font-size: 18px;
     }
 }
@@ -174,7 +250,7 @@
         flex-direction: column;
         justify-content: center;
         /* Height adjustment: 100vh minus safe area/skills bar allowance */
-        min-height: 85vh; 
+        min-height: 85vh;
         /* Reset padding since we are using flex center */
         padding-top: 0;
         padding-left: 20px;
@@ -184,7 +260,7 @@
     }
 
     /* Re-enable pointer events for text elements */
-    .heroText, .tagline {
+    .heroText, .taglineContainer {
         pointer-events: auto;
     }
 
@@ -207,16 +283,27 @@
         text-align: center;
     }
 
-    .tagline {
+    .taglineContainer {
         /* Reposition tagline for mobile balance */
         margin-top: 40px;
         /* Allow full width for better wrapping */
-        max-width: 100%; 
+        max-width: 100%;
+        /* Disable spotlight on mobile (no hover) */
+        cursor: auto;
+    }
+
+    .tagline,
+    .taglineHidden {
         /* Align left to contrast with the right-aligned 'ABBAS' above */
         text-align: left;
         justify-content: flex-start;
         /* Increase readability size */
         font-size: clamp(16px, 4vw, 20px);
         line-height: 1.5;
+    }
+
+    /* Hide the reveal layer on mobile since no hover (touch devices) */
+    .taglineHidden {
+        display: none;
     }
 }

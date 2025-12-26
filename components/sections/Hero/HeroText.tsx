@@ -20,6 +20,10 @@ const ABBAS_LETTERS_CONFIG = [
   { letter: lastName[4], color: 'purple' },
 ];
 const TAGLINE_WORDS = content.hero.tagline;
+const TAGLINE_HIDDEN_WORDS = content.hero.taglineHidden;
+
+// Spotlight cursor size (radius in px)
+const SPOTLIGHT_SIZE = 80;
 
 // Portal animation directions
 type Direction = 'up' | 'down' | 'left' | 'right';
@@ -103,7 +107,9 @@ export function HeroText() {
   const sectionRef = useRef<HTMLElement>(null);
   const mohedRef = useRef<HTMLHeadingElement>(null);
   const abbasRef = useRef<HTMLHeadingElement>(null);
-  const taglineRef = useRef<HTMLParagraphElement>(null);
+  const taglineRef = useRef<HTMLDivElement>(null);
+  const taglineContainerRef = useRef<HTMLDivElement>(null);
+  const taglineHiddenRef = useRef<HTMLParagraphElement>(null);
 
   // Handle hover on portal letters
   const handleLetterHover = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
@@ -111,6 +117,52 @@ export function HeroText() {
     if (portalLetter) {
       triggerPortalLoop(portalLetter);
     }
+  }, []);
+
+  useGSAP(() => {
+    const updateSpotlight = () => {
+      const container = taglineContainerRef.current;
+      if (!container) return;
+
+      // Read global lerped cursor position from CSS variables
+      const globalX = parseFloat(document.documentElement.style.getPropertyValue('--cursor-x')) || 0;
+      const globalY = parseFloat(document.documentElement.style.getPropertyValue('--cursor-y')) || 0;
+
+      const rect = container.getBoundingClientRect();
+      const x = globalX - rect.left;
+      const y = globalY - rect.top;
+
+      // Update CSS variables on the CONTAINER so all layers share them
+      container.style.setProperty('--spotlight-x', `${x}px`);
+      container.style.setProperty('--spotlight-y', `${y}px`);
+    };
+
+    gsap.ticker.add(updateSpotlight);
+    return () => gsap.ticker.remove(updateSpotlight);
+  }, []); // Run once on mount
+
+  // Spotlight hover enter - expand the mask
+  const handleTaglineMouseEnter = useCallback(() => {
+    const container = taglineContainerRef.current;
+    if (!container) return;
+
+    container.style.setProperty('--spotlight-size', `${SPOTLIGHT_SIZE}px`);
+
+    // Notify cursor to scale up
+    window.dispatchEvent(new CustomEvent('tagline-spotlight-enter', {
+      detail: { size: SPOTLIGHT_SIZE * 2 }
+    }));
+  }, []);
+
+  // Spotlight hover leave - shrink the mask
+  const handleTaglineMouseLeave = useCallback(() => {
+    const container = taglineContainerRef.current;
+    if (!container) return;
+
+    container.style.setProperty('--spotlight-size', '0px');
+
+    // Notify cursor to reset
+    window.dispatchEvent(new CustomEvent('tagline-spotlight-leave'));
   }, []);
 
   useGSAP(() => {
@@ -311,14 +363,34 @@ export function HeroText() {
         })}
       </h1>
 
-      {/* Tagline */}
-      <p ref={taglineRef} className={styles.tagline}>
-        {TAGLINE_WORDS.map((word, index) => (
-          <span key={index} className={styles.taglineWord}>
-            {word}
-          </span>
-        ))}
-      </p>
+      {/* Tagline with Spotlight Effect */}
+      <div
+        ref={taglineContainerRef}
+        className={styles.taglineContainer}
+        onMouseEnter={handleTaglineMouseEnter}
+        onMouseLeave={handleTaglineMouseLeave}
+      >
+        {/* LAYER 0: BACKGROUND SPOTLIGHT (Unbounded) */}
+        <div className={styles.spotlightBg} />
+
+        {/* LAYER 1: BOTTOM - Default visible tagline */}
+        <p ref={taglineRef} className={styles.tagline}>
+          {TAGLINE_WORDS.map((word, index) => (
+            <span key={index} className={styles.taglineWord}>
+              {word}
+            </span>
+          ))}
+        </p>
+
+        {/* LAYER 2: TOP - Hidden tagline revealed by spotlight */}
+        <p ref={taglineHiddenRef} className={styles.taglineHidden}>
+          {TAGLINE_HIDDEN_WORDS.map((word, index) => (
+            <span key={index} className={styles.taglineWord}>
+              {word}
+            </span>
+          ))}
+        </p>
+      </div>
     </section>
   );
 }

@@ -39,6 +39,7 @@ export function CustomCursor() {
   // Movement detection for burst effect
   const lastMousePos = useRef({ x: 0, y: 0 });
   const isMoving = useRef(false);
+  const isSpotlightActive = useRef(false);
   const movementTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasBurst = useRef(false);
 
@@ -53,7 +54,7 @@ export function CustomCursor() {
 
     // Burst animation - spheres collapse into main cursor
     const triggerBurst = () => {
-      if (hasBurst.current) return;
+      if (hasBurst.current || isSpotlightActive.current) return;
       hasBurst.current = true;
 
       // Animate each trail sphere to burst into the main cursor
@@ -115,17 +116,19 @@ export function CustomCursor() {
         isMoving.current = true;
         hasBurst.current = false;
 
-        // Show trail spheres when moving
-        trailSpheresRef.current.forEach(sphere => {
-          if (sphere.element) {
-            gsap.to(sphere.element, {
-              opacity: 1,
-              scale: 1,
-              duration: 0.2,
-              ease: 'power2.out',
-            });
-          }
-        });
+        // Show trail spheres when moving (ONLY if spotlight is NOT active)
+        if (!isSpotlightActive.current) {
+          trailSpheresRef.current.forEach(sphere => {
+            if (sphere.element) {
+              gsap.to(sphere.element, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.2,
+                ease: 'power2.out',
+              });
+            }
+          });
+        }
 
         // Clear existing timeout
         if (movementTimeout.current) {
@@ -177,6 +180,10 @@ export function CustomCursor() {
         xPercent: -50,
         yPercent: -50,
       });
+
+      // Update CSS variables for cursor position (used by spotlight effect)
+      document.documentElement.style.setProperty('--cursor-x', `${cursorPos.current.x}px`);
+      document.documentElement.style.setProperty('--cursor-y', `${cursorPos.current.y}px`);
 
       // Update trail spheres - each follows the one ahead
       trailSpheresRef.current.forEach((sphere, index) => {
@@ -258,6 +265,60 @@ export function CustomCursor() {
       });
     };
 
+    // Handle tagline spotlight - cursor becomes the spotlight
+    const handleSpotlightEnter = (e: Event) => {
+      const customEvent = e as CustomEvent<{ size: number }>;
+      const spotlightSize = customEvent.detail?.size || 100;
+
+      isSpotlightActive.current = true;
+
+      // Set CSS variable for spotlight state
+      document.documentElement.style.setProperty('--spotlight-active', '1');
+      document.documentElement.style.setProperty('--spotlight-size', `${spotlightSize / 2}px`);
+
+      // Hide the main cursor so the spotlight (reveal mask) takes over completely
+      // This prevents color clashing (difference mode vs purple background)
+      gsap.to(cursor, {
+        scale: 1.5, // Slight scale up before disappearing for effect
+        opacity: 0,
+        duration: 0.2,
+        ease: 'power2.out',
+      });
+
+      // Fade out trail during spotlight mode
+      trailSpheresRef.current.forEach((sphere) => {
+        if (sphere.element) {
+          gsap.to(sphere.element, {
+            opacity: 0,
+            scale: 0.5,
+            duration: 0.2,
+            ease: 'power2.out',
+          });
+        }
+      });
+    };
+
+    const handleSpotlightLeave = () => {
+      isSpotlightActive.current = false;
+
+      // Reset CSS variable for spotlight state
+      document.documentElement.style.setProperty('--spotlight-active', '0');
+
+      // Bring back the main cursor
+      gsap.to(cursor, {
+        scale: 1,
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+
+      // Trail will reappear naturally on next movement
+    };
+
+    // Listen for spotlight events
+    window.addEventListener('tagline-spotlight-enter', handleSpotlightEnter);
+    window.addEventListener('tagline-spotlight-leave', handleSpotlightLeave);
+
     // Add hover listeners to all interactive elements
     const interactiveElements = document.querySelectorAll('a, button, [role="button"], input, textarea, select');
 
@@ -271,6 +332,8 @@ export function CustomCursor() {
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
+      window.removeEventListener('tagline-spotlight-enter', handleSpotlightEnter);
+      window.removeEventListener('tagline-spotlight-leave', handleSpotlightLeave);
       gsap.ticker.remove(animate);
 
       if (movementTimeout.current) {
