@@ -26,12 +26,12 @@
   gap: 15px;
 }
 
-.metaLabel::before {
+/* .metaLabel::before {
   content: "";
   width: 40px;
   height: 1px;
   background-color: var(--color-accent-purple);
-}
+} */
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {

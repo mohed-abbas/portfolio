@@ -12,11 +12,10 @@
   display: inline-block;
   margin-right: 0.2em;
   opacity: 0.15;
-  transition: color 0.4s ease;
 }
 
 .highlight {
-  /* Color will be animated by GSAP */
+  /* Color animated by GSAP - no CSS transition to prevent conflicts */
   color: var(--color-primary-text);
 }
 
