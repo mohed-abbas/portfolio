@@ -59,11 +59,18 @@ export interface UIContent {
   };
 }
 
+export interface PhilosophyContent {
+  label: string;
+  statement: string;
+  highlights: string[];
+}
+
 export interface Content {
   hero: HeroContent;
   skills: SkillsContent;
   welcomeScreen: WelcomeScreenContent;
   ui: UIContent;
+  philosophy: PhilosophyContent;
 }
 
 // ============================================

@@ -40,6 +40,7 @@ export type {
   HeroContent,
   SkillsContent,
   WelcomeScreenContent,
+  PhilosophyContent,
   ColorTokens,
   TypographyTokens,
   DurationConfig,

@@ -3,6 +3,7 @@ import { Doppio_One } from "next/font/google";
 import "./globals.css";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { AccentColorProvider } from "@/lib/AccentColorContext";
+import { LenisProvider } from "@/lib/LenisProvider";
 import siteMetadata from "@/data/site-metadata.json";
 
 const doppioOne = Doppio_One({
@@ -33,10 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={doppioOne.variable}>
-        <AccentColorProvider>
-          <CustomCursor />
-          {children}
-        </AccentColorProvider>
+        <LenisProvider>
+          <AccentColorProvider>
+            <CustomCursor />
+            {children}
+          </AccentColorProvider>
+        </LenisProvider>
       </body>
     </html>
   );

@@ -1,0 +1,50 @@
+.statementText {
+  font-size: clamp(2.5rem, 6.5vw, 6rem);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  max-width: 1400px;
+  letter-spacing: -0.02em;
+  color: var(--color-primary-text);
+}
+
+.word {
+  display: inline-block;
+  margin-right: 0.2em;
+  opacity: 0.15;
+  transition: color 0.4s ease;
+}
+
+.highlight {
+  /* Color will be animated by GSAP */
+  color: var(--color-primary-text);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .statementText {
+    font-size: clamp(2rem, 5.5vw, 4.5rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .statementText {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    line-height: 1.1;
+  }
+
+  .word {
+    margin-right: 0.15em;
+  }
+}
+
+@media (max-width: 480px) {
+  .statementText {
+    font-size: clamp(1.5rem, 7vw, 2.5rem);
+    line-height: 1.15;
+  }
+
+  .word {
+    margin-right: 0.1em;
+  }
+}

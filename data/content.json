@@ -26,7 +26,14 @@
     ]
   },
   "skills": {
-    "marqueeItems": ["INTERACTIVE", "UI/UX", "BRAND STRATEGY"],
+    "marqueeItems": [
+      "DEVELOPPER",
+      "UI/UX",
+      "BRAND STRATEGY",
+      "GRAPHIC DESIGN",
+      "WEB DESIGN",
+      "MOBILE APPS"
+    ],
     "separator": "✦"
   },
   "welcomeScreen": {
@@ -44,5 +51,10 @@
       "close": "Close",
       "back": "Back"
     }
+  },
+  "philosophy": {
+    "label": "Approach & Vision",
+    "statement": "Building digital systems that balance raw aesthetics with strategic precision to elevate human interaction.",
+    "highlights": ["aesthetics", "strategic", "precision", "interaction"]
   }
 }
