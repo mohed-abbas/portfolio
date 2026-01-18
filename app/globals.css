@@ -151,3 +151,13 @@ html {
 html:hover {
     scrollbar-color: var(--color-accent-purple) transparent;
 }
+
+/* ============================================
+   SECTION LAYERING
+   Sections after Philosophy appear "over" it
+   ============================================ */
+#philosophy ~ section {
+    position: relative;
+    z-index: var(--z-above);
+    background-color: var(--color-background);
+}

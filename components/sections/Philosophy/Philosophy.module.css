@@ -1,3 +1,8 @@
+.wrapper {
+  position: relative;
+  z-index: var(--z-base);
+}
+
 .section {
   min-height: 150vh;
   padding: 150px 8%;
@@ -5,6 +10,8 @@
   flex-direction: column;
   justify-content: flex-start;
   position: relative;
+  /* background-color: var(--color-background); */
+  will-change: transform;
 }
 
 .plusIcon {
@@ -23,7 +30,13 @@
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+}
+
+.starIcon {
+  width: 1.2em;
+  height: 1.2em;
+  flex-shrink: 0;
 }
 
 /* .metaLabel::before {
@@ -64,10 +77,11 @@
 
   .metaLabel {
     font-size: 0.65rem;
-    gap: 10px;
+    gap: 8px;
   }
 
-  .metaLabel::before {
-    width: 25px;
+  .starIcon {
+    width: 1em;
+    height: 1em;
   }
 }
