@@ -19,6 +19,36 @@
   color: var(--color-primary-text);
 }
 
+/* ============================================
+   PORTAL ANIMATION SYSTEM FOR HIGHLIGHTS
+   Each highlight letter is a masked window
+   ============================================ */
+
+/* Highlight word container - wraps the letter spans */
+.highlightWord {
+  display: inline-block;
+  margin-right: 0.2em;
+  opacity: 0; /* Hidden until stagger animation */
+}
+
+/* The clipping mask - acts as the "window frame" */
+.portalMask {
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  vertical-align: baseline;
+  cursor: pointer;
+}
+
+/* The inner letter that moves within the mask */
+.portalLetter {
+  display: inline-block;
+  position: relative;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1024px) {
   .statementText {
