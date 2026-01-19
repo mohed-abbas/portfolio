@@ -65,12 +65,31 @@ export interface PhilosophyContent {
   highlights: string[];
 }
 
+export interface Project {
+  id: string;
+  title: string;
+  image: string;
+  year: string;
+  category: string;
+  badge: string;
+  themeColor: string;
+  badgeColor?: string;
+  badgeTextColor?: string;
+  badgeShadowColor?: string;
+}
+
+export interface ProjectsContent {
+  label: string;
+  items: Project[];
+}
+
 export interface Content {
   hero: HeroContent;
   skills: SkillsContent;
   welcomeScreen: WelcomeScreenContent;
   ui: UIContent;
   philosophy: PhilosophyContent;
+  projects: ProjectsContent;
 }
 
 // ============================================

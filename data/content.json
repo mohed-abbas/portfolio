@@ -56,5 +56,34 @@
     "label": "Approach & Vision",
     "statement": "Building digital systems that balance raw aesthetics with strategic precision to elevate human interaction.",
     "highlights": ["aesthetics", "strategic", "precision", "interaction"]
+  },
+  "projects": {
+    "label": "Selected Works",
+    "items": [
+      {
+        "id": "nebulix",
+        "title": "NEBULIX",
+        "image": "https://images.unsplash.com/photo-1593642532744-93771563d650?q=80&w=2000&auto=format&fit=crop",
+        "year": "2024",
+        "category": "ARCHITECTURE",
+        "badge": "VIEW<br>CASE",
+        "themeColor": "#e6f2ff",
+        "badgeColor": "#FFB800",
+        "badgeTextColor": "#1b2028",
+        "badgeShadowColor": "#1b2028"
+      },
+      {
+        "id": "quanto",
+        "title": "QUANTO",
+        "image": "https://images.unsplash.com/photo-1614851099511-6730ec3d2817?q=80&w=2000&auto=format&fit=crop",
+        "year": "2025",
+        "category": "FINTECH",
+        "badge": "LIVE<br>DEMO",
+        "themeColor": "#fff0f5",
+        "badgeColor": "#62B6CB",
+        "badgeTextColor": "#ffffff",
+        "badgeShadowColor": "#000000"
+      }
+    ]
   }
 }

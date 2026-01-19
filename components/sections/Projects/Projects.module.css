@@ -1,0 +1,166 @@
+.section {
+    position: relative;
+    width: 100%;
+    background-color: transparent;
+    margin-top: -35vh; /* Pull up to reduce gap after Philosophy */
+}
+
+.spacer {
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 14px;
+    opacity: 0.5;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    color: var(--color-primary-text);
+}
+
+.projectSection {
+    height: 250vh; /* Long scroll for drama */
+    position: relative;
+    width: 100%;
+}
+
+.projectSticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px; /* For 3D rotation effects */
+}
+
+/* THE SPLIT TEXT */
+.titleWrapper {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* The text layers */
+.textTop, .textBottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: hidden;
+    background-color: transparent;
+    will-change: transform;
+}
+
+/* We need a solid backing for the text layers to hide the image initially */
+.textBacking {
+    position: absolute;
+    width: 120%; /* Wider to cover rotation gaps */
+    height: 60%;
+    background-color: transparent;
+    z-index: -1;
+    transition: background-color 0.5s ease;
+}
+
+.textTop .textBacking { bottom: 0; }
+.textBottom .textBacking { top: 0; }
+
+.textTop {
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+    z-index: 12;
+    transform-origin: center 50%; /* Pivot from the cut line */
+}
+
+.textBottom {
+    clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+    z-index: 11;
+    transform-origin: center 50%; /* Pivot from the cut line */
+}
+
+.textContent {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16vw;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--color-primary-text);
+    white-space: nowrap;
+    letter-spacing: -0.04em;
+    line-height: 0.8;
+    font-family: var(--font-primary);
+}
+
+/* THE IMAGE */
+.imageCard {
+    width: 50vw;
+    height: 60vh;
+    position: relative;
+    z-index: 5;
+    transform: scale(0.2) rotate(-10deg); /* Start small and crooked */
+    opacity: 0;
+    border-radius: var(--radius-portrait);
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+}
+
+.projectImgWrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform: scale(1.4);
+    will-change: transform;
+}
+
+/* FUNKY BADGE */
+.funkyBadge {
+    position: absolute;
+    top: 10%;
+    right: 10%;
+    width: clamp(100px, 12vw, 150px);
+    height: clamp(100px, 12vw, 150px);
+    background: var(--color-accent-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 20;
+    transform: scale(0);
+    box-shadow: 5px 5px 0px var(--color-primary-text);
+    color: var(--color-primary-text);
+    text-align: center;
+    line-height: 1.2;
+    font-family: var(--font-navbar);
+}
+
+/* INFO */
+.projectMeta {
+    position: absolute;
+    bottom: 50px;
+    display: flex;
+    gap: 20px;
+    z-index: 20;
+    font-family: var(--font-navbar);
+    font-size: 18px;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.pill {
+    padding: 10px 20px;
+    border: 2px solid var(--color-primary-text);
+    border-radius: 50px;
+    background: white; /* Keep white or use bg var if transparent */
+    background-color: var(--color-background);
+}

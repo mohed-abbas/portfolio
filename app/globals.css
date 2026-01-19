@@ -159,5 +159,5 @@ html:hover {
 #philosophy ~ section {
     position: relative;
     z-index: var(--z-above);
-    background-color: var(--color-background);
+    /* Background removed - InteractiveBackground shows through */
 }
