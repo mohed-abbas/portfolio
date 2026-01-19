@@ -61,8 +61,8 @@
     "label": "Selected Works",
     "items": [
       {
-        "id": "nebulix",
-        "title": "NEBULIX",
+        "id": "tasktrox",
+        "title": "TASKTROX",
         "image": "https://images.unsplash.com/photo-1593642532744-93771563d650?q=80&w=2000&auto=format&fit=crop",
         "year": "2024",
         "category": "ARCHITECTURE",
@@ -73,8 +73,8 @@
         "badgeShadowColor": "#1b2028"
       },
       {
-        "id": "quanto",
-        "title": "QUANTO",
+        "id": "permitto",
+        "title": "PERMITTO",
         "image": "https://images.unsplash.com/photo-1614851099511-6730ec3d2817?q=80&w=2000&auto=format&fit=crop",
         "year": "2025",
         "category": "FINTECH",
