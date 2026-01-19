@@ -36,7 +36,7 @@
   display: inline-block;
   overflow: hidden;
   position: relative;
-  vertical-align: baseline;
+  vertical-align: bottom;
   cursor: pointer;
 }
 
