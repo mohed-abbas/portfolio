@@ -1,6 +1,7 @@
 .wrapper {
   position: relative;
-  z-index: var(--z-base);
+  z-index: var(--z-above);
+  background-color: var(--color-background);
 }
 
 .section {
@@ -10,7 +11,6 @@
   flex-direction: column;
   justify-content: flex-start;
   position: relative;
-  /* background-color: var(--color-background); */
   will-change: transform;
 }
 

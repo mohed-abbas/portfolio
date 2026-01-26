@@ -1,19 +1,51 @@
 /* Hero Section - Main Container
+   Fixed behind content; content sections scroll over it.
    Reference: styles.css lines 79-88 */
 
 .hero {
-    position: relative;
-    min-width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     max-width: var(--canvas-max-width);
     min-height: var(--canvas-min-height);
     margin: 0 auto;
     overflow: hidden;
     padding-bottom: 60px;
+    z-index: 0;
 
-    /* Performance: contain layout and paint calculations */
-    contain: layout paint;
+    /* GPU compositing without creating containing block for fixed children */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
 
-    /* Force GPU layer for smoother compositing */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+/* Scroll spacer: occupies document flow space for the fixed hero + animation range.
+   Content sections after this naturally scroll up and over the hero. */
+.heroScrollSpacer {
+    position: relative;
+    width: 100%;
+    pointer-events: none;
+    /* Height set dynamically by JS: hero height + scroll range */
+}
+
+/* ============================================
+   FLYING LETTERS
+   Clones of M and A that animate from hero text
+   to navbar center during scroll
+   ============================================ */
+
+.flyingLetter {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    color: var(--color-primary-text);
+    line-height: 0.85;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 15;
+    will-change: transform, font-size, opacity;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }

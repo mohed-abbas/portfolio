@@ -2,7 +2,7 @@
    Reference: styles.css lines 111-169 */
 
 .navbar {
-    position: absolute;
+    position: fixed;
     top: var(--spacing-nav-top);
     left: var(--spacing-nav-side);
     right: var(--spacing-nav-side);
@@ -10,12 +10,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: var(--z-above);
+    z-index: var(--z-nav);
     transition: z-index 0s;
 }
 
 .navbar.menuOpen {
-    position: fixed;
     z-index: calc(var(--z-nav) + 1);
 }
 
@@ -86,6 +85,34 @@
 .navChar {
     display: inline-block;
     will-change: transform, opacity;
+}
+
+/* ============================================
+   BRAND MARK (MA) - Center of navbar
+   Revealed via scroll animation from Hero
+   ============================================ */
+
+.navCenter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    font-size: clamp(22px, 2.5vw, 34px);
+    color: var(--color-primary-text);
+    line-height: 0.85;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.brandLetter {
+    display: inline-block;
+}
+
+.brandSpacer {
+    width: 0.1em;
 }
 
 .navContact {

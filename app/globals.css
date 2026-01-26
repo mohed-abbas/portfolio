@@ -154,10 +154,10 @@ html:hover {
 
 /* ============================================
    SECTION LAYERING
-   Sections after Philosophy appear "over" it
+   Content sections scroll over the fixed hero.
+   They need opaque backgrounds and higher z-index.
    ============================================ */
 #philosophy ~ section {
     position: relative;
     z-index: var(--z-above);
-    /* Background removed - InteractiveBackground shows through */
 }

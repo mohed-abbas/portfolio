@@ -1,8 +1,9 @@
 .section {
     position: relative;
     width: 100%;
-    background-color: transparent;
+    background-color: var(--color-background);
     margin-top: -35vh; /* Pull up to reduce gap after Philosophy */
+    z-index: var(--z-above);
 }
 
 .spacer {

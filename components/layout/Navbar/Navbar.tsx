@@ -5,7 +5,10 @@ import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import { Menu } from './Menu';
 import { useAccentColor } from '@/lib/AccentColorContext';
+import { content } from '@/data';
 import styles from './Navbar.module.css';
+
+const INITIALS = content.welcomeScreen.initials;
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -215,7 +218,14 @@ export function Navbar() {
             </span>
           </div>
         </button>
-        
+
+        {/* Brand mark - revealed by scroll animation */}
+        <div id="navbar-brand" className={styles.navCenter}>
+          <span id="navbar-brand-m" className={styles.brandLetter}>{INITIALS.first}</span>
+          <span className={styles.brandSpacer} />
+          <span id="navbar-brand-a" className={styles.brandLetter}>{INITIALS.last}</span>
+        </div>
+
       </nav>
       <Menu isOpen={isMenuOpen} onClose={closeMenu} onCloseComplete={handleCloseComplete} onRevealStart={cycleColor} />
     </>

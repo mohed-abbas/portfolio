@@ -95,11 +95,12 @@ export const Projects = () => {
                    {/* Image */}
                    <div className={styles.imageCard}>
                         <div className={styles.projectImgWrapper}>
-                             <Image 
-                                src={project.image} 
-                                alt={project.title} 
-                                fill 
-                                style={{ objectFit: 'cover' }}
+                             <Image
+                                src={project.image}
+                                alt={project.title}
+                                fill
+                                unoptimized
+                                style={{ objectFit: 'contain' }}
                                 sizes="(max-width: 768px) 100vw, 80vw"
                                 priority={false}
                              />
