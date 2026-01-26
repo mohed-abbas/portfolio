@@ -12,6 +12,12 @@ export function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    // Prevent browser scroll restoration - always start from top (welcome screen)
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     // Initialize Lenis
     const lenis = new Lenis({
       duration: 1.2,

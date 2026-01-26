@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Doppio_One } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { AccentColorProvider } from "@/lib/AccentColorContext";
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={doppioOne.variable}>
+        <Script id="scroll-restore" strategy="beforeInteractive">{`if("scrollRestoration"in history){history.scrollRestoration="manual"}window.scrollTo(0,0);`}</Script>
         <LenisProvider>
           <AccentColorProvider>
             <CustomCursor />

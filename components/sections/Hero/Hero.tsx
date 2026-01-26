@@ -41,7 +41,8 @@ export function Hero() {
     const flyingA = flyingARef.current;
 
     // Set spacer height: hero visible height + scroll range for animation
-    const scrollRange = window.innerHeight * 1.5;
+    // Tighter range so Philosophy enters right as initials land in navbar
+    const scrollRange = window.innerHeight * 1.0;
     spacer.style.height = `${hero.offsetHeight + scrollRange}px`;
 
     // Query target elements (navbar is at page level, query from document)
@@ -115,7 +116,7 @@ export function Hero() {
       tl.to(taglineContainer, { opacity: 0, duration: 0.2, ease: 'power2.in' }, 0.08);
     }
     if (skillsBar) {
-      tl.to(skillsBar, { opacity: 0, duration: 0.2, ease: 'power2.in' }, 0.08);
+      tl.to(skillsBar, { opacity: 0, duration: 0.15, ease: 'power2.in' }, 0.71);
     }
 
     // --- PHASE 5: Fly + shrink to navbar center (includes scale settle) ---
@@ -148,13 +149,13 @@ export function Hero() {
     ScrollTrigger.create({
       trigger: spacer,
       start: 'top top',
-      end: () => `+=${window.innerHeight * 1.5}`,
-      scrub: 2.5,
+      end: () => `+=${window.innerHeight * 1.0}`,
+      scrub: 2,
       animation: tl,
       invalidateOnRefresh: true,
       onRefresh: () => {
         // Recalculate spacer height on resize/refresh
-        spacer.style.height = `${hero.offsetHeight + window.innerHeight * 1.5}px`;
+        spacer.style.height = `${hero.offsetHeight + window.innerHeight * 1.0}px`;
       },
     });
 
