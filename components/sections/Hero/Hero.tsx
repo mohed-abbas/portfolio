@@ -25,7 +25,7 @@ export function Hero() {
     // Fallback: if welcome already completed (e.g., component remounted)
     const wrapper = document.querySelector('[class*="welcomeWrapper"]');
     if (wrapper && (wrapper as HTMLElement).style.display === 'none') {
-      setWelcomeDone(true);
+      queueMicrotask(() => setWelcomeDone(true));
     }
 
     return () => window.removeEventListener('welcome-complete', onComplete);
