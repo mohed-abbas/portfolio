@@ -54,3 +54,9 @@
     --z-modal: 200;
     --z-cursor: 9999;
 }
+
+/* Dark theme overrides */
+:root[data-theme="dark"] {
+    --color-background: #171717;
+    --color-primary-text: #ffffff;
+}

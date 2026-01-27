@@ -145,7 +145,7 @@ export function Navbar() {
       gsap.to(line1, {
         rotation: 0,
         y: 0,
-        backgroundColor: 'var(--color-black)',
+        backgroundColor: 'var(--color-primary-text)',
         duration: 0.4,
         ease: 'power2.out',
       });
@@ -159,7 +159,7 @@ export function Navbar() {
       gsap.to(line3, {
         rotation: 0,
         y: 0,
-        backgroundColor: 'var(--color-black)',
+        backgroundColor: 'var(--color-primary-text)',
         duration: 0.4,
         ease: 'power2.out',
       });

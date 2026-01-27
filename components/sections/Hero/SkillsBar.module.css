@@ -20,7 +20,7 @@
 
 .skillsWrapper {
     background-color: var(--color-background);
-    border: clamp(3px, 0.4vw, 5px) solid var(--color-black);
+    border: clamp(3px, 0.4vw, 5px) solid var(--color-primary-text);
     height: clamp(50px, 7vw, 91px);
     width: 100%;
     display: flex;

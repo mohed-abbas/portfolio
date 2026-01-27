@@ -3,6 +3,7 @@ import { Doppio_One } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AccentColorProvider } from "@/lib/AccentColorContext";
 import { LenisProvider } from "@/lib/LenisProvider";
 import siteMetadata from "@/data/site-metadata.json";
@@ -33,12 +34,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={doppioOne.variable}>
+        <Script id="theme-init" strategy="beforeInteractive">{`(function(){try{if(localStorage.getItem("portfolio_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}})()`}</Script>
         <Script id="scroll-restore" strategy="beforeInteractive">{`if("scrollRestoration"in history){history.scrollRestoration="manual"}window.scrollTo(0,0);`}</Script>
         <LenisProvider>
           <AccentColorProvider>
             <CustomCursor />
+            <ThemeToggle />
             {children}
           </AccentColorProvider>
         </LenisProvider>
