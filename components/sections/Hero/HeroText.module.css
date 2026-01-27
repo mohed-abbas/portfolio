@@ -104,30 +104,31 @@
     /* Hide default cursor in spotlight zone */
     cursor: none;
     /* Allow spotlight background to bleed out */
-    overflow: visible; 
+    overflow: visible;
+    contain: layout style;
 }
 
 /* LAYER 0: BACKGROUND SPOTLIGHT (UNBOUNDED) */
 /* Physically large div to allow clip-path to move outside text bounds */
 .spotlightBg {
     position: absolute;
-    /* Large negative values to expand "canvas" */
-    top: -1000px;
-    left: -1000px;
-    width: 3000px; /* Huge width */
-    height: 3000px; /* Huge height */
+    /* Negative values to expand "canvas" beyond container */
+    top: -500px;
+    left: -500px;
+    width: 2000px;
+    height: 2000px;
     background-color: var(--color-accent-purple);
     z-index: 2; /* Between Base (1) and Reveal (3) */
     pointer-events: none;
-    
-    /* 
+
+    /*
        The clip-path center needs to be offset by the top/left shift.
-       Since we shifted -1000px, (0,0) of container is at (1000, 1000) of this div.
-       So we add 1000px to the coordinates.
+       Since we shifted -500px, (0,0) of container is at (500, 500) of this div.
+       So we add 500px to the coordinates.
     */
-    --offset: 1000px;
+    --offset: 500px;
     clip-path: circle(var(--spotlight-size, 0px) at calc(var(--spotlight-x, 50%) + var(--offset)) calc(var(--spotlight-y, 50%) + var(--offset)));
-    
+
     /* Smooth transition matching text layer */
     transition: clip-path 0.05s linear;
 }
@@ -186,7 +187,7 @@
     display: inline-block;
     transform-style: preserve-3d;
     transform-origin: center bottom;
-    will-change: transform, opacity, filter;
+    will-change: transform, opacity;
 }
 
 /* Responsive adjustments for MacBook 14" and similar screens */

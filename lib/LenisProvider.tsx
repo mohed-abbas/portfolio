@@ -12,12 +12,6 @@ export function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // Prevent browser scroll restoration - always start from top (welcome screen)
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-    window.scrollTo(0, 0);
-
     // Initialize Lenis
     const lenis = new Lenis({
       duration: 1.2,
@@ -34,14 +28,16 @@ export function LenisProvider({ children }: LenisProviderProps) {
     lenis.on('scroll', ScrollTrigger.update);
 
     // RAF loop for Lenis
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     // Cleanup
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
       lenisRef.current = null;
     };

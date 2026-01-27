@@ -119,18 +119,29 @@ export function HeroText() {
     }
   }, []);
 
+  const cachedRect = useRef<DOMRect | null>(null);
+
   useGSAP(() => {
+    const container = taglineContainerRef.current;
+    if (!container) return;
+
+    const updateRect = () => {
+      cachedRect.current = container.getBoundingClientRect();
+    };
+    updateRect();
+
+    window.addEventListener('resize', updateRect);
+    window.addEventListener('scroll', updateRect, { passive: true });
+
     const updateSpotlight = () => {
-      const container = taglineContainerRef.current;
-      if (!container) return;
+      if (!cachedRect.current) return;
 
       // Read global lerped cursor position from CSS variables
       const globalX = parseFloat(document.documentElement.style.getPropertyValue('--cursor-x')) || 0;
       const globalY = parseFloat(document.documentElement.style.getPropertyValue('--cursor-y')) || 0;
 
-      const rect = container.getBoundingClientRect();
-      const x = globalX - rect.left;
-      const y = globalY - rect.top;
+      const x = globalX - cachedRect.current.left;
+      const y = globalY - cachedRect.current.top;
 
       // Update CSS variables on the CONTAINER so all layers share them
       container.style.setProperty('--spotlight-x', `${x}px`);
@@ -138,7 +149,11 @@ export function HeroText() {
     };
 
     gsap.ticker.add(updateSpotlight);
-    return () => gsap.ticker.remove(updateSpotlight);
+    return () => {
+      gsap.ticker.remove(updateSpotlight);
+      window.removeEventListener('resize', updateRect);
+      window.removeEventListener('scroll', updateRect);
+    };
   }, []); // Run once on mount
 
   // Spotlight hover enter - expand the mask

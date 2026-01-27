@@ -47,7 +47,7 @@
     opacity: 0;
     pointer-events: none;
     z-index: 15;
-    will-change: transform, font-size, opacity;
+    will-change: transform, opacity;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

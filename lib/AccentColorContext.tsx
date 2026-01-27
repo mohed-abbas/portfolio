@@ -6,6 +6,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   type ReactNode,
 } from 'react';
 import { designTokens, features } from '@/data';
@@ -71,11 +72,11 @@ export function AccentColorProvider({ children }: { children: ReactNode }) {
     setColorIndex((prev) => (prev + 1) % ACCENT_COLORS.length);
   }, []);
 
-  const value: AccentColorContextType = {
+  const value = useMemo<AccentColorContextType>(() => ({
     color: ACCENT_COLORS[colorIndex],
     colorIndex,
     cycleColor,
-  };
+  }), [colorIndex, cycleColor]);
 
   return (
     <AccentColorContext.Provider value={value}>

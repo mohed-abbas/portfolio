@@ -27,13 +27,14 @@ body {
 
 /* Hide default cursor for custom cursor */
 @media (hover: hover) and (pointer: fine) {
-    * {
-        cursor: none !important;
+    body {
+        cursor: none;
     }
 }
 
 html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
 }
 
 body {

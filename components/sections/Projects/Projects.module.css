@@ -36,6 +36,7 @@
     align-items: center;
     justify-content: center;
     perspective: 1000px; /* For 3D rotation effects */
+    contain: layout style;
 }
 
 /* THE SPLIT TEXT */
@@ -102,15 +103,16 @@
 
 /* THE IMAGE */
 .imageCard {
-    width: 50vw;
-    height: 60vh;
+    width: 80vw;
+    height: 70vh;
     position: relative;
     z-index: 5;
-    transform: scale(0.2) rotate(-10deg); /* Start small and crooked */
+    transform: scale(0.125) rotate(-10deg); /* Start small and crooked */
     opacity: 0;
     border-radius: var(--radius-portrait);
     overflow: hidden;
     box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    will-change: transform, opacity;
 }
 
 .projectImgWrapper {

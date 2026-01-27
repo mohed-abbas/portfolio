@@ -51,8 +51,6 @@ export const Projects = () => {
                 scale: 1,
                 rotation: 0, // Straighten out
                 opacity: 1,
-                width: "80vw", // Go Wide
-                height: "70vh",
                 ease: "back.out(1.2)" // Bouncy effect
             }, "start+=0.05");
 
