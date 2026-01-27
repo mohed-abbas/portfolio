@@ -1,9 +1,10 @@
 'use client';
 
-import { useRef, useMemo, useCallback } from 'react';
+import { useRef, useMemo, useCallback, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, ANIMATION_CONFIG } from '@/lib/gsap';
 import styles from './RevealText.module.css';
+import { useAccentColor } from '@/lib/AccentColorContext';
 
 interface RevealTextProps {
   text: string;
@@ -67,6 +68,27 @@ const triggerPortalLoop = (letterElement: HTMLElement) => {
 };
 
 // ============================================
+// COLOR INTERPOLATION
+// ============================================
+
+const PRIMARY_COLOR = '#1b2028';
+
+const interpolateColor = (color1: string, color2: string, progress: number): string => {
+  const hex1 = color1.replace('#', '');
+  const hex2 = color2.replace('#', '');
+  const r1 = parseInt(hex1.substring(0, 2), 16);
+  const g1 = parseInt(hex1.substring(2, 4), 16);
+  const b1 = parseInt(hex1.substring(4, 6), 16);
+  const r2 = parseInt(hex2.substring(0, 2), 16);
+  const g2 = parseInt(hex2.substring(2, 4), 16);
+  const b2 = parseInt(hex2.substring(4, 6), 16);
+  const r = Math.round(r1 + (r2 - r1) * progress);
+  const g = Math.round(g1 + (g2 - g1) * progress);
+  const b = Math.round(b1 + (b2 - b1) * progress);
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
+// ============================================
 // COMPONENT
 // ============================================
 
@@ -74,6 +96,9 @@ export function RevealText({ text, highlights }: RevealTextProps) {
   const containerRef = useRef<HTMLHeadingElement>(null);
   const hasAnimated = useRef(false);
   const animationIntervals = useRef<number[]>([]);
+  const { color: accentColor } = useAccentColor();
+  const phase2TriggerRef = useRef<ScrollTrigger | null>(null);
+  const highlightWordsRef = useRef<NodeListOf<Element> | null>(null);
 
   // Split text into words and determine which should be highlighted
   const words = useMemo(() => {
@@ -206,36 +231,21 @@ export function RevealText({ text, highlights }: RevealTextProps) {
     // ============================================
     // PHASE 2: Highlight color interpolation (scroll-scrubbed)
     // ============================================
-    const primaryColor = '#1b2028';
-
-    const interpolateColor = (color1: string, color2: string, progress: number): string => {
-      const hex1 = color1.replace('#', '');
-      const hex2 = color2.replace('#', '');
-      const r1 = parseInt(hex1.substring(0, 2), 16);
-      const g1 = parseInt(hex1.substring(2, 4), 16);
-      const b1 = parseInt(hex1.substring(4, 6), 16);
-      const r2 = parseInt(hex2.substring(0, 2), 16);
-      const g2 = parseInt(hex2.substring(2, 4), 16);
-      const b2 = parseInt(hex2.substring(4, 6), 16);
-      const r = Math.round(r1 + (r2 - r1) * progress);
-      const g = Math.round(g1 + (g2 - g1) * progress);
-      const b = Math.round(b1 + (b2 - b1) * progress);
-      return `rgb(${r}, ${g}, ${b})`;
-    };
-
     const getAccentColor = (): string => {
       return getComputedStyle(document.documentElement)
         .getPropertyValue('--color-accent-purple').trim() || '#62b6cb';
     };
 
-    ScrollTrigger.create({
+    highlightWordsRef.current = highlightWords;
+
+    phase2TriggerRef.current = ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top 50%',
       end: 'top 20%',
       scrub: 2,
       onUpdate: (self) => {
         const progress = self.progress;
-        const accentColor = getAccentColor();
+        const currentAccent = getAccentColor();
         const totalHighlights = highlightWords.length;
         highlightWords.forEach((wordEl, index) => {
           const letters = wordEl.querySelectorAll(`.${styles.portalLetter}`);
@@ -244,7 +254,7 @@ export function RevealText({ text, highlights }: RevealTextProps) {
           const easedProgress = adjustedProgress < 0.5
             ? 2 * adjustedProgress * adjustedProgress
             : 1 - Math.pow(-2 * adjustedProgress + 2, 2) / 2;
-          const color = interpolateColor(primaryColor, accentColor, easedProgress);
+          const color = interpolateColor(PRIMARY_COLOR, currentAccent, easedProgress);
           letters.forEach((el) => {
             (el as HTMLElement).style.color = color;
           });
@@ -259,6 +269,27 @@ export function RevealText({ text, highlights }: RevealTextProps) {
     };
 
   }, { scope: containerRef, dependencies: [words] });
+
+  // Re-apply highlight colors when accent color changes (e.g. menu close cycles color)
+  useEffect(() => {
+    if (!phase2TriggerRef.current || !highlightWordsRef.current) return;
+
+    const progress = phase2TriggerRef.current.progress;
+    const totalHighlights = highlightWordsRef.current.length;
+
+    highlightWordsRef.current.forEach((wordEl, index) => {
+      const letters = wordEl.querySelectorAll(`.${styles.portalLetter}`);
+      const staggerDelay = totalHighlights > 1 ? (index / (totalHighlights - 1)) * 0.3 : 0;
+      const adjustedProgress = Math.max(0, Math.min(1, (progress - staggerDelay) / (1 - staggerDelay)));
+      const easedProgress = adjustedProgress < 0.5
+        ? 2 * adjustedProgress * adjustedProgress
+        : 1 - Math.pow(-2 * adjustedProgress + 2, 2) / 2;
+      const color = interpolateColor(PRIMARY_COLOR, accentColor, easedProgress);
+      letters.forEach((el) => {
+        (el as HTMLElement).style.color = color;
+      });
+    });
+  }, [accentColor]);
 
   return (
     <h2 ref={containerRef} className={styles.statementText}>
