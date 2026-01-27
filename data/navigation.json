@@ -29,25 +29,25 @@
     {
       "id": "instagram",
       "label": "Instagram",
-      "href": "https://instagram.com/",
+      "href": "https://www.instagram.com/mohed._.abbas",
       "platform": "instagram"
     },
     {
       "id": "linkedin",
       "label": "LinkedIn",
-      "href": "https://linkedin.com/",
+      "href": "https://www.linkedin.com/in/mohed-abbas/",
       "platform": "linkedin"
     },
     {
       "id": "github",
       "label": "GitHub",
-      "href": "https://github.com/",
+      "href": "https://github.com/mohed-abbas",
       "platform": "github"
     },
     {
       "id": "twitter",
       "label": "Twitter",
-      "href": "https://twitter.com/",
+      "href": "https://x.com/mohed332",
       "platform": "twitter"
     }
   ],
