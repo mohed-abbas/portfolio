@@ -17,6 +17,7 @@ export function Navbar() {
   const navRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const hamburgerLinesRef = useRef<HTMLSpanElement[]>([]);
+  const brandWrapperRef = useRef<HTMLDivElement>(null);
   const { cycleColor } = useAccentColor();
 
   const toggleMenu = useCallback(() => {
@@ -77,9 +78,16 @@ export function Navbar() {
     // Kill any running animations to prevent conflicts
     gsap.killTweensOf([line1, line2, line3, menuChars, closeChars, closeTextItem]);
 
+    const brandWrapper = brandWrapperRef.current;
+
     if (isMenuOpen) {
       // === OPEN STATE ===
-      
+
+      // Hide brand mark
+      if (brandWrapper) {
+        gsap.to(brandWrapper, { opacity: 0, duration: 0.3, ease: 'power2.in' });
+      }
+
       // 1. Hamburger Morph to X
       gsap.to(line1, {
         rotation: 45,
@@ -127,6 +135,11 @@ export function Navbar() {
 
     } else {
       // === CLOSED STATE ===
+
+      // Show brand mark (delayed until menu curtain retracts)
+      if (brandWrapper) {
+        gsap.to(brandWrapper, { opacity: 1, duration: 0.3, ease: 'power2.out', delay: 0.5 });
+      }
 
       // 1. Hamburger Morph back to parallel lines
       gsap.to(line1, {
@@ -219,13 +232,13 @@ export function Navbar() {
           </div>
         </button>
 
-        {/* Brand mark - revealed by scroll animation */}
-        <div id="navbar-brand" className={styles.navCenter}>
-          <span id="navbar-brand-m" className={styles.brandLetter}>{INITIALS.first}</span>
-          <span className={styles.brandSpacer} />
-          <span id="navbar-brand-a" className={styles.brandLetter}>{INITIALS.last}</span>
+        <div ref={brandWrapperRef} className={styles.navCenterWrapper}>
+          <div id="navbar-brand" className={styles.navCenter}>
+            <span id="navbar-brand-m" className={styles.brandLetter}>{INITIALS.first}</span>
+            <span className={styles.brandSpacer} />
+            <span id="navbar-brand-a" className={styles.brandLetter}>{INITIALS.last}</span>
+          </div>
         </div>
-
       </nav>
       <Menu isOpen={isMenuOpen} onClose={closeMenu} onCloseComplete={handleCloseComplete} onRevealStart={cycleColor} />
     </>
