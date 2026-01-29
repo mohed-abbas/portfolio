@@ -35,14 +35,17 @@ export const Projects = () => {
             });
 
             // 1. THE SNAP (Rotate and Separate)
+            // PERF: Added force3D for consistent GPU compositing
             tl.to(topPart, {
                 yPercent: -45,
                 rotation: -5, // Rotate Left
+                force3D: true,
                 ease: "power2.inOut",
             }, "start")
             .to(botPart, {
                 yPercent: 45,
                 rotation: 5, // Rotate Right
+                force3D: true,
                 ease: "power2.inOut",
             }, "start");
 
@@ -51,12 +54,14 @@ export const Projects = () => {
                 scale: 1,
                 rotation: 0, // Straighten out
                 opacity: 1,
+                force3D: true,
                 ease: "back.out(1.2)" // Bouncy effect
             }, "start+=0.05");
 
             // 3. INNER PARALLAX
             tl.to(imgWrapper, {
                 scale: 1.1,
+                force3D: true,
                 ease: "none"
             }, "start");
 
@@ -64,6 +69,7 @@ export const Projects = () => {
             tl.to(badge, {
                 scale: 1,
                 rotation: 360,
+                force3D: true,
                 ease: "elastic.out(1, 0.5)"
             }, "start+=0.3");
 
@@ -71,6 +77,7 @@ export const Projects = () => {
             tl.to(meta, {
                 opacity: 1,
                 y: 0,
+                force3D: true,
                 duration: 0.2
             }, "start+=0.4");
         });
@@ -97,8 +104,8 @@ export const Projects = () => {
                                 src={project.image}
                                 alt={project.title}
                                 fill
-                                unoptimized
-                                style={{ objectFit: 'contain' }}
+                                // unoptimized
+                                style={{ objectFit: 'cover', objectPosition: 'top', objectViewBox: '0 0 800 600' }}
                                 sizes="(max-width: 768px) 100vw, 80vw"
                                 priority={false}
                              />

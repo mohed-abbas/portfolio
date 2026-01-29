@@ -68,6 +68,15 @@ export function Hero() {
       return { x: r.left - h.left, y: r.top - h.top };
     };
 
+    // PERF: Cache computed styles BEFORE building timeline to avoid layout thrashing
+    // These values are read once and reused, avoiding repeated getComputedStyle calls
+    const cachedStyles = {
+      targetMFontSize: parseFloat(getComputedStyle(targetM).fontSize),
+      targetAFontSize: parseFloat(getComputedStyle(targetA).fontSize),
+      navBrandMFontSize: parseFloat(getComputedStyle(navBrandM).fontSize),
+      navBrandAFontSize: parseFloat(getComputedStyle(navBrandA).fontSize),
+    };
+
     // ============================================
     // BUILD MASTER TIMELINE
     // Timeline durations are proportional (0-1 range),
@@ -79,13 +88,13 @@ export function Hero() {
     tl.to(flyingM, {
       x: () => getRelPos(targetM).x,
       y: () => getRelPos(targetM).y,
-      fontSize: () => parseFloat(getComputedStyle(targetM).fontSize),
+      fontSize: cachedStyles.targetMFontSize, // PERF: Use cached value
       duration: 0.001,
     }, 0)
     .to(flyingA, {
       x: () => getRelPos(targetA).x,
       y: () => getRelPos(targetA).y,
-      fontSize: () => parseFloat(getComputedStyle(targetA).fontSize),
+      fontSize: cachedStyles.targetAFontSize, // PERF: Use cached value
       duration: 0.001,
     }, 0);
 
@@ -123,7 +132,7 @@ export function Hero() {
     tl.to(flyingM, {
       x: () => getRelPos(navBrandM).x,
       y: () => getRelPos(navBrandM).y,
-      fontSize: () => parseFloat(getComputedStyle(navBrandM).fontSize),
+      fontSize: cachedStyles.navBrandMFontSize, // PERF: Use cached value
       scale: 1,
       duration: 0.65,
       ease: 'power2.inOut',
@@ -131,7 +140,7 @@ export function Hero() {
     .to(flyingA, {
       x: () => getRelPos(navBrandA).x,
       y: () => getRelPos(navBrandA).y,
-      fontSize: () => parseFloat(getComputedStyle(navBrandA).fontSize),
+      fontSize: cachedStyles.navBrandAFontSize, // PERF: Use cached value
       scale: 1,
       duration: 0.65,
       ease: 'power2.inOut',
@@ -159,8 +168,8 @@ export function Hero() {
       },
     });
 
-    // Ensure positions are calculated after layout is stable
-    ScrollTrigger.refresh();
+    // PERF: Defer refresh to avoid blocking main thread
+    requestAnimationFrame(() => ScrollTrigger.refresh());
 
   }, { dependencies: [welcomeDone] });
 

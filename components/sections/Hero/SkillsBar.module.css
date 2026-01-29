@@ -141,3 +141,11 @@
         height: 16px;
     }
 }
+
+/* PERF: Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .skillsContent {
+        animation: none;
+        transform: none;
+    }
+}

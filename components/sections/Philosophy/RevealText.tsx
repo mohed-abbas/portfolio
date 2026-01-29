@@ -96,6 +96,8 @@ export function RevealText({ text, highlights }: RevealTextProps) {
   const containerRef = useRef<HTMLHeadingElement>(null);
   const hasAnimated = useRef(false);
   const animationIntervals = useRef<number[]>([]);
+  // PERF: AbortController for cleaner async animation cancellation
+  const abortControllerRef = useRef<AbortController | null>(null);
   const { color: accentColor } = useAccentColor();
   const phase2TriggerRef = useRef<ScrollTrigger | null>(null);
   const highlightWordsRef = useRef<NodeListOf<Element> | null>(null);
@@ -141,15 +143,25 @@ export function RevealText({ text, highlights }: RevealTextProps) {
     // ============================================
     // FUNCTION: Start async continuous animations
     // Each letter animates independently at random intervals
+    // PERF: Uses AbortController for clean cancellation
     // ============================================
     const startAsyncAnimations = () => {
+      // Create new abort controller for this animation cycle
+      abortControllerRef.current = new AbortController();
+      const signal = abortControllerRef.current.signal;
+
       const letters = Array.from(highlightLetters) as HTMLElement[];
 
       letters.forEach((letter) => {
         // Random interval between 3-6 seconds for each letter
         const scheduleNext = () => {
+          // PERF: Check if aborted before scheduling
+          if (signal.aborted) return;
+
           const randomDelay = 3000 + Math.random() * 3000;
           const intervalId = window.setTimeout(() => {
+            // PERF: Check if aborted before triggering animation
+            if (signal.aborted) return;
             triggerPortalLoop(letter);
             scheduleNext();
           }, randomDelay);
@@ -159,6 +171,8 @@ export function RevealText({ text, highlights }: RevealTextProps) {
         // Start with a random initial delay (0-3 seconds)
         const initialDelay = Math.random() * 3000;
         const initialId = window.setTimeout(() => {
+          // PERF: Check if aborted before triggering
+          if (signal.aborted) return;
           triggerPortalLoop(letter);
           scheduleNext();
         }, initialDelay);
@@ -264,6 +278,11 @@ export function RevealText({ text, highlights }: RevealTextProps) {
 
     // Cleanup
     return () => {
+      // PERF: Abort all pending animations first
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Then clear timeouts
       animationIntervals.current.forEach((id) => window.clearTimeout(id));
       animationIntervals.current = [];
     };

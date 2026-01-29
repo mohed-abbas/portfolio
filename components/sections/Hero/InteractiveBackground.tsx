@@ -114,18 +114,25 @@ export function InteractiveBackground() {
       const ctx = canvas?.getContext('2d');
       if (!canvas || !ctx) return;
 
+      // PERF: Skip rendering when tab is hidden
+      if (document.hidden) {
+        rafRef.current = requestAnimationFrame(() => animateRef.current?.());
+        return;
+      }
+
       const mouse = mouseRef.current;
       const plusSigns = plusSignsRef.current;
 
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Performance optimization: if idle and settled, just draw static grid
+      // PERF: If idle and settled, draw static grid once and STOP the loop
       if (isIdleRef.current && hasSettledRef.current) {
         plusSigns.forEach((plus) => {
           drawPlusSign(ctx, plus.originX, plus.originY, PLUS_SIZE, 0.12);
         });
-        rafRef.current = requestAnimationFrame(() => animateRef.current?.());
+        // Don't request next frame - loop stops here until mouse moves
+        rafRef.current = null;
         return;
       }
 
@@ -228,6 +235,11 @@ export function InteractiveBackground() {
 
     isHoveringRef.current = isInBounds;
     mouseRef.current = { x, y };
+
+    // PERF: Restart animation loop if it was stopped (idle + settled)
+    if (rafRef.current === null && animateRef.current && isInBounds) {
+      rafRef.current = requestAnimationFrame(animateRef.current);
+    }
   }, []);
 
   useEffect(() => {

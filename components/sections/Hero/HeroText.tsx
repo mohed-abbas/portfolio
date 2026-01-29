@@ -120,6 +120,9 @@ export function HeroText() {
   }, []);
 
   const cachedRect = useRef<DOMRect | null>(null);
+  // PERF: Track spotlight ticker state - only run when hovering tagline
+  const spotlightTickerRef = useRef<(() => void) | null>(null);
+  const spotlightTickerActiveRef = useRef(false);
 
   useGSAP(() => {
     const container = taglineContainerRef.current;
@@ -148,9 +151,15 @@ export function HeroText() {
       container.style.setProperty('--spotlight-y', `${y}px`);
     };
 
-    gsap.ticker.add(updateSpotlight);
+    // PERF: Store reference but DON'T add to ticker yet - wait for hover
+    spotlightTickerRef.current = updateSpotlight;
+
     return () => {
-      gsap.ticker.remove(updateSpotlight);
+      // PERF: Clean up ticker if active
+      if (spotlightTickerActiveRef.current && spotlightTickerRef.current) {
+        gsap.ticker.remove(spotlightTickerRef.current);
+        spotlightTickerActiveRef.current = false;
+      }
       window.removeEventListener('resize', updateRect);
       window.removeEventListener('scroll', updateRect);
     };
@@ -162,6 +171,12 @@ export function HeroText() {
     if (!container) return;
 
     container.style.setProperty('--spotlight-size', `${SPOTLIGHT_SIZE}px`);
+
+    // PERF: Start spotlight ticker only on hover
+    if (!spotlightTickerActiveRef.current && spotlightTickerRef.current) {
+      gsap.ticker.add(spotlightTickerRef.current);
+      spotlightTickerActiveRef.current = true;
+    }
 
     // Notify cursor to scale up
     window.dispatchEvent(new CustomEvent('tagline-spotlight-enter', {
@@ -175,6 +190,12 @@ export function HeroText() {
     if (!container) return;
 
     container.style.setProperty('--spotlight-size', '0px');
+
+    // PERF: Stop spotlight ticker when not hovering
+    if (spotlightTickerActiveRef.current && spotlightTickerRef.current) {
+      gsap.ticker.remove(spotlightTickerRef.current);
+      spotlightTickerActiveRef.current = false;
+    }
 
     // Notify cursor to reset
     window.dispatchEvent(new CustomEvent('tagline-spotlight-leave'));
@@ -280,21 +301,21 @@ export function HeroText() {
       }, "<+0.05")
 
       // 5. Tagline Animation
+      // PERF: Removed filter: blur() animation - very expensive in Chrome
+      // Using opacity + scale + transform for similar visual effect
       .fromTo(
         taglineWords,
         {
           opacity: 0,
           y: 40,
           rotateX: -60,
-          scale: 0.8,
-          filter: 'blur(8px)',
+          scale: 0.85,
         },
         {
           opacity: 1,
           y: 0,
           rotateX: 0,
           scale: 1,
-          filter: 'blur(0px)',
           duration: 0.6,
           stagger: {
             each: 0.06,

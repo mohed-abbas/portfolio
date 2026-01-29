@@ -33,7 +33,8 @@
     height: 100%;
     pointer-events: none;
     z-index: var(--z-cursor);
-    mix-blend-mode: difference;
+    /* PERF: Use exclusion instead of difference - similar visual, better performance */
+    mix-blend-mode: exclusion;
 
     /* Performance: isolate blend mode calculations */
     isolation: isolate;
@@ -62,12 +63,12 @@
     border-radius: 50%;
     pointer-events: none;
     will-change: transform;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) translateZ(0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 
-    /* Simplified glow - reduced for Chromium performance */
-    box-shadow: 0 0 6px currentColor;
+    /* PERF: Minimal glow - box-shadow is expensive, reduced blur radius */
+    box-shadow: 0 0 4px currentColor;
 
     /* Performance containment */
     contain: layout style;

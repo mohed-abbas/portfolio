@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { gsap } from '@/lib/gsap';
 import { features } from '@/data';
 import styles from './CustomCursor.module.css';
@@ -42,6 +42,11 @@ export function CustomCursor() {
   const isSpotlightActive = useRef(false);
   const movementTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasBurst = useRef(false);
+
+  // PERF: Track ticker state to avoid unnecessary 60fps updates
+  const tickerActiveRef = useRef(false);
+  const animateFnRef = useRef<(() => void) | null>(null);
+  const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Smooth lerp factor for main cursor
   const lerpFactor = 0.15;
@@ -143,6 +148,9 @@ export function CustomCursor() {
       }
 
       lastMousePos.current = { x: e.clientX, y: e.clientY };
+
+      // PERF: Ensure ticker is running when mouse moves
+      startTicker();
     };
 
     // Create trail sphere elements
@@ -164,6 +172,37 @@ export function CustomCursor() {
 
     // Track mouse movement
     window.addEventListener('mousemove', handleMouseMove);
+
+    // PERF: Start ticker only when needed
+    const startTicker = () => {
+      if (!tickerActiveRef.current && animateFnRef.current) {
+        gsap.ticker.add(animateFnRef.current);
+        tickerActiveRef.current = true;
+      }
+    };
+
+    // PERF: Stop ticker when cursor is idle
+    const stopTicker = () => {
+      if (tickerActiveRef.current && animateFnRef.current) {
+        gsap.ticker.remove(animateFnRef.current);
+        tickerActiveRef.current = false;
+      }
+    };
+
+    // PERF: Schedule idle check - stop ticker after 150ms of no movement
+    const scheduleIdleCheck = () => {
+      if (idleTimeoutRef.current) {
+        clearTimeout(idleTimeoutRef.current);
+      }
+      idleTimeoutRef.current = setTimeout(() => {
+        // Check if cursor has settled (lerp nearly complete)
+        const dx = Math.abs(mousePos.current.x - cursorPos.current.x);
+        const dy = Math.abs(mousePos.current.y - cursorPos.current.y);
+        if (dx < 0.5 && dy < 0.5) {
+          stopTicker();
+        }
+      }, 150);
+    };
 
     // Animate with GSAP ticker for smooth 60fps updates
     const animate = () => {
@@ -204,9 +243,20 @@ export function CustomCursor() {
           yPercent: -50,
         });
       });
+
+      // PERF: Check if settled and schedule idle
+      const dx = Math.abs(mousePos.current.x - cursorPos.current.x);
+      const dy = Math.abs(mousePos.current.y - cursorPos.current.y);
+      if (dx < 0.5 && dy < 0.5) {
+        scheduleIdleCheck();
+      }
     };
 
-    gsap.ticker.add(animate);
+    // Store reference for cleanup and control
+    animateFnRef.current = animate;
+
+    // PERF: Don't start ticker immediately - wait for mouse move
+    // gsap.ticker.add(animate); // REMOVED - ticker starts on demand
 
     // Handle cursor visibility when leaving/entering window
     const handleMouseLeave = () => {
@@ -319,13 +369,38 @@ export function CustomCursor() {
     window.addEventListener('tagline-spotlight-enter', handleSpotlightEnter);
     window.addEventListener('tagline-spotlight-leave', handleSpotlightLeave);
 
-    // Add hover listeners to all interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, [role="button"], input, textarea, select');
+    // PERF: Use event delegation instead of adding listeners to every element
+    // This handles dynamically added elements and reduces memory usage
+    const INTERACTIVE_SELECTOR = 'a, button, [role="button"], input, textarea, select';
 
-    interactiveElements.forEach((el) => {
-      el.addEventListener('mouseenter', handleLinkHover);
-      el.addEventListener('mouseleave', handleLinkLeave);
-    });
+    const handleInteractiveEnter = (e: Event) => {
+      const target = e.target;
+      // Ensure target is an Element with closest method
+      if (target instanceof Element && target.closest(INTERACTIVE_SELECTOR)) {
+        handleLinkHover();
+      }
+    };
+
+    const handleInteractiveLeave = (e: Event) => {
+      const target = e.target;
+      const relatedTarget = (e as MouseEvent).relatedTarget;
+
+      // Ensure target is an Element with closest method
+      if (!(target instanceof Element)) return;
+
+      // Only trigger leave if not moving to another interactive element
+      if (target.closest(INTERACTIVE_SELECTOR)) {
+        const isRelatedInteractive = relatedTarget instanceof Element &&
+          relatedTarget.closest(INTERACTIVE_SELECTOR);
+        if (!isRelatedInteractive) {
+          handleLinkLeave();
+        }
+      }
+    };
+
+    // Use capture phase for better delegation performance
+    document.addEventListener('mouseenter', handleInteractiveEnter, true);
+    document.addEventListener('mouseleave', handleInteractiveLeave, true);
 
     // Cleanup
     return () => {
@@ -334,16 +409,25 @@ export function CustomCursor() {
       document.removeEventListener('mouseenter', handleMouseEnter);
       window.removeEventListener('tagline-spotlight-enter', handleSpotlightEnter);
       window.removeEventListener('tagline-spotlight-leave', handleSpotlightLeave);
-      gsap.ticker.remove(animate);
+
+      // PERF: Clean up ticker properly
+      if (animateFnRef.current) {
+        gsap.ticker.remove(animateFnRef.current);
+      }
+      tickerActiveRef.current = false;
 
       if (movementTimeout.current) {
         clearTimeout(movementTimeout.current);
       }
 
-      interactiveElements.forEach((el) => {
-        el.removeEventListener('mouseenter', handleLinkHover);
-        el.removeEventListener('mouseleave', handleLinkLeave);
-      });
+      // PERF: Clean up idle timeout
+      if (idleTimeoutRef.current) {
+        clearTimeout(idleTimeoutRef.current);
+      }
+
+      // PERF: Remove delegated event listeners
+      document.removeEventListener('mouseenter', handleInteractiveEnter, true);
+      document.removeEventListener('mouseleave', handleInteractiveLeave, true);
 
       // Remove trail elements
       trailSpheresRef.current.forEach(sphere => {

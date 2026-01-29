@@ -16,7 +16,7 @@ export function Philosophy() {
     if (!wrapperRef.current || !sectionRef.current || !labelRef.current) return;
 
     // Meta-label entrance animation
-    gsap.from(labelRef.current, {
+    const labelTween = gsap.from(labelRef.current, {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: 'top 80%',
@@ -37,7 +37,7 @@ export function Philosophy() {
     });
 
     // Parallax exit animation - section scrolls slower after pin ends
-    gsap.to(sectionRef.current, {
+    const parallaxTween = gsap.to(sectionRef.current, {
       scrollTrigger: {
         trigger: wrapperRef.current,
         start: () => `top+=${pinTrigger.end}px top`,
@@ -47,6 +47,13 @@ export function Philosophy() {
       yPercent: -35,
       ease: 'none',
     });
+
+    // PERF: Explicit cleanup to prevent memory leaks
+    return () => {
+      pinTrigger.kill();
+      if (labelTween.scrollTrigger) labelTween.scrollTrigger.kill();
+      if (parallaxTween.scrollTrigger) parallaxTween.scrollTrigger.kill();
+    };
   }, { scope: wrapperRef });
 
   return (

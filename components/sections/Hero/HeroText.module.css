@@ -129,8 +129,12 @@
     --offset: 500px;
     clip-path: circle(var(--spotlight-size, 0px) at calc(var(--spotlight-x, 50%) + var(--offset)) calc(var(--spotlight-y, 50%) + var(--offset)));
 
-    /* Smooth transition matching text layer */
-    transition: clip-path 0.05s linear;
+    /* PERF: Remove transition - let GSAP ticker handle smooth updates */
+    /* transition: clip-path 0.05s linear; */
+
+    /* PERF: GPU acceleration for clip-path changes */
+    will-change: clip-path;
+    contain: layout style;
 }
 
 /* Base tagline styles (shared) */
@@ -178,8 +182,11 @@
     /* Disable pointer events so hover passes through */
     pointer-events: none;
     user-select: none;
-    /* Smooth transition */
-    transition: clip-path 0.05s linear;
+    /* PERF: Remove transition - let GSAP ticker handle smooth updates */
+    /* transition: clip-path 0.05s linear; */
+
+    /* PERF: GPU acceleration for clip-path changes */
+    will-change: clip-path;
 }
 
 /* Individual tagline word for stagger animation */
