@@ -68,15 +68,6 @@ export function Hero() {
       return { x: r.left - h.left, y: r.top - h.top };
     };
 
-    // PERF: Cache computed styles BEFORE building timeline to avoid layout thrashing
-    // These values are read once and reused, avoiding repeated getComputedStyle calls
-    const cachedStyles = {
-      targetMFontSize: parseFloat(getComputedStyle(targetM).fontSize),
-      targetAFontSize: parseFloat(getComputedStyle(targetA).fontSize),
-      navBrandMFontSize: parseFloat(getComputedStyle(navBrandM).fontSize),
-      navBrandAFontSize: parseFloat(getComputedStyle(navBrandA).fontSize),
-    };
-
     // ============================================
     // BUILD MASTER TIMELINE
     // Timeline durations are proportional (0-1 range),
@@ -85,16 +76,17 @@ export function Hero() {
     const tl = gsap.timeline();
 
     // --- PHASE 0: Snap flying letters to hero letter positions (instant) ---
+    // NOTE: fontSize uses functional getters so values recalculate on viewport resize
     tl.to(flyingM, {
       x: () => getRelPos(targetM).x,
       y: () => getRelPos(targetM).y,
-      fontSize: cachedStyles.targetMFontSize, // PERF: Use cached value
+      fontSize: () => parseFloat(getComputedStyle(targetM).fontSize),
       duration: 0.001,
     }, 0)
     .to(flyingA, {
       x: () => getRelPos(targetA).x,
       y: () => getRelPos(targetA).y,
-      fontSize: cachedStyles.targetAFontSize, // PERF: Use cached value
+      fontSize: () => parseFloat(getComputedStyle(targetA).fontSize),
       duration: 0.001,
     }, 0);
 
@@ -132,7 +124,7 @@ export function Hero() {
     tl.to(flyingM, {
       x: () => getRelPos(navBrandM).x,
       y: () => getRelPos(navBrandM).y,
-      fontSize: cachedStyles.navBrandMFontSize, // PERF: Use cached value
+      fontSize: () => parseFloat(getComputedStyle(navBrandM).fontSize),
       scale: 1,
       duration: 0.65,
       ease: 'power2.inOut',
@@ -140,7 +132,7 @@ export function Hero() {
     .to(flyingA, {
       x: () => getRelPos(navBrandA).x,
       y: () => getRelPos(navBrandA).y,
-      fontSize: cachedStyles.navBrandAFontSize, // PERF: Use cached value
+      fontSize: () => parseFloat(getComputedStyle(navBrandA).fontSize),
       scale: 1,
       duration: 0.65,
       ease: 'power2.inOut',
