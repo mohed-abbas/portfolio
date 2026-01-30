@@ -101,6 +101,8 @@ export function RevealText({ text, highlights }: RevealTextProps) {
   const { color: accentColor } = useAccentColor();
   const phase2TriggerRef = useRef<ScrollTrigger | null>(null);
   const highlightWordsRef = useRef<NodeListOf<Element> | null>(null);
+  // PERF: Cache letter elements per highlight word to avoid querySelectorAll on every scroll frame
+  const cachedLettersRef = useRef<Map<Element, HTMLElement[]>>(new Map());
 
   // Split text into words and determine which should be highlighted
   const words = useMemo(() => {
@@ -223,7 +225,7 @@ export function RevealText({ text, highlights }: RevealTextProps) {
       trigger: containerRef.current,
       start: 'top 95%',
       end: 'top 35%',
-      scrub: 2,
+      scrub: 2.5,
       onUpdate: (self) => {
         // Update normal words opacity
         const progress = self.progress;
@@ -252,17 +254,25 @@ export function RevealText({ text, highlights }: RevealTextProps) {
 
     highlightWordsRef.current = highlightWords;
 
+    // PERF: Pre-cache letter elements to avoid querySelectorAll on every scroll frame
+    cachedLettersRef.current.clear();
+    highlightWords.forEach((wordEl) => {
+      const letters = Array.from(wordEl.querySelectorAll(`.${styles.portalLetter}`)) as HTMLElement[];
+      cachedLettersRef.current.set(wordEl, letters);
+    });
+
     phase2TriggerRef.current = ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top 50%',
       end: 'top 20%',
-      scrub: 2,
+      scrub: 2.5,
       onUpdate: (self) => {
         const progress = self.progress;
         const currentAccent = getAccentColor();
         const totalHighlights = highlightWords.length;
         highlightWords.forEach((wordEl, index) => {
-          const letters = wordEl.querySelectorAll(`.${styles.portalLetter}`);
+          // PERF: Use cached letters instead of querySelectorAll
+          const letters = cachedLettersRef.current.get(wordEl) || [];
           const staggerDelay = totalHighlights > 1 ? (index / (totalHighlights - 1)) * 0.3 : 0;
           const adjustedProgress = Math.max(0, Math.min(1, (progress - staggerDelay) / (1 - staggerDelay)));
           const easedProgress = adjustedProgress < 0.5
@@ -270,7 +280,7 @@ export function RevealText({ text, highlights }: RevealTextProps) {
             : 1 - Math.pow(-2 * adjustedProgress + 2, 2) / 2;
           const color = interpolateColor(PRIMARY_COLOR, currentAccent, easedProgress);
           letters.forEach((el) => {
-            (el as HTMLElement).style.color = color;
+            el.style.color = color;
           });
         });
       },
@@ -297,7 +307,8 @@ export function RevealText({ text, highlights }: RevealTextProps) {
     const totalHighlights = highlightWordsRef.current.length;
 
     highlightWordsRef.current.forEach((wordEl, index) => {
-      const letters = wordEl.querySelectorAll(`.${styles.portalLetter}`);
+      // PERF: Use cached letters instead of querySelectorAll
+      const letters = cachedLettersRef.current.get(wordEl) || [];
       const staggerDelay = totalHighlights > 1 ? (index / (totalHighlights - 1)) * 0.3 : 0;
       const adjustedProgress = Math.max(0, Math.min(1, (progress - staggerDelay) / (1 - staggerDelay)));
       const easedProgress = adjustedProgress < 0.5
@@ -305,7 +316,7 @@ export function RevealText({ text, highlights }: RevealTextProps) {
         : 1 - Math.pow(-2 * adjustedProgress + 2, 2) / 2;
       const color = interpolateColor(PRIMARY_COLOR, accentColor, easedProgress);
       letters.forEach((el) => {
-        (el as HTMLElement).style.color = color;
+        el.style.color = color;
       });
     });
   }, [accentColor]);

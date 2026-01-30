@@ -63,7 +63,7 @@
 
   .metaLabel {
     font-size: 0.7rem;
-    margin-bottom: 2rem;
+    gap: 8px;
   }
 }
 
@@ -75,11 +75,6 @@
 
   .plusIcon {
     font-size: 1.5rem;
-  }
-
-  .metaLabel {
-    font-size: 0.65rem;
-    gap: 8px;
   }
 
   .starIcon {

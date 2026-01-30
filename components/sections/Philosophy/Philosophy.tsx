@@ -42,7 +42,7 @@ export function Philosophy() {
         trigger: wrapperRef.current,
         start: () => `top+=${pinTrigger.end}px top`,
         end: 'bottom bottom',
-        scrub: 1.5,
+        scrub: 2.5,
       },
       yPercent: -35,
       ease: 'none',

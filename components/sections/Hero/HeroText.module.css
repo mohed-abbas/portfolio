@@ -225,7 +225,7 @@
     }
 
     .taglineContainer {
-        margin-top: clamp(15px, 2vw, 30px);
+        margin-top: clamp(5px, 2vw, 10px);
     }
 }
 
@@ -286,6 +286,7 @@
     /* Re-enable pointer events for text elements */
     .heroText, .taglineContainer {
         pointer-events: auto;
+        margin: 0 auto;
     }
 
     .heroText {
@@ -296,7 +297,7 @@
 
     .heroTextMohed {
         /* Ensure it sticks to the left */
-        text-align: left;
+        text-align: center;
         margin-bottom: 0;
     }
 

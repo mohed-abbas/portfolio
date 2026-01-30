@@ -28,7 +28,7 @@ export const Projects = () => {
                     trigger: section,
                     start: "top top",
                     end: "bottom bottom",
-                    scrub: 1,
+                    scrub: 2.5,
                     pin: stickyContainer,
                     // No background color changes - InteractiveBackground shows through entirely
                 }

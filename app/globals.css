@@ -33,7 +33,8 @@ body {
 }
 
 html {
-    scroll-behavior: smooth;
+    /* Note: scroll-behavior removed - Lenis handles smooth scrolling.
+       CSS scroll-behavior can conflict with Lenis on anchor links and scrollTo() calls */
     scrollbar-gutter: stable;
 }
 

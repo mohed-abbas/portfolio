@@ -151,7 +151,7 @@ export function Hero() {
       trigger: spacer,
       start: 'top top',
       end: () => `+=${window.innerHeight * 1.0}`,
-      scrub: 2,
+      scrub: 2.5,
       animation: tl,
       invalidateOnRefresh: true,
       onRefresh: () => {
