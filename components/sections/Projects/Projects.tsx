@@ -87,7 +87,7 @@ export const Projects = () => {
   }, [projects]);
 
   return (
-    <div ref={containerRef} className={styles.section}>
+    <div ref={containerRef} className={styles.section} id='projects'>
        
        {projects.items.map((project) => (
            <div 

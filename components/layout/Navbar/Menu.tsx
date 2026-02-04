@@ -3,6 +3,7 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { gsap } from '@/lib/gsap';
 import { navigation, content } from '@/data';
+import { useLenis } from '@/lib/LenisProvider';
 import styles from './Menu.module.css';
 
 interface MenuProps {
@@ -35,6 +36,7 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
   const linksContainerRef = useRef<HTMLUListElement>(null);
   const socialSectionRef = useRef<HTMLDivElement>(null);
   const isAnimating = useRef(false);
+  const { scrollTo } = useLenis();
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -275,12 +277,9 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
     onClose();
     // Delay scroll to allow menu close animation
     setTimeout(() => {
-      const target = document.querySelector(href);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
+      scrollTo(href, { duration: 1.8 }); // Lenis smooth scroll with custom duration
     }, 800);
-  }, [onClose]);
+  }, [onClose, scrollTo]);
 
   return (
     <div ref={menuRef} className={`${styles.menu} ${isOpen ? styles.isOpen : ''}`}>

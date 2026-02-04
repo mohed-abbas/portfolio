@@ -3,13 +3,13 @@
     {
       "id": "work",
       "label": "Work",
-      "href": "#work",
+      "href": "#projects",
       "description": "Selected projects and case studies"
     },
     {
       "id": "about",
       "label": "About",
-      "href": "#about",
+      "href": "#philosophy",
       "description": "The story behind the craft"
     },
     {
