@@ -163,6 +163,5 @@
     padding: 10px 20px;
     border: 2px solid var(--color-primary-text);
     border-radius: 50px;
-    background: white; /* Keep white or use bg var if transparent */
     background-color: var(--color-background);
 }
