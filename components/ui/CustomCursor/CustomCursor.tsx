@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { gsap } from '@/lib/gsap';
 import { features } from '@/data';
 import styles from './CustomCursor.module.css';
@@ -56,6 +56,12 @@ export function CustomCursor() {
     const trailContainer = trailContainerRef.current;
 
     if (!cursor || !trailContainer) return;
+
+    // Skip cursor entirely on touch devices — CSS hides it, but JS would still
+    // mount listeners, run the ticker, and create trail DOM otherwise.
+    if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
+      return;
+    }
 
     // Burst animation - spheres collapse into main cursor
     const triggerBurst = () => {
@@ -195,10 +201,11 @@ export function CustomCursor() {
         clearTimeout(idleTimeoutRef.current);
       }
       idleTimeoutRef.current = setTimeout(() => {
-        // Check if cursor has settled (lerp nearly complete)
+        // Check if cursor has settled (lerp nearly complete).
+        // 1px threshold avoids ticker restarts on sub-pixel jitter.
         const dx = Math.abs(mousePos.current.x - cursorPos.current.x);
         const dy = Math.abs(mousePos.current.y - cursorPos.current.y);
-        if (dx < 0.5 && dy < 0.5) {
+        if (dx < 1 && dy < 1) {
           stopTicker();
         }
       }, 150);
@@ -220,9 +227,12 @@ export function CustomCursor() {
         yPercent: -50,
       });
 
-      // Update CSS variables for cursor position (used by spotlight effect)
-      document.documentElement.style.setProperty('--cursor-x', `${cursorPos.current.x}px`);
-      document.documentElement.style.setProperty('--cursor-y', `${cursorPos.current.y}px`);
+      // PERF: --cursor-x / --cursor-y are only consumed by the spotlight reveal mask.
+      // Skip the per-frame style recalculation when spotlight is inactive.
+      if (isSpotlightActive.current) {
+        document.documentElement.style.setProperty('--cursor-x', `${cursorPos.current.x}px`);
+        document.documentElement.style.setProperty('--cursor-y', `${cursorPos.current.y}px`);
+      }
 
       // Update trail spheres - each follows the one ahead
       trailSpheresRef.current.forEach((sphere, index) => {
@@ -244,10 +254,10 @@ export function CustomCursor() {
         });
       });
 
-      // PERF: Check if settled and schedule idle
+      // PERF: Check if settled and schedule idle (1px threshold)
       const dx = Math.abs(mousePos.current.x - cursorPos.current.x);
       const dy = Math.abs(mousePos.current.y - cursorPos.current.y);
-      if (dx < 0.5 && dy < 0.5) {
+      if (dx < 1 && dy < 1) {
         scheduleIdleCheck();
       }
     };
@@ -325,6 +335,10 @@ export function CustomCursor() {
       // Set CSS variable for spotlight state
       document.documentElement.style.setProperty('--spotlight-active', '1');
       document.documentElement.style.setProperty('--spotlight-size', `${spotlightSize / 2}px`);
+      // Seed cursor position vars so the spotlight is correctly placed on the
+      // first paint (per-frame writes are gated on spotlight state).
+      document.documentElement.style.setProperty('--cursor-x', `${cursorPos.current.x}px`);
+      document.documentElement.style.setProperty('--cursor-y', `${cursorPos.current.y}px`);
 
       // Hide the main cursor so the spotlight (reveal mask) takes over completely
       // This prevents color clashing (difference mode vs purple background)

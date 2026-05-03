@@ -47,16 +47,22 @@ export function AccentColorProvider({ children }: { children: ReactNode }) {
       return DEFAULT_INDEX;
     }
 
-    const hasLoaded = sessionStorage.getItem(STORAGE_KEY);
+    // sessionStorage may throw in private mode or when storage is disabled
+    try {
+      const hasLoaded = sessionStorage.getItem(STORAGE_KEY);
 
-    if (!hasLoaded) {
-      // First load → default color
-      sessionStorage.setItem(STORAGE_KEY, 'true');
+      if (!hasLoaded) {
+        // First load → default color
+        sessionStorage.setItem(STORAGE_KEY, 'true');
+        return DEFAULT_INDEX;
+      }
+
+      // Refresh → random color
+      return Math.floor(Math.random() * ACCENT_COLORS.length);
+    } catch {
+      // Storage unavailable — behave like a first load (in-memory fallback)
       return DEFAULT_INDEX;
     }
-
-    // Refresh → random color
-    return Math.floor(Math.random() * ACCENT_COLORS.length);
   });
 
   // Update CSS variable on mount and when color changes

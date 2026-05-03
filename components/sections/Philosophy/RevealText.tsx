@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useCallback, useEffect } from 'react';
+import { useRef, useMemo, useCallback, useEffect, Fragment } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, ANIMATION_CONFIG } from '@/lib/gsap';
 import styles from './RevealText.module.css';
@@ -322,32 +322,34 @@ export function RevealText({ text, highlights }: RevealTextProps) {
   }, [accentColor]);
 
   return (
-    <h2 ref={containerRef} className={styles.statementText}>
-      {words.map(({ word, index, isHighlight }) => {
-        if (isHighlight) {
-          const letters = word.split('');
-          return (
-            <span
-              key={index}
-              className={`${styles.word} ${styles.highlightWord} ${styles.highlight}`}
-            >
-              {letters.map((letter, letterIdx) => (
-                <span
-                  key={letterIdx}
-                  className={styles.portalMask}
-                  onMouseEnter={handleLetterHover}
-                >
-                  <span className={styles.portalLetter}>{letter}</span>
-                </span>
-              ))}
-            </span>
-          );
-        }
-
-        return (
-          <span key={index} className={styles.word}>
+    <h2 ref={containerRef} className={styles.statementText} aria-label={text}>
+      {words.map(({ word, index, isHighlight }, i) => {
+        const wordEl = isHighlight ? (
+          <span
+            className={`${styles.word} ${styles.highlightWord} ${styles.highlight}`}
+            aria-hidden="true"
+          >
+            {word.split('').map((letter, letterIdx) => (
+              <span
+                key={letterIdx}
+                className={styles.portalMask}
+                onMouseEnter={handleLetterHover}
+              >
+                <span className={styles.portalLetter}>{letter}</span>
+              </span>
+            ))}
+          </span>
+        ) : (
+          <span className={styles.word} aria-hidden="true">
             {word}
           </span>
+        );
+
+        return (
+          <Fragment key={index}>
+            {i > 0 && ' '}
+            {wordEl}
+          </Fragment>
         );
       })}
     </h2>

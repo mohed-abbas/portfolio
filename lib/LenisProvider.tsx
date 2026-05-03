@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, createContext, useContext, ReactNode, useMemo } from 'react';
 import Lenis from 'lenis';
-import { ScrollTrigger } from '@/lib/gsap';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 // ============================================
 // LENIS CONTEXT - Allows child components to scroll programmatically
@@ -47,18 +47,16 @@ export function LenisProvider({ children }: LenisProviderProps) {
     // Sync Lenis scroll with ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
 
-    // PERF: RAF loop with visibility optimization
-    // Lenis internally optimizes when scroll velocity is zero
-    let rafId: number;
-
-    function raf(time: number) {
-      // PERF: Skip processing when tab is hidden to save resources
+    // PERF: Drive Lenis from gsap.ticker so all RAF-driven animations
+    // (Lenis, CustomCursor, GSAP tweens) share a single frame loop.
+    // gsap.ticker passes time in seconds; lenis.raf expects ms.
+    const tick = (time: number) => {
       if (!document.hidden) {
-        lenis.raf(time);
+        lenis.raf(time * 1000);
       }
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
+    };
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0); // Required by Lenis to keep scroll timing accurate
 
     // PERF: Handle visibility change - sync when tab becomes visible
     const handleVisibilityChange = () => {
@@ -71,7 +69,7 @@ export function LenisProvider({ children }: LenisProviderProps) {
 
     // Cleanup
     return () => {
-      cancelAnimationFrame(rafId);
+      gsap.ticker.remove(tick);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       lenis.destroy();
       lenisRef.current = null;

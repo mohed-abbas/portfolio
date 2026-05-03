@@ -19,7 +19,6 @@
     inset: 0;
     background-color: var(--color-accent-purple);
     clip-path: inset(0% 0% 100% 0%);
-    will-change: clip-path;
     /* Performance: contain and GPU acceleration */
     contain: strict;
     transform: translateZ(0);
@@ -79,7 +78,6 @@
     font-weight: 600;
     color: #04080f80;
     transition: color 0.4s ease;
-    will-change: opacity, transform;
 }
 
 .linkItem:hover .linkNumber {
@@ -90,7 +88,6 @@
 .linkInner {
     display: block;
     position: relative;
-    will-change: clip-path;
 }
 
 /* Base layer - dark navy text (becomes the "ghost" peeking from top) */
@@ -167,7 +164,6 @@
     padding-bottom: 60px;
     gap: 40px;
     text-align: right;
-    will-change: opacity, transform;
 }
 
 .socialGroup,
@@ -185,7 +181,6 @@
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--color-accent-teal);
-    will-change: opacity, transform;
 }
 
 .socialList {
@@ -272,7 +267,6 @@
     line-height: 1.4;
     color: var(--color-background);
     margin: 0;
-    will-change: opacity, transform;
 }
 
 /* Back button */
@@ -290,7 +284,6 @@
     cursor: pointer;
     transition: border-color 0.3s ease, background-color 0.3s ease;
     margin-top: 20px;
-    will-change: opacity, transform;
 }
 
 .backButton:hover {
@@ -473,3 +466,12 @@
         height: 56px;
     }
 }
+
+/* PERF: hint compositor only while menu is open */
+.menu.isOpen .overlay,
+.menu.isOpen .linkInner { will-change: clip-path; }
+.menu.isOpen .linkNumber,
+.menu.isOpen .socialSection,
+.menu.isOpen .socialLabel,
+.menu.isOpen .locationText,
+.menu.isOpen .backButton { will-change: opacity, transform; }

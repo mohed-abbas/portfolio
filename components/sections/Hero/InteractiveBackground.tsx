@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
+import { gsap } from '@/lib/gsap';
 import { useAccentColor } from '@/lib/AccentColorContext';
+import { useReducedMotion } from '@/lib/useReducedMotion';
 import { hexToRgba } from '@/lib/colorUtils';
 import { features } from '@/data';
 import styles from './InteractiveBackground.module.css';
@@ -20,9 +22,10 @@ interface MousePosition {
   y: number;
 }
 
-// Grid configuration from features data
+// Grid configuration from features data (BASE_GRID_SPACING is the design baseline;
+// actual spacing is computed responsively below).
 const bgConfig = features.interactiveBackground;
-const GRID_SPACING = bgConfig.grid.spacing;
+const BASE_GRID_SPACING = bgConfig.grid.spacing;
 const PLUS_SIZE = bgConfig.grid.plusSignSize;
 const STROKE_WIDTH = bgConfig.grid.strokeWidth;
 
@@ -33,22 +36,27 @@ const RETURN_STRENGTH = bgConfig.physics.returnStrength;
 const FRICTION = bgConfig.physics.friction;
 const MAX_VELOCITY = bgConfig.physics.maxVelocity;
 
+// Scale grid spacing on large viewports to keep total element count bounded
+// on 4K+ displays. Below ~2300px the design baseline (24px) is preserved.
+const computeGridSpacing = (viewportWidth: number) =>
+  Math.max(BASE_GRID_SPACING, Math.min(40, Math.round(viewportWidth / 96)));
+
 export function InteractiveBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const plusSignsRef = useRef<PlusSign[]>([]);
   const mouseRef = useRef<MousePosition>({ x: -1000, y: -1000 });
-  const rafRef = useRef<number | null>(null);
   const isHoveringRef = useRef(false);
   const { color: accentColor } = useAccentColor();
+  const reducedMotion = useReducedMotion();
 
   // Performance optimization: idle state tracking
   const isIdleRef = useRef(true);
   const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastMousePosRef = useRef<MousePosition>({ x: -1000, y: -1000 });
-  const hasSettledRef = useRef(true); // Track if all elements have returned to origin
-
-  // Ref to hold the animate function for self-referencing
+  const hasSettledRef = useRef(true);
+  const tickerActiveRef = useRef(false);
   const animateRef = useRef<(() => void) | null>(null);
+  const gridSpacingRef = useRef(BASE_GRID_SPACING);
 
   const initializePlusSigns = useCallback(() => {
     const canvas = canvasRef.current;
@@ -58,16 +66,18 @@ export function InteractiveBackground() {
     canvas.width = width;
     canvas.height = height;
 
+    gridSpacingRef.current = computeGridSpacing(window.innerWidth);
+    const spacing = gridSpacingRef.current;
+
     plusSignsRef.current = [];
 
-    // Create grid of plus signs
-    const cols = Math.ceil(width / GRID_SPACING) + 1;
-    const rows = Math.ceil(height / GRID_SPACING) + 1;
+    const cols = Math.ceil(width / spacing) + 1;
+    const rows = Math.ceil(height / spacing) + 1;
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
-        const x = col * GRID_SPACING + GRID_SPACING / 2;
-        const y = row * GRID_SPACING + GRID_SPACING / 2;
+        const x = col * spacing + spacing / 2;
+        const y = row * spacing + spacing / 2;
 
         plusSignsRef.current.push({
           x,
@@ -94,140 +104,130 @@ export function InteractiveBackground() {
     ctx.lineWidth = STROKE_WIDTH;
     ctx.lineCap = 'round';
 
-    // Draw horizontal line
     ctx.beginPath();
     ctx.moveTo(x - halfSize, y);
     ctx.lineTo(x + halfSize, y);
     ctx.stroke();
 
-    // Draw vertical line
     ctx.beginPath();
     ctx.moveTo(x, y - halfSize);
     ctx.lineTo(x, y + halfSize);
     ctx.stroke();
   }, [accentColor]);
 
-  // Set up animate function and store in ref for self-referencing
+  // Build animate function and store in ref so the ticker callback stays stable
   useEffect(() => {
+    let warnedContextFailure = false;
+
+    const stopTicker = () => {
+      if (tickerActiveRef.current && animateRef.current) {
+        gsap.ticker.remove(animateRef.current);
+        tickerActiveRef.current = false;
+      }
+    };
+
     const animate = () => {
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) return;
-
-      // PERF: Skip rendering when tab is hidden
-      if (document.hidden) {
-        rafRef.current = requestAnimationFrame(() => animateRef.current?.());
+      if (!canvas || !ctx) {
+        if (canvas && !ctx && !warnedContextFailure) {
+          warnedContextFailure = true;
+          console.warn('[InteractiveBackground] 2D canvas context unavailable — background will not render.');
+        }
         return;
       }
+
+      // Skip rendering when tab is hidden — but stay subscribed to the ticker
+      if (document.hidden) return;
 
       const mouse = mouseRef.current;
       const plusSigns = plusSignsRef.current;
 
-      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // PERF: If idle and settled, draw static grid once and STOP the loop
+      // Idle + settled: draw static grid once, then unsubscribe from the ticker
       if (isIdleRef.current && hasSettledRef.current) {
         plusSigns.forEach((plus) => {
           drawPlusSign(ctx, plus.originX, plus.originY, PLUS_SIZE, 0.12);
         });
-        // Don't request next frame - loop stops here until mouse moves
-        rafRef.current = null;
+        stopTicker();
         return;
       }
 
-      // Track if any element is still moving (for settle detection)
       let maxMovement = 0;
 
       plusSigns.forEach((plus) => {
-        // Calculate distance from mouse
         const dx = mouse.x - plus.x;
         const dy = mouse.y - plus.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Apply repulsion force when mouse is near
         if (distance < MOUSE_RADIUS && isHoveringRef.current) {
           const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
           const angle = Math.atan2(dy, dx);
-
-          // Repel away from mouse
           plus.vx -= Math.cos(angle) * force * REPULSION_STRENGTH;
           plus.vy -= Math.sin(angle) * force * REPULSION_STRENGTH;
         }
 
-        // Apply return force to original position (spring effect)
         const returnDx = plus.originX - plus.x;
         const returnDy = plus.originY - plus.y;
-
         plus.vx += returnDx * RETURN_STRENGTH;
         plus.vy += returnDy * RETURN_STRENGTH;
 
-        // Apply friction
         plus.vx *= FRICTION;
         plus.vy *= FRICTION;
 
-        // Clamp velocity
         plus.vx = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, plus.vx));
         plus.vy = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, plus.vy));
 
-        // Update position
         plus.x += plus.vx;
         plus.y += plus.vy;
 
-        // Track maximum movement for settle detection
         const movement = Math.abs(plus.x - plus.originX) + Math.abs(plus.y - plus.originY);
         if (movement > maxMovement) maxMovement = movement;
 
-        // Calculate opacity based on distance from mouse (glow effect)
-        let opacity = 0.12; // Base opacity
+        let opacity = 0.12;
         if (distance < MOUSE_RADIUS && isHoveringRef.current) {
           const glowIntensity = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-          opacity = 0.12 + glowIntensity * 0.4; // Increase opacity near mouse
+          opacity = 0.12 + glowIntensity * 0.4;
         }
 
-        // Draw the plus sign
         drawPlusSign(ctx, plus.x, plus.y, PLUS_SIZE, opacity);
       });
 
-      // Check if all elements have settled (within 0.5px of origin)
       hasSettledRef.current = maxMovement < 0.5;
-
-      rafRef.current = requestAnimationFrame(() => animateRef.current?.());
     };
 
     animateRef.current = animate;
   }, [drawPlusSign]);
+
+  const startTicker = useCallback(() => {
+    if (!tickerActiveRef.current && animateRef.current) {
+      gsap.ticker.add(animateRef.current);
+      tickerActiveRef.current = true;
+    }
+  }, []);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-
-    // Calculate mouse position relative to canvas
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
-    // Check if mouse is within canvas bounds
     const isInBounds = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
 
-    // Performance optimization: detect actual mouse movement
     const dx = x - lastMousePosRef.current.x;
     const dy = y - lastMousePosRef.current.y;
     const hasMoved = Math.abs(dx) > 2 || Math.abs(dy) > 2;
 
     if (hasMoved && isInBounds) {
-      // Mouse is moving - exit idle state
       isIdleRef.current = false;
       hasSettledRef.current = false;
       lastMousePosRef.current = { x, y };
 
-      // Clear existing timeout
       if (idleTimeoutRef.current) {
         clearTimeout(idleTimeoutRef.current);
       }
-
-      // Set new idle timeout (enter idle after 150ms of no movement)
       idleTimeoutRef.current = setTimeout(() => {
         isIdleRef.current = true;
       }, 150);
@@ -236,44 +236,44 @@ export function InteractiveBackground() {
     isHoveringRef.current = isInBounds;
     mouseRef.current = { x, y };
 
-    // PERF: Restart animation loop if it was stopped (idle + settled)
-    if (rafRef.current === null && animateRef.current && isInBounds) {
-      rafRef.current = requestAnimationFrame(animateRef.current);
-    }
-  }, []);
+    if (isInBounds) startTicker();
+  }, [startTicker]);
 
   useEffect(() => {
+    if (reducedMotion) return;
+
     initializePlusSigns();
 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Listen to mouse events on window for global tracking
-    // This allows text elements to have their own hover events
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Start animation loop using the ref
-    if (animateRef.current) {
-      rafRef.current = requestAnimationFrame(animateRef.current);
-    }
+    // Kick off the loop so the static grid renders immediately
+    startTicker();
 
-    // Handle resize
     const handleResize = () => {
       initializePlusSigns();
+      // After a resize, the grid needs to redraw at new positions
+      hasSettledRef.current = false;
+      startTicker();
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
+      if (animateRef.current) {
+        gsap.ticker.remove(animateRef.current);
       }
+      tickerActiveRef.current = false;
       if (idleTimeoutRef.current) {
         clearTimeout(idleTimeoutRef.current);
       }
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
     };
-  }, [initializePlusSigns, handleMouseMove]);
+  }, [initializePlusSigns, handleMouseMove, startTicker, reducedMotion]);
+
+  if (reducedMotion) return null;
 
   return (
     <canvas

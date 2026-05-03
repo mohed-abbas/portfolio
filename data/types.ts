@@ -16,13 +16,22 @@ export interface TwitterData {
   creator: string;
 }
 
+export interface PersonData {
+  name: string;
+  jobTitle: string;
+  sameAs: string[];
+}
+
 export interface SiteMetadata {
   title: string;
   description: string;
   author: string;
+  siteUrl: string;
+  themeColor: string;
   keywords: string[];
   openGraph: OpenGraphData;
   twitter: TwitterData;
+  person: PersonData;
 }
 
 // ============================================

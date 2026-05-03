@@ -65,7 +65,6 @@
     text-align: right;
     margin-top: clamp(10px, 2vw, 20px);
     transform-origin: center bottom;
-    will-change: transform;
     perspective: 1000px;
 }
 
@@ -132,8 +131,6 @@
     /* PERF: Remove transition - let GSAP ticker handle smooth updates */
     /* transition: clip-path 0.05s linear; */
 
-    /* PERF: GPU acceleration for clip-path changes */
-    will-change: clip-path;
     contain: layout style;
 }
 
@@ -184,8 +181,11 @@
     user-select: none;
     /* PERF: Remove transition - let GSAP ticker handle smooth updates */
     /* transition: clip-path 0.05s linear; */
+}
 
-    /* PERF: GPU acceleration for clip-path changes */
+/* PERF: only promote spotlight layers while user hovers tagline */
+.taglineContainer.spotlightActive .spotlightBg,
+.taglineContainer.spotlightActive .taglineHidden {
     will-change: clip-path;
 }
 
@@ -194,7 +194,6 @@
     display: inline-block;
     transform-style: preserve-3d;
     transform-origin: center bottom;
-    will-change: transform, opacity;
 }
 
 /* Responsive adjustments for MacBook 14" and similar screens */
