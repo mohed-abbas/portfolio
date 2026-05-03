@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { useGSAP } from '@gsap/react';
+import { useReducedMotion } from '@/lib/useReducedMotion';
 import { content } from '@/data';
 import styles from './WelcomeScreen.module.css';
 
@@ -14,6 +15,7 @@ export const WelcomeScreen = () => {
   const initialsRef = useRef<HTMLDivElement>(null);
   const mRef = useRef<HTMLSpanElement>(null);
   const aRef = useRef<HTMLSpanElement>(null);
+  const reducedMotion = useReducedMotion();
 
   useGSAP(() => {
     // Helper to handle scrollbar lock without layout shift
@@ -31,8 +33,34 @@ export const WelcomeScreen = () => {
         document.body.style.paddingRight = '';
     };
 
+    // Reduced-motion path: skip flash + flight; hide welcome and dispatch
+    // handoff/complete events so Hero & HeroText proceed normally.
+    if (reducedMotion) {
+      if (containerRef.current) {
+        containerRef.current.style.display = 'none';
+      }
+      // Defer to next tick so sibling components have attached their listeners.
+      const handoffTimer = setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('welcome-handoff'));
+        window.dispatchEvent(new CustomEvent('welcome-complete'));
+      }, 0);
+      return () => clearTimeout(handoffTimer);
+    }
+
     // Context for flight tweens to ensure proper cleanup
     const flightCtx = gsap.context(() => {});
+
+    // Failure handler — guarantees we don't leave scroll locked or the rest
+    // of the app waiting on handoff/complete events if timeline setup throws.
+    const bailOut = (err: unknown) => {
+      console.error('[WelcomeScreen] Animation setup failed, bailing out:', err);
+      unlockScroll();
+      if (containerRef.current) {
+        containerRef.current.style.display = 'none';
+      }
+      window.dispatchEvent(new CustomEvent('welcome-handoff'));
+      window.dispatchEvent(new CustomEvent('welcome-complete'));
+    };
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -47,6 +75,8 @@ export const WelcomeScreen = () => {
     });
 
     lockScroll(); // Lock immediately
+
+    try {
 
     const greetingElements = containerRef.current?.querySelectorAll(`.${styles.greeting}`);
 
@@ -192,13 +222,16 @@ export const WelcomeScreen = () => {
 
       // Wait for flight animation to complete (matches flightDuration + buffer)
       tl.to({}, { duration: 1.3 }, "flightStart");
+    } catch (err) {
+      bailOut(err);
+    }
 
-      // Cleanup on unmount
-      return () => {
-        flightCtx.revert();
-        unlockScroll();
-      };
-  }, { scope: containerRef });
+    // Cleanup on unmount
+    return () => {
+      flightCtx.revert();
+      unlockScroll();
+    };
+  }, { scope: containerRef, dependencies: [reducedMotion] });
 
   return (
     <div ref={containerRef} className={styles.welcomeWrapper}>

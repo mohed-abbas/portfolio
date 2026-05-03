@@ -160,6 +160,10 @@ export function HeroText() {
         gsap.ticker.remove(spotlightTickerRef.current);
         spotlightTickerActiveRef.current = false;
       }
+      // Defensive: clear stale spotlight class on unmount/HMR
+      if (taglineContainerRef.current) {
+        taglineContainerRef.current.classList.remove(styles.spotlightActive);
+      }
       window.removeEventListener('resize', updateRect);
       window.removeEventListener('scroll', updateRect);
     };
@@ -171,6 +175,8 @@ export function HeroText() {
     if (!container) return;
 
     container.style.setProperty('--spotlight-size', `${SPOTLIGHT_SIZE}px`);
+    // PERF: promote spotlight layers only while hovering
+    container.classList.add(styles.spotlightActive);
 
     // PERF: Start spotlight ticker only on hover
     if (!spotlightTickerActiveRef.current && spotlightTickerRef.current) {
@@ -190,6 +196,7 @@ export function HeroText() {
     if (!container) return;
 
     container.style.setProperty('--spotlight-size', '0px');
+    container.classList.remove(styles.spotlightActive);
 
     // PERF: Stop spotlight ticker when not hovering
     if (spotlightTickerActiveRef.current && spotlightTickerRef.current) {

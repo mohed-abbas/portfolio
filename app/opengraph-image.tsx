@@ -1,0 +1,86 @@
+import { ImageResponse } from "next/og";
+import siteMetadata from "@/data/site-metadata.json";
+
+export const dynamic = "force-static";
+export const alt = siteMetadata.openGraph.title;
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+
+export default function OpengraphImage() {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "80px",
+          background: "#f5f3ee",
+          color: "#1b2028",
+          fontFamily: "system-ui, sans-serif",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            fontSize: 28,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            color: "#62B6CB",
+          }}
+        >
+          MOHED ABBAS · DESIGNER
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 24,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 200,
+              fontWeight: 900,
+              lineHeight: 0.9,
+              letterSpacing: "-0.04em",
+              display: "flex",
+            }}
+          >
+            MOHED
+          </div>
+          <div
+            style={{
+              fontSize: 200,
+              fontWeight: 900,
+              lineHeight: 0.9,
+              letterSpacing: "-0.04em",
+              display: "flex",
+              alignSelf: "flex-end",
+            }}
+          >
+            ABB<span style={{ color: "#62B6CB" }}>A</span>S
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            fontSize: 22,
+            color: "rgba(27,32,40,0.6)",
+            fontFamily: "system-ui, serif",
+          }}
+        >
+          <span>UI/UX · Brand · Interactive</span>
+          <span>Portfolio · 2026</span>
+        </div>
+      </div>
+    ),
+    size,
+  );
+}

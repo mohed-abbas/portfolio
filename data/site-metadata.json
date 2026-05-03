@@ -2,6 +2,8 @@
   "title": "MOHED ABBAS - Designer",
   "description": "Portfolio of Mohed Abbas - UI/UX Designer specializing in brand strategy, interactive design, and digital products.",
   "author": "Mohed Abbas",
+  "siteUrl": "https://portfolio.thecodeman.cloud",
+  "themeColor": "#1b2028",
   "keywords": [
     "UI/UX Designer",
     "Brand Strategy",
@@ -19,5 +21,10 @@
   "twitter": {
     "card": "summary_large_image",
     "creator": "@mohedabbas"
+  },
+  "person": {
+    "name": "Mohed Abbas",
+    "jobTitle": "UI/UX Designer",
+    "sameAs": []
   }
 }

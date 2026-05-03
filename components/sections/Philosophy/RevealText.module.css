@@ -10,7 +10,6 @@
 
 .word {
   display: inline-block;
-  margin-right: 0.2em;
   opacity: 0.15;
 }
 
@@ -27,7 +26,6 @@
 /* Highlight word container - wraps the letter spans */
 .highlightWord {
   display: inline-block;
-  margin-right: 0.2em;
   opacity: 0; /* Hidden until stagger animation */
 }
 
@@ -61,19 +59,11 @@
     font-size: clamp(1.75rem, 9vw, 5rem);
     line-height: 1.1;
   }
-
-  .word {
-    margin-right: 0.15em;
-  }
 }
 
 @media (max-width: 480px) {
   .statementText {
     font-size: clamp(1.5rem, 12vw, 3.5rem);
     line-height: 1.15;
-  }
-
-  .word {
-    margin-right: 0.1em;
   }
 }

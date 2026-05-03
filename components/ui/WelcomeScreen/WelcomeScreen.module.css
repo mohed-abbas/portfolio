@@ -36,7 +36,6 @@
   text-align: center;
   white-space: nowrap;
   opacity: 0; /* Hidden by default */
-  will-change: opacity;
 }
 
 .initialsContainer {

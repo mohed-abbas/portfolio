@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, ANIMATION_CONFIG } from '@/lib/gsap';
+import { useReducedMotion } from '@/lib/useReducedMotion';
 import { content } from '@/data';
 import { RevealText } from './RevealText';
 import styles from './Philosophy.module.css';
@@ -11,8 +12,10 @@ export function Philosophy() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
   useGSAP(() => {
+    if (reducedMotion) return;
     if (!wrapperRef.current || !sectionRef.current || !labelRef.current) return;
 
     // Meta-label entrance animation
@@ -36,15 +39,20 @@ export function Philosophy() {
       pinSpacing: true,
     });
 
+    // Cache pinTrigger.end so the parallax start callback doesn't re-read it
+    // on every ScrollTrigger refresh.
+    const pinEnd = pinTrigger.end;
+
     // Parallax exit animation - section scrolls slower after pin ends
     const parallaxTween = gsap.to(sectionRef.current, {
       scrollTrigger: {
         trigger: wrapperRef.current,
-        start: () => `top+=${pinTrigger.end}px top`,
+        start: `top+=${pinEnd}px top`,
         end: 'bottom bottom',
         scrub: 2.5,
       },
       yPercent: -35,
+      force3D: true,
       ease: 'none',
     });
 
@@ -54,7 +62,7 @@ export function Philosophy() {
       if (labelTween.scrollTrigger) labelTween.scrollTrigger.kill();
       if (parallaxTween.scrollTrigger) parallaxTween.scrollTrigger.kill();
     };
-  }, { scope: wrapperRef });
+  }, { scope: wrapperRef, dependencies: [reducedMotion] });
 
   return (
     <div ref={wrapperRef} className={styles.wrapper}>
