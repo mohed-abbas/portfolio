@@ -1,0 +1,151 @@
+/* ============================================================
+   CASE STUDY · HERO — desktop layout (animations + responsive
+   handled in later passes)
+   ============================================================ */
+
+.hero {
+    height: 100vh;
+    padding: clamp(80px, 11vh, 132px) var(--spacing-nav-side)
+             clamp(24px, 4vh, 48px);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    row-gap: clamp(24px, 4vh, 48px);
+    position: relative;
+    overflow: hidden;
+    background: var(--color-background);
+}
+
+.top,
+.middle {
+    width: 100%;
+    max-width: var(--canvas-max-width);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.top { position: relative; z-index: 2; }
+.middle { z-index: 1; }
+
+/* ---------- TOP — pills (left) + lede (right) ---------- */
+.top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: clamp(32px, 4vw, 80px);
+}
+
+.metaRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    border: 2px solid var(--color-primary-text);
+    border-radius: 999px;
+    background: var(--color-background);
+    color: var(--color-primary-text);
+    font-family: var(--font-navbar);
+    font-size: clamp(13px, 1vw, 16px);
+    line-height: 1;
+}
+
+.pillSolid {
+    background: var(--color-primary-text);
+    color: var(--color-background);
+}
+
+.lede {
+    margin: 0;
+    max-width: 32ch;
+    text-align: right;
+    font-family: var(--font-primary);
+    font-weight: 400;
+    font-size: clamp(16px, 1.3vw, 20px);
+    line-height: 1.4;
+    color: var(--color-primary-text);
+}
+
+/* ---------- MIDDLE — hero image centred, badge tagged on it ---------- */
+.middle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    /*allowgridtracktoshrinktoavailablespace*/transform: translateY(-18%);
+    -webkit-transform: translateY(-18%);
+    -moz-transform: translateY(-18%);
+    -ms-transform: translateY(-18%);
+    -o-transform: translateY(-18%);
+}
+
+.imageCard {
+    --card-radius: var(--radius-portrait);
+    position: relative;
+    width: clamp(420px, 54%, 920px);
+    aspect-ratio: 16 / 10;
+    border-radius: var(--card-radius);
+    box-shadow: 0 20px 20px -20px rgba(27, 32, 40, 0.18);
+    will-change: transform, width, height, top, left;
+}
+
+.imageInner {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    will-change: transform;
+}
+
+.imageInner img,
+.imageCard img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.badge {
+    position: absolute;
+    top: -6%;
+    right: -6%;
+    transform: rotate(8deg);
+    width: clamp(110px, 11vw, 150px);
+    height: clamp(110px, 11vw, 150px);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--color-accent-gold);
+    color: var(--color-primary-text);
+    box-shadow: 5px 5px 0 var(--color-primary-text);
+    font-family: var(--font-navbar);
+    font-size: clamp(13px, 1vw, 15px);
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    z-index: 2;
+}
+
+/* ---------- WORDMARK — full-bleed, anchored to bottom; sits BEHIND
+              the hero image so the image clips the title ---------- */
+.titleText {
+    position: absolute;
+    left: var(--spacing-nav-side);
+    right: var(--spacing-nav-side);
+    bottom: clamp(16px, 3vh, 36px);
+    margin: 0;
+    z-index: 3;
+    pointer-events: none;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.86;
+    letter-spacing: -0.04em;
+    font-size: var(--font-size-hero);
+    text-align: center;
+}
