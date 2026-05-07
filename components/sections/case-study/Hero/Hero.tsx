@@ -52,6 +52,13 @@ export function Hero() {
         };
         document.body.appendChild(card);
 
+        // Resolve --card-radius to a concrete px value so GSAP can tween
+        // (and reverse) it cleanly. getComputedStyle on a custom property
+        // returns the unresolved clamp() string, which GSAP can't reverse;
+        // borderRadius is the shorthand, which IS resolved to px.
+        const initialRadiusPx =
+          parseFloat(getComputedStyle(card).borderRadius) || 0;
+
         gsap.set(card, {
           position: "fixed",
           left: fixedAt.left,
@@ -60,6 +67,7 @@ export function Hero() {
           height: fixedAt.height,
           margin: 0,
           zIndex: 5,
+          "--card-radius": initialRadiusPx + "px",
         });
 
         // ── PHASE 1 ── Brief pin while intro elements fade out
