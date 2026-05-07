@@ -104,7 +104,6 @@ export function Hero() {
               top: 0,
               width: () => window.innerWidth,
               height: () => window.innerHeight,
-              "--card-radius": "0px",
               ease: "power2.inOut",
               duration: 1,
             },
@@ -115,6 +114,17 @@ export function Hero() {
             { scale: 1.04 },
             { scale: 1, ease: "none", duration: 1 },
             0
+          )
+          // Hold the rounded corners through most of the grow, then
+          // smoothly snap to sharp once the card is near full-bleed.
+          .to(
+            card,
+            {
+              "--card-radius": "0px",
+              ease: "power2.out",
+              duration: 0.22,
+            },
+            0.8
           )
           // Brief hold at full-bleed, then slide the card up off the
           // viewport so the next section can take over.
