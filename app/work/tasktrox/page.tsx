@@ -1,5 +1,15 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/case-study/Hero";
+import { Ledger } from "@/components/sections/case-study/Ledger";
+import { Context } from "@/components/sections/case-study/Context";
+import { Vision } from "@/components/sections/case-study/Vision";
+import { Pull } from "@/components/sections/case-study/Pull";
+import { Product } from "@/components/sections/case-study/Product";
+import { Dashboard } from "@/components/sections/case-study/Dashboard";
+import { Toggle } from "@/components/sections/case-study/Toggle";
+import { Outcomes } from "@/components/sections/case-study/Outcomes";
+import { Colophon } from "@/components/sections/case-study/Colophon";
+import { NextCase } from "@/components/sections/case-study/NextCase";
 
 export const metadata: Metadata = {
   title: "Tasktrox — Case Study · Mohed Abbas",
@@ -11,25 +21,16 @@ export default function TasktroxCaseStudy() {
   return (
     <main>
       <Hero />
-      {/* Placeholder for the next section — exists so the hero has real
-          content to unpin against. Replace with the actual Overview /
-          Context section when implemented. */}
-      <section
-        aria-label="Placeholder — overview"
-        style={{
-          minHeight: "200vh",
-          background: "var(--color-primary-text)",
-          color: "var(--color-background)",
-          display: "grid",
-          placeItems: "center",
-          padding: "clamp(48px, 8vh, 120px)",
-          fontFamily: "var(--font-primary)",
-          fontSize: "clamp(20px, 2vw, 28px)",
-          letterSpacing: "-0.01em",
-        }}
-      >
-        Next section placeholder — scroll past the hero to land here.
-      </section>
+      <Ledger />
+      <Context />
+      <Vision />
+      <Pull />
+      <Product />
+      <Dashboard />
+      <Toggle />
+      <Outcomes />
+      <Colophon />
+      <NextCase />
     </main>
   );
 }

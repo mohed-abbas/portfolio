@@ -37,6 +37,10 @@
     /* Border Radius - Fluid */
     --radius-portrait: clamp(20px, 3vw, 42px);
 
+    /* Editorial */
+    --read-col: 64ch;
+    --paper: #F4F1EB;
+
     /* Animation - Easing */
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);

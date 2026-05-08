@@ -1,0 +1,69 @@
+/* ============================================================
+   CASE STUDY · DASHBOARD — full-bleed sticky-pin cinematic.
+   Image parallaxes (subtle scale + y) during pinned scroll.
+   ============================================================ */
+
+.dashboard {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    padding: clamp(20px, 3vh, 40px) var(--spacing-nav-side);
+    background: var(--color-background);
+}
+
+.frame {
+    position: relative;
+    height: 100%;
+    border-radius: var(--radius-portrait);
+    overflow: hidden;
+    box-shadow: 0 30px 80px -20px rgba(27, 32, 40, 0.18);
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    will-change: transform;
+}
+
+/* ---------- BADGE — top-right, cyan variant (overlay) ---------- */
+.badge {
+    position: absolute;
+    top: 5%;
+    right: 4%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: clamp(110px, 11vw, 150px);
+    height: clamp(110px, 11vw, 150px);
+    border-radius: 50%;
+    background: var(--color-accent-purple);
+    color: var(--color-background);
+    box-shadow: 5px 5px 0 var(--color-primary-text);
+    font-family: var(--font-navbar);
+    font-size: clamp(13px, 1vw, 15px);
+    line-height: 1.15;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transform: rotate(-8deg);
+}
+
+/* ---------- CORNER CAPTION — bottom-left, glassy pill ---------- */
+.corner {
+    position: absolute;
+    left: clamp(28px, 3vw, 48px);
+    bottom: clamp(24px, 3vh, 36px);
+    z-index: 2;
+    color: #fff;
+    font-family: var(--font-navbar);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 8px 14px;
+    border-radius: 999px;
+}

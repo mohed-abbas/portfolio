@@ -52,6 +52,25 @@
     font-family: var(--font-navbar);
     font-size: clamp(13px, 1vw, 16px);
     line-height: 1;
+    transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.28s ease,
+        color 0.28s ease,
+        border-color 0.28s ease;
+    will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .pill:hover {
+        transform: translateY(-2px) scale(1.03);
+        background: var(--color-primary-text);
+        color: var(--color-background);
+    }
+
+    .pillSolid:hover {
+        background: var(--color-background);
+        color: var(--color-primary-text);
+    }
 }
 
 .pillSolid {
@@ -89,7 +108,7 @@
     width: clamp(420px, 54%, 920px);
     aspect-ratio: 16 / 10;
     border-radius: var(--card-radius);
-    box-shadow: 0 20px 20px -20px rgba(27, 32, 40, 0.18);
+    box-shadow: 0 5px 10px 20px rgba(0, 0, 0, 0.18);
     will-change: transform, width, height, top, left;
 }
 
@@ -129,6 +148,16 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
     z-index: 2;
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.35s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .imageCard:hover .badge {
+        transform: rotate(8deg) scale(1.07) translate(-2px, -3px);
+        box-shadow: 7px 7px 0 var(--color-primary-text);
+    }
 }
 
 /* ---------- WORDMARK — full-bleed, anchored to bottom; sits BEHIND
@@ -145,7 +174,39 @@
     font-weight: 700;
     text-transform: uppercase;
     line-height: 0.86;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.04rem;
     font-size: var(--font-size-hero);
     text-align: center;
+}
+
+/* Per-letter mask for the on-load portal stagger. Mask clips the inner
+   span while it slides in from outside; the inner carries the visible
+   glyph and is the only element transformed during entrance. */
+.titleLetter {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: baseline;
+}
+
+.titleLetterInner {
+    display: inline-block;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Per-word mask for the on-load lede line cascade. Words on the same
+   wrapped line share an offsetTop and animate together; the cascade
+   between lines is what produces the row-by-row baseline reveal. */
+.ledeWord {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+}
+
+.ledeWordInner {
+    display: inline-block;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
 }
