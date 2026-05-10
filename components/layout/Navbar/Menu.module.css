@@ -76,12 +76,12 @@
     font-family: var(--font-primary);
     font-size: clamp(12px, 1.2vw, 16px);
     font-weight: 600;
-    color: #04080f80;
+    color: var(--color-text-muted);
     transition: color 0.4s ease;
 }
 
 .linkItem:hover .linkNumber {
-    color: rgba(4, 8, 15, 0.8);
+    color: var(--color-text-muted-strong);
 }
 
 /* Inner wrapper for the text - this is what animates */
@@ -135,7 +135,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: #04080fcc;
+    color: var(--color-text-muted-strong);
     margin: 0;
     opacity: 0;
     transform: translateY(-5px);

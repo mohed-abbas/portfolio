@@ -13,6 +13,8 @@
     --color-gray-dark: #4C4C4C;
     --color-accent-teal: #62B6CB;
     --color-grid-line: #E5E5E5;
+    --color-text-muted: rgba(27, 32, 40, 0.5);
+    --color-text-muted-strong: rgba(27, 32, 40, 0.8);
 
     /* Highlight bar painted behind body-strong text — 78%–96% slice of the
        line-box. Vision title uses a narrower 78%–90% variant kept inline. */
@@ -73,4 +75,8 @@
 :root[data-theme="dark"] {
     --color-background: #171717;
     --color-primary-text: #ffffff;
+    --color-grid-line: #2A2A2A;
+    --color-gray-dark: #B3B3B3;
+    --color-text-muted: rgba(255, 255, 255, 0.5);
+    --color-text-muted-strong: rgba(255, 255, 255, 0.8);
 }
