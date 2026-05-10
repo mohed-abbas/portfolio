@@ -204,13 +204,20 @@ export const WelcomeScreen = () => {
             delay: flightDuration - handoffDuration
           });
 
-          // D. Fade out background
-          gsap.to(containerRef.current, {
-            backgroundColor: "rgba(255, 255, 255, 0)",
-            duration: 0.8,
-            ease: "power2.inOut",
-            delay: 0.4
-          });
+          // D. Fade out background — keep source RGB, only kill alpha so
+          // the tween works in both light and dark themes.
+          if (containerRef.current) {
+            const startBg = getComputedStyle(containerRef.current).backgroundColor;
+            const transparentBg = startBg.startsWith("rgba")
+              ? startBg.replace(/[\d.]+\s*\)$/, "0)")
+              : startBg.replace("rgb(", "rgba(").replace(")", ", 0)");
+            gsap.to(containerRef.current, {
+              backgroundColor: transparentBg,
+              duration: 0.8,
+              ease: "power2.inOut",
+              delay: 0.4
+            });
+          }
         });
 
         // C. Trigger HeroText Fade IN when cross-fade starts
