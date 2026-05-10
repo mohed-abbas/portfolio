@@ -7,7 +7,6 @@
     border-top: 2px solid var(--color-primary-text);
     border-bottom: 2px solid var(--color-primary-text);
     padding: clamp(28px, 4vw, 44px) var(--spacing-nav-side);
-    background: var(--color-background);
 }
 
 .inner {

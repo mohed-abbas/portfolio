@@ -8,7 +8,6 @@
     height: 100vh;
     overflow: hidden;
     padding: clamp(20px, 3vh, 40px) var(--spacing-nav-side);
-    background: var(--color-background);
 }
 
 .frame {

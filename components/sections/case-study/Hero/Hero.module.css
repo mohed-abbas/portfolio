@@ -12,7 +12,6 @@
     row-gap: clamp(24px, 4vh, 48px);
     position: relative;
     overflow: hidden;
-    background: var(--color-background);
 }
 
 .top,

@@ -5,7 +5,6 @@
 
 .pull {
     padding: clamp(80px, 14vh, 160px) var(--spacing-nav-side);
-    background: var(--color-background);
     border-top: 2px solid var(--color-primary-text);
     border-bottom: 2px solid var(--color-primary-text);
 }

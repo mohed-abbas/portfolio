@@ -5,7 +5,6 @@
 
 .context {
     padding: clamp(80px, 12vh, 140px) var(--spacing-nav-side);
-    background: var(--color-background);
     display: grid;
     gap: clamp(20px, 3vw, 48px);
     grid-template-columns:

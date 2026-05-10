@@ -7,7 +7,6 @@
     /* Padding-top:0 so Context's bottom flows continuously into the
        chapter-head; bottom padding is the standard editorial rhythm. */
     padding: 0 var(--spacing-nav-side) clamp(80px, 12vh, 140px);
-    background: var(--color-background);
 }
 
 /* ---------- CHAPTER HEAD — eyebrow + display H2 ---------- */

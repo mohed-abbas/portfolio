@@ -5,7 +5,6 @@
 
 .product {
     padding: clamp(80px, 12vh, 140px) var(--spacing-nav-side);
-    background: var(--color-background);
 }
 
 /* ---------- CHAPTER HEAD — eyebrow left, h2 right ---------- */
