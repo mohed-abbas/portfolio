@@ -3,7 +3,10 @@
 import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
+import { animationConfig } from "@/data";
 import styles from "./Pull.module.css";
+
+const cs = animationConfig.caseStudy;
 
 export function Pull() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -11,8 +14,15 @@ export function Pull() {
   const attrRef = useRef<HTMLDivElement>(null);
 
   useBlockFadeIn(sectionRef, {
-    start: "top 70%",
-    groups: [{ targets: [attrRef], y: 20, duration: 0.8, delay: 0.4 }],
+    start: cs.scrollTrigger.late,
+    groups: [
+      {
+        targets: [attrRef],
+        y: 20,
+        duration: cs.blockFade.durationMedium,
+        delay: 0.4,
+      },
+    ],
   });
 
   useWordLineReveal(quoteRef, { scope: sectionRef });

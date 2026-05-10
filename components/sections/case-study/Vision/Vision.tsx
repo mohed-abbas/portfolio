@@ -3,8 +3,11 @@
 import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
+import { animationConfig } from "@/data";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Vision.module.css";
+
+const cs = animationConfig.caseStudy;
 
 export function Vision() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -13,7 +16,14 @@ export function Vision() {
   const colRef = useRef<HTMLDivElement>(null);
 
   useBlockFadeIn(sectionRef, {
-    groups: [{ targets: [eyebrowRef], y: 16, duration: 0.7 }],
+    start: cs.scrollTrigger.early,
+    groups: [
+      {
+        targets: [eyebrowRef],
+        y: cs.blockFade.yShort,
+        duration: cs.blockFade.durationShort,
+      },
+    ],
   });
 
   useWordLineReveal(titleRef, { scope: sectionRef });

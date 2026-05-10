@@ -3,8 +3,11 @@
 import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
+import { animationConfig } from "@/data";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Colophon.module.css";
+
+const cs = animationConfig.caseStudy;
 
 type Credit = {
   role: string;
@@ -29,18 +32,18 @@ export function Colophon() {
   const actionsRef = useRef<HTMLDivElement>(null);
 
   useBlockFadeIn(sectionRef, {
-    start: "top 85%",
+    start: cs.scrollTrigger.mid,
     groups: [
       {
         targets: [leftEyebrowRef, rightEyebrowRef],
-        y: 16,
-        duration: 0.7,
+        y: cs.blockFade.yShort,
+        duration: cs.blockFade.durationShort,
         stagger: 0.06,
       },
       {
         targets: [creditsRef, actionsRef],
-        y: 24,
-        duration: 0.9,
+        y: cs.blockFade.yMedium,
+        duration: cs.blockFade.durationLong,
         stagger: 0.1,
         delay: 0.4,
       },

@@ -4,8 +4,11 @@ import Image from "next/image";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
+import { animationConfig } from "@/data";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Toggle.module.css";
+
+const cs = animationConfig.caseStudy;
 
 type Mode = "gallery" | "list";
 
@@ -145,8 +148,14 @@ export function Toggle() {
   );
 
   useBlockFadeIn(sectionRef, {
+    start: cs.scrollTrigger.early,
     groups: [
-      { targets: [modesRef, viewRef], y: 28, duration: 0.9, stagger: 0.08 },
+      {
+        targets: [modesRef, viewRef],
+        y: cs.blockFade.yTall,
+        duration: cs.blockFade.durationLong,
+        stagger: 0.08,
+      },
     ],
   });
 

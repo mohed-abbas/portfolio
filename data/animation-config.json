@@ -36,5 +36,21 @@
     "short": 0.1,
     "medium": 0.3,
     "long": 0.5
+  },
+  "caseStudy": {
+    "scrollTrigger": {
+      "early": "top 88%",
+      "mid": "top 85%",
+      "late": "top 70%"
+    },
+    "blockFade": {
+      "yShort": 16,
+      "yMedium": 24,
+      "yTall": 28,
+      "durationShort": 0.7,
+      "durationMedium": 0.8,
+      "durationLong": 0.9,
+      "ease": "expo.out"
+    }
   }
 }

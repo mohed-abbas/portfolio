@@ -247,11 +247,33 @@ export interface DelayConfig {
   long: number;
 }
 
+export interface CaseStudyScrollTriggerConfig {
+  early: string;
+  mid: string;
+  late: string;
+}
+
+export interface CaseStudyBlockFadeConfig {
+  yShort: number;
+  yMedium: number;
+  yTall: number;
+  durationShort: number;
+  durationMedium: number;
+  durationLong: number;
+  ease: string;
+}
+
+export interface CaseStudyAnimationConfig {
+  scrollTrigger: CaseStudyScrollTriggerConfig;
+  blockFade: CaseStudyBlockFadeConfig;
+}
+
 export interface AnimationConfig {
   durations: DurationConfig;
   easing: EasingConfig;
   stagger: StaggerConfig;
   delays: DelayConfig;
+  caseStudy: CaseStudyAnimationConfig;
 }
 
 // ============================================

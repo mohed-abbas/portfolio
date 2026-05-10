@@ -3,8 +3,11 @@
 import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
+import { animationConfig } from "@/data";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Context.module.css";
+
+const cs = animationConfig.caseStudy;
 
 export function Context() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -12,7 +15,14 @@ export function Context() {
   const colRef = useRef<HTMLDivElement>(null);
 
   useBlockFadeIn(sectionRef, {
-    groups: [{ targets: [innerRef], y: 28, duration: 0.9 }],
+    start: cs.scrollTrigger.early,
+    groups: [
+      {
+        targets: [innerRef],
+        y: cs.blockFade.yTall,
+        duration: cs.blockFade.durationLong,
+      },
+    ],
   });
 
   useWordLineReveal(colRef, { scope: sectionRef });

@@ -3,8 +3,11 @@
 import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
+import { animationConfig } from "@/data";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Outcomes.module.css";
+
+const cs = animationConfig.caseStudy;
 
 type Metric = {
   value: string;
@@ -27,9 +30,19 @@ export function Outcomes() {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useBlockFadeIn(sectionRef, {
+    start: cs.scrollTrigger.early,
     groups: [
-      { targets: [eyebrowRef], y: 24, duration: 0.7 },
-      { targets: [gridRef], y: 24, duration: 0.9, delay: 0.35 },
+      {
+        targets: [eyebrowRef],
+        y: cs.blockFade.yMedium,
+        duration: cs.blockFade.durationShort,
+      },
+      {
+        targets: [gridRef],
+        y: cs.blockFade.yMedium,
+        duration: cs.blockFade.durationLong,
+        delay: 0.35,
+      },
     ],
   });
 
