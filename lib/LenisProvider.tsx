@@ -55,6 +55,13 @@ export function LenisProvider({ children }: LenisProviderProps) {
         lenis.raf(time * 1000);
       }
     };
+    // Capture so StrictMode dev-mount→unmount→remount doesn't permanently
+    // disable lagSmoothing. Zero-arg getter is supported at runtime but not
+    // in GSAP's d.ts; cast around it. Getter returns the threshold only —
+    // restoring collapses adjustedLag to GSAP default 33.
+    const prevLagSmoothing = (
+      gsap.ticker.lagSmoothing as unknown as () => number
+    )();
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0); // Required by Lenis to keep scroll timing accurate
 
@@ -70,6 +77,7 @@ export function LenisProvider({ children }: LenisProviderProps) {
     // Cleanup
     return () => {
       gsap.ticker.remove(tick);
+      gsap.ticker.lagSmoothing(prevLagSmoothing);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       lenis.destroy();
       lenisRef.current = null;
