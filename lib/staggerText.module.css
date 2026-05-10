@@ -13,7 +13,6 @@
 
 .wordInner {
     display: inline-block;
-    will-change: transform;
     backface-visibility: hidden;
     -webkit-font-smoothing: antialiased;
 }
