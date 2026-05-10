@@ -21,7 +21,7 @@
 }
 
 .eyebrow {
-    margin: 0 0 clamp(20px, 3vw, 36px);
+    /* margin: 0 0 clamp(20px, 3vw, 36px); */
 }
 
 .title {
@@ -64,7 +64,7 @@
         color var(--duration-normal) var(--ease-out-expo);
 }
 
-.modeBtn[aria-pressed='true'] {
+.modeBtn[aria-checked='true'] {
     background: var(--color-primary-text);
     color: var(--color-background);
 }

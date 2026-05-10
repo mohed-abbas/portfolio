@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
@@ -103,8 +103,40 @@ export function Toggle() {
   const modesRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const modeButtonsRef = useRef<Record<Mode, HTMLButtonElement | null>>({
+    gallery: null,
+    list: null,
+  });
 
   const [mode, setMode] = useState<Mode>("gallery");
+
+  const selectMode = (target: Mode) => {
+    setMode(target);
+    requestAnimationFrame(() => modeButtonsRef.current[target]?.focus());
+  };
+
+  // 2-radio group: prev/next collapse to "the other one"; arrow handlers are
+  // intentionally symmetric. Kept as one case so the WAI-ARIA contract is
+  // explicit and trivially extends if a third mode is added.
+  const handleModeKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    switch (e.key) {
+      case "ArrowLeft":
+      case "ArrowUp":
+      case "ArrowRight":
+      case "ArrowDown":
+        e.preventDefault();
+        selectMode(mode === "gallery" ? "list" : "gallery");
+        break;
+      case "Home":
+        e.preventDefault();
+        selectMode("gallery");
+        break;
+      case "End":
+        e.preventDefault();
+        selectMode("list");
+        break;
+    }
+  };
   // Preview position is updated via direct style mutation in
   // handleRowMove rather than React state — pumping setState on every
   // mousemove forces a re-render of all 24 list rows + the gallery.
@@ -188,22 +220,30 @@ export function Toggle() {
         <div
           ref={modesRef}
           className={styles.modes}
-          role="group"
-          aria-label="Toggle view"
+          role="radiogroup"
+          aria-label="View mode"
         >
           <button
             type="button"
+            ref={(el) => { modeButtonsRef.current.gallery = el; }}
             className={styles.modeBtn}
-            aria-pressed={mode === "gallery"}
-            onClick={() => setMode("gallery")}
+            role="radio"
+            aria-checked={mode === "gallery"}
+            tabIndex={mode === "gallery" ? 0 : -1}
+            onClick={() => selectMode("gallery")}
+            onKeyDown={handleModeKey}
           >
             Gallery
           </button>
           <button
             type="button"
+            ref={(el) => { modeButtonsRef.current.list = el; }}
             className={styles.modeBtn}
-            aria-pressed={mode === "list"}
-            onClick={() => setMode("list")}
+            role="radio"
+            aria-checked={mode === "list"}
+            tabIndex={mode === "list" ? 0 : -1}
+            onClick={() => selectMode("list")}
+            onKeyDown={handleModeKey}
           >
             List
           </button>
