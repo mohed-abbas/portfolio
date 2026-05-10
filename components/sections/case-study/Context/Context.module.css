@@ -65,12 +65,7 @@
 
 .col > p strong {
     font-weight: 700;
-    background: linear-gradient(
-        transparent 78%,
-        var(--color-accent-purple) 78%,
-        var(--color-accent-purple) 96%,
-        transparent 96%
-    );
+    background: var(--highlight-strong);
     padding: 0 0.04em;
 }
 
