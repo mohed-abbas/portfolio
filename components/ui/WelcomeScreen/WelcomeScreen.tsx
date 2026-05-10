@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { useGSAP } from '@gsap/react';
 import { useReducedMotion } from '@/lib/useReducedMotion';
-import { content } from '@/data';
+import { content, features } from '@/data';
 import styles from './WelcomeScreen.module.css';
 
 const GREETINGS = content.welcomeScreen.greetings;
@@ -18,6 +18,24 @@ export const WelcomeScreen = () => {
   const reducedMotion = useReducedMotion();
 
   useGSAP(() => {
+    // Skip greeting on Next.js client-side navigation. The inline script in
+    // app/layout.tsx sets window.__freshLoad on every full document load
+    // (cold visit + F5 refresh) — it never re-runs on Link clicks, so its
+    // absence here means we got here via in-app navigation.
+    if (features.welcomeScreen.skipOnReturn && !window.__freshLoad) {
+      if (containerRef.current) {
+        containerRef.current.style.display = 'none';
+      }
+      const handoffTimer = setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('welcome-handoff'));
+        window.dispatchEvent(new CustomEvent('welcome-complete'));
+      }, 0);
+      return () => clearTimeout(handoffTimer);
+    }
+    // Consume the flag so a same-tab client-nav back here is treated as a
+    // return visit (no re-greeting).
+    delete window.__freshLoad;
+
     // Helper to handle scrollbar lock without layout shift
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 

@@ -64,7 +64,7 @@ export default function RootLayout({
             reload. Inline scripts execute at parse time, before React. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(localStorage.getItem("portfolio_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}})();if("scrollRestoration"in history){history.scrollRestoration="manual"}window.scrollTo(0,0);`,
+            __html: `(function(){try{if(localStorage.getItem("portfolio_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}})();if("scrollRestoration"in history){history.scrollRestoration="manual"}window.scrollTo(0,0);window.__freshLoad=true;`,
           }}
         />
         <script
