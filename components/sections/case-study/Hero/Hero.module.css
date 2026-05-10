@@ -3,30 +3,64 @@
    handled in later passes)
    ============================================================ */
 
+/* The hero is a 3-column grid (1fr / auto / 1fr). The middle column is
+   `auto`, sized to its widest item — a hidden .titleSizer that mirrors
+   the wordmark text at the wordmark's font. .top sits in that same
+   middle column, so pills/lede automatically share the wordmark's
+   exact left/right edges for any title length or viewport width, with
+   zero JS measurement. The wordmark itself stays position:absolute at
+   the bottom so the image (in row 2) keeps its original vertical room. */
 .hero {
     height: 100vh;
     padding: clamp(80px, 11vh, 132px) var(--spacing-nav-side)
              clamp(24px, 4vh, 48px);
     display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     grid-template-rows: auto 1fr;
     row-gap: clamp(24px, 4vh, 48px);
     position: relative;
     overflow: hidden;
 }
 
-.top,
 .middle {
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
     max-width: var(--canvas-max-width);
     margin-left: auto;
     margin-right: auto;
+    z-index: 1;
 }
 
-.top { position: relative; z-index: 2; }
-.middle { z-index: 1; }
+/* Invisible, zero-height grid item that mirrors the wordmark text and
+   font metrics. Its `width: max-content` is what auto-sizes the shared
+   middle grid column; `height:0; overflow:hidden; visibility:hidden`
+   keeps it out of the visual layout and stops it from inflating row 1. */
+.titleSizer {
+    grid-column: 2;
+    grid-row: 1;
+    width: max-content;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+    white-space: nowrap;
+    font-family: var(--font-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.04rem;
+    font-size: var(--font-size-hero);
+    line-height: 0.86;
+}
 
 /* ---------- TOP — pills (left) + lede (right) ---------- */
 .top {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    z-index: 2;
+    /* width is driven by the shared middle column, not by content. */
+    width: 100%;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -191,7 +225,10 @@
 }
 
 /* ---------- WORDMARK — full-bleed, anchored to bottom; sits BEHIND
-              the hero image so the image clips the title ---------- */
+              the hero image so the image clips the title during the
+              scroll-pinned grow. Horizontal alignment of pills/lede to
+              its visible glyph run is handled by .titleSizer driving
+              the shared middle grid column, not by this rule. */
 .titleText {
     position: absolute;
     left: var(--spacing-nav-side);

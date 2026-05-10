@@ -423,6 +423,16 @@ export function Hero() {
 
   return (
     <section ref={sectionRef} className={styles.hero}>
+      {/* Hidden width-only sizer — mirrors the wordmark's per-letter
+          inline-block structure so its rendered width matches the
+          visible title to the pixel. See .titleSizer in CSS. */}
+      <span className={styles.titleSizer} aria-hidden="true">
+        {TITLE.split("").map((letter, i) => (
+          <span key={i} className={styles.titleLetter}>
+            {letter}
+          </span>
+        ))}
+      </span>
       <div className={styles.top}>
         <div className={styles.metaCol}>
           <Link
