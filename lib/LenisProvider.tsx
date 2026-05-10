@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback, createContext, useContext, ReactNode, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
@@ -26,6 +27,8 @@ interface LenisProviderProps {
 
 export function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
+  const firstRouteRef = useRef(true);
 
   useEffect(() => {
     // Initialize Lenis
@@ -79,6 +82,26 @@ export function LenisProvider({ children }: LenisProviderProps) {
       lenisRef.current = null;
     };
   }, []);
+
+  // Reset scroll + ScrollTrigger world on client-side route changes.
+  // Cold load is handled by the inline scrollTo(0,0) in layout.tsx, so the
+  // very first run of this effect must be a no-op — otherwise Lenis fights
+  // the inline reset and ScrollTrigger.refresh() runs before any page-level
+  // triggers exist.
+  useEffect(() => {
+    if (firstRouteRef.current) {
+      firstRouteRef.current = false;
+      return;
+    }
+    const lenis = lenisRef.current;
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+    ScrollTrigger.refresh();
+    ScrollTrigger.update();
+  }, [pathname]);
 
   const scrollTo = useCallback((target: string | number | HTMLElement, options?: { offset?: number; duration?: number }) => {
     lenisRef.current?.scrollTo(target, options);
