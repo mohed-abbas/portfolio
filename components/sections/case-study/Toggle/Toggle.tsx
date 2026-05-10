@@ -97,7 +97,10 @@ const SCREENS: readonly Screen[] = [
   },
 ] as const;
 
-const GALLERY_SCREENS = SCREENS.filter((s) => s.galleryCaption);
+type GalleryScreen = Screen & { galleryCaption: NonNullable<Screen["galleryCaption"]> };
+const GALLERY_SCREENS: readonly GalleryScreen[] = SCREENS.filter(
+  (s): s is GalleryScreen => !!s.galleryCaption
+);
 
 export function Toggle() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -240,8 +243,8 @@ export function Toggle() {
                   />
                 </div>
                 <figcaption className={styles.caption}>
-                  <span>{s.galleryCaption!.label}</span>
-                  <span>{s.galleryCaption!.num}</span>
+                  <span>{s.galleryCaption.label}</span>
+                  <span>{s.galleryCaption.num}</span>
                 </figcaption>
               </figure>
             ))}
