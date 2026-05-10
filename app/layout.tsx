@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Doppio_One } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -57,8 +56,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={doppioOne.variable}>
-        <Script id="theme-init" strategy="beforeInteractive">{`(function(){try{if(localStorage.getItem("portfolio_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}})()`}</Script>
-        <Script id="scroll-restore" strategy="beforeInteractive">{`if("scrollRestoration"in history){history.scrollRestoration="manual"}window.scrollTo(0,0);`}</Script>
+        {/* Run synchronously before paint — next/script's beforeInteractive
+            is unreliable in App Router (fires after hydration), causing a
+            theme flash on dark-mode users and a scroll-position flash on
+            reload. Inline scripts execute at parse time, before React. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(localStorage.getItem("portfolio_theme")==="dark"){document.documentElement.setAttribute("data-theme","dark")}}catch(e){}})();if("scrollRestoration"in history){history.scrollRestoration="manual"}window.scrollTo(0,0);`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
