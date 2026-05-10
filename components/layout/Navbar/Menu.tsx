@@ -282,7 +282,7 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
   }, [onClose, scrollTo]);
 
   return (
-    <div ref={menuRef} className={`${styles.menu} ${isOpen ? styles.isOpen : ''}`}>
+    <div ref={menuRef} id="main-menu" className={`${styles.menu} ${isOpen ? styles.isOpen : ''}`}>
       <div ref={overlayRef} className={styles.overlay} />
 
       <div className={styles.menuContent}>
