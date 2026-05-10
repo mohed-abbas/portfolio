@@ -33,7 +33,7 @@ export function Pull() {
       className={styles.pull}
       aria-label="Client testimonial"
     >
-      <blockquote ref={quoteRef} className={styles.quote} cite="#">
+      <blockquote ref={quoteRef} className={styles.quote}>
         “For the first time the software{" "}
         <span className={styles.quoteAccent}>respects</span> the way our studio
         actually thinks.”
