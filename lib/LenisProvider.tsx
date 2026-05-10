@@ -9,14 +9,10 @@ import { gsap, ScrollTrigger } from '@/lib/gsap';
 // ============================================
 interface LenisContextValue {
   scrollTo: (target: string | number | HTMLElement, options?: { offset?: number; duration?: number }) => void;
-  stop: () => void;
-  start: () => void;
 }
 
 const LenisContext = createContext<LenisContextValue>({
   scrollTo: () => {},
-  stop: () => {},
-  start: () => {},
 });
 
 export const useLenis = () => useContext(LenisContext);
@@ -84,25 +80,13 @@ export function LenisProvider({ children }: LenisProviderProps) {
     };
   }, []);
 
-  // Stable callback functions that access ref internally (safe in callbacks)
   const scrollTo = useCallback((target: string | number | HTMLElement, options?: { offset?: number; duration?: number }) => {
     lenisRef.current?.scrollTo(target, options);
   }, []);
 
-  const stop = useCallback(() => {
-    lenisRef.current?.stop();
-  }, []);
-
-  const start = useCallback(() => {
-    lenisRef.current?.start();
-  }, []);
-
-  // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo<LenisContextValue>(() => ({
     scrollTo,
-    stop,
-    start,
-  }), [scrollTo, stop, start]);
+  }), [scrollTo]);
 
   return (
     <LenisContext.Provider value={contextValue}>
