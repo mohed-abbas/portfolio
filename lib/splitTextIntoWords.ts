@@ -1,9 +1,6 @@
-// Wraps every whitespace-separated word in a two-span mask used by
-// useWordLineReveal. Inline elements (<strong>, <em>) are walked through
-// so styling survives the split. Whitespace runs are kept as plain text
-// nodes so word-level selection still works. The root element gets an
-// aria-label with the unsplit text and the masks are aria-hidden so
-// screen readers announce the original phrase, not per-word fragments.
+// Whitespace runs stay as plain text nodes so per-word selection works,
+// and the root gets an aria-label of the unsplit phrase with masks
+// aria-hidden so screen readers announce the original sentence.
 export type SplitWord = { mask: HTMLSpanElement; inner: HTMLSpanElement };
 
 export type SplitResult = {
@@ -81,8 +78,6 @@ export function splitTextIntoWords(
     }
   });
 
-  // Capture the unsplit phrase for assistive tech. If the root already had
-  // an aria-label / aria-labelledby we preserve and restore them on revert.
   let labelApplied = false;
   let originalLabel: string | null = null;
   let originalLabelledBy: string | null = null;

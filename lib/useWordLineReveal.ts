@@ -16,10 +16,9 @@ type RevealOptions = {
   scope?: RefObject<HTMLElement | null>;
 };
 
-// Per-word, per-line cascade reveal — same recipe as the case-study Hero
-// lede. Words are grouped by post-layout offsetTop into visual lines and
-// staggered yPercent: 110 → 0. Waits for document.fonts.ready before
-// grouping (web-font swap reflows wrapping) and re-buckets on resize.
+// Awaits document.fonts.ready before grouping words by offsetTop (the
+// fallback-font wrap doesn't match the rendered layout) and re-buckets on
+// resize since the trigger fires only once.
 export function useWordLineReveal(
   target: RefObject<HTMLElement | null>,
   options: RevealOptions = {}
