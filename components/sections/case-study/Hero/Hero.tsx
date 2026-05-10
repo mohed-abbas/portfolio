@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { content } from "@/data";
 import styles from "./Hero.module.css";
 
 const TITLE = "TASKTROX";
@@ -29,6 +31,7 @@ export function Hero() {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
+  const backRef = useRef<HTMLAnchorElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const ledeRef = useRef<HTMLParagraphElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -79,6 +82,22 @@ export function Hero() {
           stagger: 0.08,
           delay: 0.1,
         });
+
+        // Back link — sits above the pills and shares their reading-order
+        // entrance so the back-to-home affordance is visible from frame one.
+        const backEl = backRef.current;
+        let backTween: gsap.core.Tween | null = null;
+        if (backEl) {
+          gsap.set(backEl, { autoAlpha: 0, y: 8 });
+          backTween = gsap.to(backEl, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.45,
+            ease: "power2.out",
+            delay: 0,
+            clearProps: "transform",
+          });
+        }
 
         // Pills — top-of-cascade entrance (fires earliest so the eye
         // moves from pills → title → lede in reading order).
@@ -150,6 +169,8 @@ export function Hero() {
         return () => {
           titleTween.kill();
           gsap.set(innerLetters, { clearProps: "transform" });
+          if (backTween) backTween.kill();
+          if (backEl) gsap.set(backEl, { clearProps: "all" });
           if (pillsTween) pillsTween.kill();
           if (pillEls) gsap.set(pillEls, { clearProps: "all" });
           if (badgeTween) badgeTween.kill();
@@ -403,12 +424,23 @@ export function Hero() {
   return (
     <section ref={sectionRef} className={styles.hero}>
       <div className={styles.top}>
-        <div ref={metaRef} className={styles.metaRow}>
-          <span className={styles.pill}>2024</span>
-          <span className={styles.pill}>Architecture · SaaS</span>
-          <span className={`${styles.pill} ${styles.pillSolid}`}>
-            Brand · Product · Web
-          </span>
+        <div className={styles.metaCol}>
+          <Link
+            ref={backRef}
+            href="/"
+            className={styles.backLink}
+            aria-label="Back to home"
+          >
+            <span aria-hidden="true">←</span>
+            {content.ui.buttons.back}
+          </Link>
+          <div ref={metaRef} className={styles.metaRow}>
+            <span className={styles.pill}>2024</span>
+            <span className={styles.pill}>Architecture · SaaS</span>
+            <span className={`${styles.pill} ${styles.pillSolid}`}>
+              Brand · Product · Web
+            </span>
+          </div>
         </div>
         <p ref={ledeRef} className={styles.lede}>
           {LEDE_WORDS.map((word, i) => (
