@@ -32,13 +32,23 @@
     color: var(--color-primary-text);
 }
 
-.titleUnderline {
+.titleUnderline,
+.titleUnderline [data-split-word] {
+    /* Strip sits inside the lower 12% of the line-box. Any wider than
+       this and `line-height: 0.86` lets the colour bleed onto the next
+       line of the display title. The selector also paints onto each
+       split-word mask so the strip survives useWordLineReveal's per-word
+       wrap (the mask's overflow:hidden would otherwise clip the gradient
+       painted on the outer span). */
     background: linear-gradient(
-        transparent 60%,
-        var(--color-accent-purple) 60%,
-        var(--color-accent-purple) 92%,
-        transparent 92%
+        transparent 78%,
+        var(--color-accent-purple) 78%,
+        var(--color-accent-purple) 90%,
+        transparent 90%
     );
+}
+
+.titleUnderline {
     padding: 0 0.05em;
 }
 

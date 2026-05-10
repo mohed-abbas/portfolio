@@ -3,50 +3,52 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Vision.module.css";
 
 export function Vision() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headRef = useRef<HTMLDivElement>(null);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const colRef = useRef<HTMLDivElement>(null);
 
+  // Eyebrow gets a quiet block fade — too short to bother cascading.
   useGSAP(
     () => {
       const section = sectionRef.current;
-      const head = headRef.current;
-      const col = colRef.current;
-      if (!section || !head || !col) return;
+      const eyebrow = eyebrowRef.current;
+      if (!section || !eyebrow) return;
 
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const targets = [head, col];
-        gsap.set(targets, { autoAlpha: 0, y: 28 });
-
+        gsap.set(eyebrow, { autoAlpha: 0, y: 16 });
         const trigger = ScrollTrigger.create({
           trigger: section,
           start: "top 88%",
           once: true,
           onEnter: () =>
-            gsap.to(targets, {
+            gsap.to(eyebrow, {
               autoAlpha: 1,
               y: 0,
-              duration: 0.9,
+              duration: 0.7,
               ease: "expo.out",
-              stagger: 0.08,
               clearProps: "transform",
             }),
         });
-
         return () => {
           trigger.kill();
-          gsap.set(targets, { clearProps: "all" });
+          gsap.set(eyebrow, { clearProps: "all" });
         };
       });
     },
     { scope: sectionRef }
   );
+
+  // Display H2 + reading column — per-line cascade.
+  useWordLineReveal(titleRef, { scope: sectionRef });
+  useWordLineReveal(colRef, { scope: sectionRef, delay: 0.15 });
 
   return (
     <section
@@ -54,15 +56,19 @@ export function Vision() {
       className={styles.vision}
       aria-labelledby="vision-eyebrow"
     >
-      <div ref={headRef} className={styles.head}>
-        <SectionLabel id="vision-eyebrow" className={styles.eyebrow}>
+      <div className={styles.head}>
+        <SectionLabel
+          ref={eyebrowRef}
+          id="vision-eyebrow"
+          className={styles.eyebrow}
+        >
           The Vision
         </SectionLabel>
-        <h2 className={styles.title}>
+        <h2 ref={titleRef} className={styles.title}>
           A workspace that{" "}
           <span className={styles.titleUnderline}>respects</span>
           <br />
-          the <span className={styles.titleAccent}>craft</span>.
+          the <span className={styles.titleAccent}>craft.</span>
         </h2>
       </div>
 

@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Colophon.module.css";
 
@@ -21,45 +22,66 @@ const CREDITS: readonly Credit[] = [
 
 export function Colophon() {
   const sectionRef = useRef<HTMLElement>(null);
-  const leftRef = useRef<HTMLDivElement>(null);
-  const rightRef = useRef<HTMLDivElement>(null);
+  const leftEyebrowRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const creditsRef = useRef<HTMLDListElement>(null);
+  const rightEyebrowRef = useRef<HTMLDivElement>(null);
+  const bioRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const section = sectionRef.current;
-      const left = leftRef.current;
-      const right = rightRef.current;
-      if (!section || !left || !right) return;
+      if (!section) return;
+
+      const eyebrows = [leftEyebrowRef.current, rightEyebrowRef.current].filter(
+        (el): el is HTMLDivElement => !!el
+      );
+      const blocks = [creditsRef.current, actionsRef.current].filter(
+        (el): el is HTMLDivElement | HTMLDListElement => !!el
+      );
 
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const targets = [left, right];
-        gsap.set(targets, { autoAlpha: 0, y: 28 });
+        gsap.set(eyebrows, { autoAlpha: 0, y: 16 });
+        gsap.set(blocks, { autoAlpha: 0, y: 24 });
 
         const trigger = ScrollTrigger.create({
           trigger: section,
-          start: "top 88%",
+          start: "top 85%",
           once: true,
-          onEnter: () =>
-            gsap.to(targets, {
+          onEnter: () => {
+            gsap.to(eyebrows, {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.7,
+              ease: "expo.out",
+              stagger: 0.06,
+              clearProps: "transform",
+            });
+            gsap.to(blocks, {
               autoAlpha: 1,
               y: 0,
               duration: 0.9,
               ease: "expo.out",
-              stagger: 0.08,
+              stagger: 0.1,
+              delay: 0.4,
               clearProps: "transform",
-            }),
+            });
+          },
         });
-
         return () => {
           trigger.kill();
-          gsap.set(targets, { clearProps: "all" });
+          gsap.set([...eyebrows, ...blocks], { clearProps: "all" });
         };
       });
     },
     { scope: sectionRef }
   );
+
+  useWordLineReveal(titleRef, { scope: sectionRef });
+  useWordLineReveal(bioRef, { scope: sectionRef, delay: 0.15 });
 
   return (
     <section
@@ -68,15 +90,19 @@ export function Colophon() {
       aria-labelledby="colophon-eyebrow"
     >
       <div className={styles.inner}>
-        <div ref={leftRef}>
-          <SectionLabel id="colophon-eyebrow" className={styles.eyebrow}>
+        <div>
+          <SectionLabel
+            ref={leftEyebrowRef}
+            id="colophon-eyebrow"
+            className={styles.eyebrow}
+          >
             Colophon
           </SectionLabel>
-          <h2 className={styles.title}>
+          <h2 ref={titleRef} className={styles.title}>
             Made with a small{" "}
-            <span className={styles.titleAccent}>circle</span>.
+            <span className={styles.titleAccent}>circle.</span>
           </h2>
-          <dl className={styles.credits}>
+          <dl ref={creditsRef} className={styles.credits}>
             {CREDITS.map((c) => (
               <div key={c.role} className={styles.credit}>
                 <dt>{c.role}</dt>
@@ -87,28 +113,38 @@ export function Colophon() {
           </dl>
         </div>
 
-        <div ref={rightRef} className={styles.bio}>
-          <SectionLabel className={styles.eyebrow}>About M.A</SectionLabel>
-          <p>
-            Mohed Abbas is an independent designer working at the seam of
-            brand, product and the small motion details that make software
-            feel made. Selected work from 2018 → present.
-          </p>
-          <p>
-            Currently taking on one new engagement per quarter — typically a
-            6 to 14-week sprint covering identity, a flagship surface, and
-            the design system that holds them together.
-          </p>
-          <div className={styles.actions}>
-            <a className={`${styles.pill} ${styles.pillSolid}`} href="#">
+        <div className={styles.bio}>
+          <SectionLabel ref={rightEyebrowRef} className={styles.eyebrow}>
+            About M.A
+          </SectionLabel>
+          <div ref={bioRef}>
+            <p>
+              Mohed Abbas is an independent designer working at the seam of
+              brand, product and the small motion details that make software
+              feel made. Selected work from 2018 → present.
+            </p>
+            <p>
+              Currently taking on one new engagement per quarter — typically a
+              6 to 14-week sprint covering identity, a flagship surface, and
+              the design system that holds them together.
+            </p>
+          </div>
+          <div ref={actionsRef} className={styles.actions}>
+            <button
+              type="button"
+              className={`${styles.pill} ${styles.pillSolid}`}
+            >
               Start a project →
-            </a>
-            <a className={styles.pill} href="#">
+            </button>
+            <button type="button" className={styles.pill}>
               Read approach
-            </a>
-            <a className={`${styles.pill} ${styles.pillGhost}`} href="#">
+            </button>
+            <button
+              type="button"
+              className={`${styles.pill} ${styles.pillGhost}`}
+            >
               All works
-            </a>
+            </button>
           </div>
         </div>
       </div>

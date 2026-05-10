@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Toggle.module.css";
 
@@ -98,30 +99,33 @@ const GALLERY_SCREENS = SCREENS.filter((s) => s.galleryCaption);
 
 export function Toggle() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const modesRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [mode, setMode] = useState<Mode>("gallery");
-  const [preview, setPreview] = useState<{
-    visible: boolean;
-    src: string;
-    x: number;
-    y: number;
-  }>({ visible: false, src: "", x: 0, y: 0 });
+  // Preview position is updated via direct style mutation in
+  // handleRowMove rather than React state — pumping setState on every
+  // mousemove forces a re-render of all 24 list rows + the gallery.
+  // Visibility + src still go through state because they change rarely.
+  const [preview, setPreview] = useState<{ visible: boolean; src: string }>(
+    { visible: false, src: "" }
+  );
 
   useGSAP(
     () => {
       const section = sectionRef.current;
-      const head = headRef.current;
       const modes = modesRef.current;
       const view = viewRef.current;
-      if (!section || !head || !modes || !view) return;
+      if (!section || !modes || !view) return;
 
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const targets = [head, modes, view];
+        // Mode toggle + view stack get a quiet block fade — title runs
+        // its own per-line cascade via useWordLineReveal below.
+        const targets = [modes, view];
         gsap.set(targets, { autoAlpha: 0, y: 28 });
 
         const trigger = ScrollTrigger.create({
@@ -148,12 +152,21 @@ export function Toggle() {
     { scope: sectionRef }
   );
 
+  useWordLineReveal(titleRef, { scope: sectionRef });
+
+  const movePreview = (clientX: number, clientY: number) => {
+    const el = previewRef.current;
+    if (!el) return;
+    el.style.left = `${clientX}px`;
+    el.style.top = `${clientY}px`;
+  };
   const handleRowEnter = (src: string) => (e: React.MouseEvent) => {
-    setPreview({ visible: true, src, x: e.clientX, y: e.clientY });
+    movePreview(e.clientX, e.clientY);
+    setPreview({ visible: true, src });
   };
   const handleRowLeave = () => setPreview((p) => ({ ...p, visible: false }));
   const handleRowMove = (e: React.MouseEvent) => {
-    setPreview((p) => ({ ...p, x: e.clientX, y: e.clientY }));
+    movePreview(e.clientX, e.clientY);
   };
 
   return (
@@ -163,11 +176,11 @@ export function Toggle() {
       aria-labelledby="toggle-eyebrow"
     >
       <div className={styles.controls}>
-        <div ref={headRef}>
+        <div>
           <SectionLabel id="toggle-eyebrow" className={styles.eyebrow}>
             The Build
           </SectionLabel>
-          <h2 className={styles.title}>
+          <h2 ref={titleRef} className={styles.title}>
             All <span className={styles.titleAccent}>24</span> screens.
           </h2>
         </div>
@@ -239,8 +252,8 @@ export function Toggle() {
 
       {/* Cursor-following hover preview (list mode only) */}
       <div
+        ref={previewRef}
         className={`${styles.preview} ${preview.visible ? styles.previewVisible : ""}`}
-        style={{ left: preview.x, top: preview.y }}
         aria-hidden
       >
         {preview.src && (

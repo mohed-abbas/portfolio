@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import styles from "./Pull.module.css";
 
 export function Pull() {
@@ -10,42 +11,46 @@ export function Pull() {
   const quoteRef = useRef<HTMLQuoteElement>(null);
   const attrRef = useRef<HTMLDivElement>(null);
 
+  // Attribution row keeps the block fade — avatar + name don't gain
+  // anything from a per-word cascade.
   useGSAP(
     () => {
       const section = sectionRef.current;
-      const quote = quoteRef.current;
       const attr = attrRef.current;
-      if (!section || !quote || !attr) return;
+      if (!section || !attr) return;
 
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const targets = [quote, attr];
-        gsap.set(targets, { autoAlpha: 0, y: 28 });
+        gsap.set(attr, { autoAlpha: 0, y: 20 });
 
         const trigger = ScrollTrigger.create({
           trigger: section,
-          start: "top 88%",
+          start: "top 70%",
           once: true,
           onEnter: () =>
-            gsap.to(targets, {
+            gsap.to(attr, {
               autoAlpha: 1,
               y: 0,
-              duration: 0.9,
+              duration: 0.8,
               ease: "expo.out",
-              stagger: 0.08,
+              delay: 0.4,
               clearProps: "transform",
             }),
         });
 
         return () => {
           trigger.kill();
-          gsap.set(targets, { clearProps: "all" });
+          gsap.set(attr, { clearProps: "all" });
         };
       });
     },
     { scope: sectionRef }
   );
+
+  // Display quote — same per-line cascade as the hero lede so the
+  // testimonial reads as a single, considered statement.
+  useWordLineReveal(quoteRef, { scope: sectionRef });
 
   return (
     <section

@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Outcomes.module.css";
 
@@ -22,45 +23,53 @@ const METRICS: readonly Metric[] = [
 
 export function Outcomes() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headRef = useRef<HTMLDivElement>(null);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const section = sectionRef.current;
-      const head = headRef.current;
+      const eyebrow = eyebrowRef.current;
       const grid = gridRef.current;
-      if (!section || !head || !grid) return;
+      if (!section || !eyebrow || !grid) return;
 
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const targets = [head, grid];
-        gsap.set(targets, { autoAlpha: 0, y: 28 });
-
+        gsap.set([eyebrow, grid], { autoAlpha: 0, y: 24 });
         const trigger = ScrollTrigger.create({
           trigger: section,
           start: "top 88%",
           once: true,
-          onEnter: () =>
-            gsap.to(targets, {
+          onEnter: () => {
+            gsap.to(eyebrow, {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.7,
+              ease: "expo.out",
+              clearProps: "transform",
+            });
+            gsap.to(grid, {
               autoAlpha: 1,
               y: 0,
               duration: 0.9,
               ease: "expo.out",
-              stagger: 0.08,
+              delay: 0.35,
               clearProps: "transform",
-            }),
+            });
+          },
         });
-
         return () => {
           trigger.kill();
-          gsap.set(targets, { clearProps: "all" });
+          gsap.set([eyebrow, grid], { clearProps: "all" });
         };
       });
     },
     { scope: sectionRef }
   );
+
+  useWordLineReveal(titleRef, { scope: sectionRef });
 
   return (
     <section
@@ -68,14 +77,18 @@ export function Outcomes() {
       className={styles.outcomes}
       aria-labelledby="outcomes-eyebrow"
     >
-      <div ref={headRef} className={styles.head}>
-        <SectionLabel id="outcomes-eyebrow" className={styles.eyebrow}>
+      <div className={styles.head}>
+        <SectionLabel
+          ref={eyebrowRef}
+          id="outcomes-eyebrow"
+          className={styles.eyebrow}
+        >
           Outcome
         </SectionLabel>
-        <h2 className={styles.title}>
+        <h2 ref={titleRef} className={styles.title}>
           What changed,
           <br />
-          in <span className={styles.titleAccent}>numbers</span>.
+          in <span className={styles.titleAccent}>numbers.</span>
         </h2>
       </div>
 

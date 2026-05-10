@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Product.module.css";
 
@@ -16,39 +17,36 @@ export function Product() {
     () => {
       const section = sectionRef.current;
       const eyebrow = eyebrowRef.current;
-      const title = titleRef.current;
-      const col = colRef.current;
-      if (!section || !eyebrow || !title || !col) return;
+      if (!section || !eyebrow) return;
 
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const targets = [eyebrow, title, col];
-        gsap.set(targets, { autoAlpha: 0, y: 28 });
-
+        gsap.set(eyebrow, { autoAlpha: 0, y: 16 });
         const trigger = ScrollTrigger.create({
           trigger: section,
           start: "top 88%",
           once: true,
           onEnter: () =>
-            gsap.to(targets, {
+            gsap.to(eyebrow, {
               autoAlpha: 1,
               y: 0,
-              duration: 0.9,
+              duration: 0.7,
               ease: "expo.out",
-              stagger: 0.08,
               clearProps: "transform",
             }),
         });
-
         return () => {
           trigger.kill();
-          gsap.set(targets, { clearProps: "all" });
+          gsap.set(eyebrow, { clearProps: "all" });
         };
       });
     },
     { scope: sectionRef }
   );
+
+  useWordLineReveal(titleRef, { scope: sectionRef });
+  useWordLineReveal(colRef, { scope: sectionRef, delay: 0.15 });
 
   return (
     <section
@@ -68,7 +66,7 @@ export function Product() {
           <h2 ref={titleRef} className={styles.title}>
             The dashboard,
             <br />
-            read like a <span className={styles.titleAccent}>plate</span>.
+            read like a <span className={styles.titleAccent}>plate.</span>
           </h2>
         </div>
       </div>

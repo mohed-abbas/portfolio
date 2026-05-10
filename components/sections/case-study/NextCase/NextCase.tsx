@@ -1,10 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import styles from "./NextCase.module.css";
 
 export function NextCase() {
   return (
     <nav className={styles.next} aria-label="Next case study">
-      <a className={styles.link} href="#">
+      <a
+        className={styles.link}
+        href="#"
+        aria-disabled="true"
+        onClick={(e) => e.preventDefault()}
+      >
         <div className={styles.left}>
           <span className={styles.eyebrow}>Next case · 02 / 02</span>
           <h2 className={styles.title}>
