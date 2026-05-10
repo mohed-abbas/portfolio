@@ -391,7 +391,7 @@ export function Hero() {
             if (st.trigger === section || st.pin === card) st.kill();
           });
           gsap.set(card, { clearProps: "all" });
-          if (originalParent && card.parentElement !== originalParent) {
+          if (originalParent?.isConnected && card.parentElement !== originalParent) {
             originalParent.appendChild(card);
           }
         };
