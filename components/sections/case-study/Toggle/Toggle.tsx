@@ -15,7 +15,7 @@ type Mode = "gallery" | "list";
 type Screen = {
   src: string;
   alt: string;
-  galleryCaption?: { label: string; num: string };
+  galleryCaption?: { label: string };
   list: { num: string; name: string; desc: string; meta: string };
 };
 
@@ -43,7 +43,7 @@ const SCREENS: readonly Screen[] = [
   {
     src: "/images/work/tasktrox/Product.jpg",
     alt: "Product surface",
-    galleryCaption: { label: "02 — Product surface", num: "03 / 24" },
+    galleryCaption: { label: "02 — Product surface" },
     list: {
       num: "03",
       name: "Product surface",
@@ -54,7 +54,7 @@ const SCREENS: readonly Screen[] = [
   {
     src: "/images/work/tasktrox/About.jpg",
     alt: "Studio profile",
-    galleryCaption: { label: "03 — Studio profile", num: "11 / 24" },
+    galleryCaption: { label: "03 — Studio profile" },
     list: {
       num: "04",
       name: "Studio profile",
@@ -65,7 +65,7 @@ const SCREENS: readonly Screen[] = [
   {
     src: "/images/work/tasktrox/Price.jpg",
     alt: "Pricing",
-    galleryCaption: { label: "04 — Pricing", num: "14 / 24" },
+    galleryCaption: { label: "04 — Pricing" },
     list: {
       num: "05",
       name: "Pricing",
@@ -76,7 +76,7 @@ const SCREENS: readonly Screen[] = [
   {
     src: "/images/work/tasktrox/testimonials.jpg",
     alt: "Testimonials",
-    galleryCaption: { label: "05 — Testimonials", num: "19 / 24" },
+    galleryCaption: { label: "05 — Testimonials" },
     list: {
       num: "06",
       name: "Testimonials",
@@ -87,7 +87,7 @@ const SCREENS: readonly Screen[] = [
   {
     src: "/images/work/tasktrox/footer.jpg",
     alt: "Footer marquee",
-    galleryCaption: { label: "06 — Footer marquee", num: "24 / 24" },
+    galleryCaption: { label: "06 — Footer marquee" },
     list: {
       num: "07",
       name: "Footer marquee",
@@ -98,8 +98,12 @@ const SCREENS: readonly Screen[] = [
 ] as const;
 
 type GalleryScreen = Screen & { galleryCaption: NonNullable<Screen["galleryCaption"]> };
-const GALLERY_SCREENS: readonly GalleryScreen[] = SCREENS.filter(
-  (s): s is GalleryScreen => !!s.galleryCaption
+type GalleryEntry = { screen: GalleryScreen; indexInAll: number };
+
+const TOTAL_PAD = String(SCREENS.length).padStart(2, "0");
+
+const GALLERY_ENTRIES: readonly GalleryEntry[] = SCREENS.flatMap((s, i) =>
+  s.galleryCaption ? [{ screen: s as GalleryScreen, indexInAll: i }] : []
 );
 
 export function Toggle() {
@@ -191,7 +195,7 @@ export function Toggle() {
             The Build
           </SectionLabel>
           <h2 ref={titleRef} className={styles.title}>
-            All <span className={styles.titleAccent}>24</span> screens.
+            All <span className={styles.titleAccent}>{SCREENS.length}</span> screens.
           </h2>
         </div>
 
@@ -231,7 +235,7 @@ export function Toggle() {
       <div ref={viewRef}>
         {mode === "gallery" ? (
           <div className={styles.gallery}>
-            {GALLERY_SCREENS.map((s) => (
+            {GALLERY_ENTRIES.map(({ screen: s, indexInAll }) => (
               <figure key={s.src}>
                 <div className={styles.frame}>
                   <Image
@@ -244,7 +248,9 @@ export function Toggle() {
                 </div>
                 <figcaption className={styles.caption}>
                   <span>{s.galleryCaption.label}</span>
-                  <span>{s.galleryCaption.num}</span>
+                  <span>
+                    {String(indexInAll + 1).padStart(2, "0")} / {TOTAL_PAD}
+                  </span>
                 </figcaption>
               </figure>
             ))}
