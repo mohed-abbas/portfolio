@@ -10,7 +10,6 @@ import { Toggle } from "@/components/sections/case-study/Toggle";
 import { Outcomes } from "@/components/sections/case-study/Outcomes";
 import { Colophon } from "@/components/sections/case-study/Colophon";
 import { NextCase } from "@/components/sections/case-study/NextCase";
-import { InteractiveBackgroundV2 } from "@/components/sections/Hero";
 
 export const metadata: Metadata = {
   title: "Tasktrox — Case Study · Mohed Abbas",
@@ -21,7 +20,6 @@ export const metadata: Metadata = {
 export default function TasktroxCaseStudy() {
   return (
     <main>
-      <InteractiveBackgroundV2 />
       <Hero />
       <Ledger />
       <Context />

@@ -5,6 +5,8 @@ import { CustomCursor } from "@/components/ui/CustomCursor";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { AccentColorProvider } from "@/lib/AccentColorContext";
 import { LenisProvider } from "@/lib/LenisProvider";
+import { InteractiveBackgroundV2 } from "@/components/sections/Hero";
+import { Navbar } from "@/components/layout/Navbar";
 import siteMetadata from "@/data/site-metadata.json";
 
 const doppioOne = Doppio_One({
@@ -71,6 +73,8 @@ export default function RootLayout({
         />
         <LenisProvider>
           <AccentColorProvider>
+            <InteractiveBackgroundV2 />
+            <Navbar />
             <CustomCursor />
             <ThemeToggle />
             {children}
