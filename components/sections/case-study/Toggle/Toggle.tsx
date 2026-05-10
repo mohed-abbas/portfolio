@@ -221,6 +221,7 @@ export function Toggle() {
                     alt={s.alt}
                     width={2400}
                     height={1500}
+                    sizes="(min-width: 1024px) 33vw, 100vw"
                   />
                 </div>
                 <figcaption className={styles.caption}>
@@ -257,7 +258,7 @@ export function Toggle() {
         aria-hidden
       >
         {preview.src && (
-          <Image src={preview.src} alt="" width={560} height={400} />
+          <Image src={preview.src} alt="" width={560} height={400} sizes="280px" />
         )}
       </div>
     </section>

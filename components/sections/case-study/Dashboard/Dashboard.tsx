@@ -66,6 +66,7 @@ export function Dashboard() {
           alt="Tasktrox studio dashboard"
           width={2400}
           height={1500}
+          sizes="(min-width: 1512px) 1440px, 100vw"
         />
         <span className={styles.badge} aria-hidden>
           Live
