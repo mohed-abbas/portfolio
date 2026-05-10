@@ -115,6 +115,13 @@ export function InteractiveBackground() {
     ctx.stroke();
   }, [accentColor]);
 
+  const startTicker = useCallback(() => {
+    if (!tickerActiveRef.current && animateRef.current) {
+      gsap.ticker.add(animateRef.current);
+      tickerActiveRef.current = true;
+    }
+  }, []);
+
   // Build animate function and store in ref so the ticker callback stays stable
   useEffect(() => {
     let warnedContextFailure = false;
@@ -198,14 +205,11 @@ export function InteractiveBackground() {
     };
 
     animateRef.current = animate;
-  }, [drawPlusSign]);
-
-  const startTicker = useCallback(() => {
-    if (!tickerActiveRef.current && animateRef.current) {
-      gsap.ticker.add(animateRef.current);
-      tickerActiveRef.current = true;
-    }
-  }, []);
+    // Accent color changed → wake the ticker so the static grid repaints in
+    // the new colour. The animate body re-stops itself once settled, so this
+    // costs at most one frame per change.
+    startTicker();
+  }, [drawPlusSign, startTicker]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const canvas = canvasRef.current;
