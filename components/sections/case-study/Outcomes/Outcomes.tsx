@@ -1,8 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Outcomes.module.css";
@@ -27,47 +26,12 @@ export function Outcomes() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      const section = sectionRef.current;
-      const eyebrow = eyebrowRef.current;
-      const grid = gridRef.current;
-      if (!section || !eyebrow || !grid) return;
-
-      const mm = gsap.matchMedia();
-
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.set([eyebrow, grid], { autoAlpha: 0, y: 24 });
-        const trigger = ScrollTrigger.create({
-          trigger: section,
-          start: "top 88%",
-          once: true,
-          onEnter: () => {
-            gsap.to(eyebrow, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.7,
-              ease: "expo.out",
-              clearProps: "transform",
-            });
-            gsap.to(grid, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.9,
-              ease: "expo.out",
-              delay: 0.35,
-              clearProps: "transform",
-            });
-          },
-        });
-        return () => {
-          trigger.kill();
-          gsap.set([eyebrow, grid], { clearProps: "all" });
-        };
-      });
-    },
-    { scope: sectionRef }
-  );
+  useBlockFadeIn(sectionRef, {
+    groups: [
+      { targets: [eyebrowRef], y: 24, duration: 0.7 },
+      { targets: [gridRef], y: 24, duration: 0.9, delay: 0.35 },
+    ],
+  });
 
   useWordLineReveal(titleRef, { scope: sectionRef });
 

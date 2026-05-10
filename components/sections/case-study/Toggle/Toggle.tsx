@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useState, type KeyboardEvent } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Toggle.module.css";
@@ -145,44 +144,11 @@ export function Toggle() {
     { visible: false, src: "" }
   );
 
-  useGSAP(
-    () => {
-      const section = sectionRef.current;
-      const modes = modesRef.current;
-      const view = viewRef.current;
-      if (!section || !modes || !view) return;
-
-      const mm = gsap.matchMedia();
-
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Mode toggle + view stack get a quiet block fade — title runs
-        // its own per-line cascade via useWordLineReveal below.
-        const targets = [modes, view];
-        gsap.set(targets, { autoAlpha: 0, y: 28 });
-
-        const trigger = ScrollTrigger.create({
-          trigger: section,
-          start: "top 88%",
-          once: true,
-          onEnter: () =>
-            gsap.to(targets, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.9,
-              ease: "expo.out",
-              stagger: 0.08,
-              clearProps: "transform",
-            }),
-        });
-
-        return () => {
-          trigger.kill();
-          gsap.set(targets, { clearProps: "all" });
-        };
-      });
-    },
-    { scope: sectionRef }
-  );
+  useBlockFadeIn(sectionRef, {
+    groups: [
+      { targets: [modesRef, viewRef], y: 28, duration: 0.9, stagger: 0.08 },
+    ],
+  });
 
   useWordLineReveal(titleRef, { scope: sectionRef });
 

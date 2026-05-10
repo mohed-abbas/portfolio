@@ -1,8 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Colophon.module.css";
@@ -29,56 +28,24 @@ export function Colophon() {
   const bioRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      const section = sectionRef.current;
-      if (!section) return;
-
-      const eyebrows = [leftEyebrowRef.current, rightEyebrowRef.current].filter(
-        (el): el is HTMLDivElement => !!el
-      );
-      const blocks = [creditsRef.current, actionsRef.current].filter(
-        (el): el is HTMLDivElement | HTMLDListElement => !!el
-      );
-
-      const mm = gsap.matchMedia();
-
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.set(eyebrows, { autoAlpha: 0, y: 16 });
-        gsap.set(blocks, { autoAlpha: 0, y: 24 });
-
-        const trigger = ScrollTrigger.create({
-          trigger: section,
-          start: "top 85%",
-          once: true,
-          onEnter: () => {
-            gsap.to(eyebrows, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.7,
-              ease: "expo.out",
-              stagger: 0.06,
-              clearProps: "transform",
-            });
-            gsap.to(blocks, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.9,
-              ease: "expo.out",
-              stagger: 0.1,
-              delay: 0.4,
-              clearProps: "transform",
-            });
-          },
-        });
-        return () => {
-          trigger.kill();
-          gsap.set([...eyebrows, ...blocks], { clearProps: "all" });
-        };
-      });
-    },
-    { scope: sectionRef }
-  );
+  useBlockFadeIn(sectionRef, {
+    start: "top 85%",
+    groups: [
+      {
+        targets: [leftEyebrowRef, rightEyebrowRef],
+        y: 16,
+        duration: 0.7,
+        stagger: 0.06,
+      },
+      {
+        targets: [creditsRef, actionsRef],
+        y: 24,
+        duration: 0.9,
+        stagger: 0.1,
+        delay: 0.4,
+      },
+    ],
+  });
 
   useWordLineReveal(titleRef, { scope: sectionRef });
   useWordLineReveal(bioRef, { scope: sectionRef, delay: 0.15 });

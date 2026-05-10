@@ -1,8 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Context.module.css";
@@ -12,43 +11,10 @@ export function Context() {
   const innerRef = useRef<HTMLDivElement>(null);
   const colRef = useRef<HTMLDivElement>(null);
 
-  // Marginalia (eyebrow + facts) keeps the block fade — there's no
-  // wrapping text to cascade per-line, just metadata rows.
-  useGSAP(
-    () => {
-      const section = sectionRef.current;
-      const inner = innerRef.current;
-      if (!section || !inner) return;
+  useBlockFadeIn(sectionRef, {
+    groups: [{ targets: [innerRef], y: 28, duration: 0.9 }],
+  });
 
-      const mm = gsap.matchMedia();
-
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.set(inner, { autoAlpha: 0, y: 28 });
-
-        const trigger = ScrollTrigger.create({
-          trigger: section,
-          start: "top 88%",
-          once: true,
-          onEnter: () =>
-            gsap.to(inner, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.9,
-              ease: "expo.out",
-              clearProps: "transform",
-            }),
-        });
-
-        return () => {
-          trigger.kill();
-          gsap.set(inner, { clearProps: "all" });
-        };
-      });
-    },
-    { scope: sectionRef }
-  );
-
-  // Reading column — per-word, per-line cascade matching the hero lede.
   useWordLineReveal(colRef, { scope: sectionRef });
 
   return (
