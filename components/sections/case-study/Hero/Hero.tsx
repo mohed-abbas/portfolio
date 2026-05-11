@@ -235,10 +235,6 @@ export function Hero() {
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Measure visual bounds BEFORE re-parenting (so transforms on
-        // any ancestor — e.g. .middle's translateY — are baked in).
-        const cRect = card.getBoundingClientRect();
-
         // Re-parent card to <body> AND make it position: fixed from the
         // start. ScrollTrigger pin leaves a transform on the section to
         // maintain layout, and any ancestor with a transform becomes the
@@ -247,33 +243,80 @@ export function Hero() {
         // card is always anchored to the actual viewport, and we animate
         // from there to full-bleed. The card stays in place throughout
         // the intro phase (no scroll movement) and only moves/grows in P2.
+        //
+        // ── RESIZE-FIX: in-flow placeholder ──
+        // Before re-parenting, we leave a hidden placeholder div at the
+        // card's original DOM position with the SAME .imageCard class
+        // (minus visual content). It preserves the natural layout slot
+        // and lets us re-measure "where the card would sit at the
+        // current viewport" on every ScrollTrigger refresh — which is
+        // what we use to recover from window resizes.
         const originalParent = card.parentElement;
-        const fixedAt = {
-          left: cRect.left,
-          top: cRect.top,
-          width: cRect.width,
-          height: cRect.height,
-        };
-        document.body.appendChild(card);
-
-        // Resolve --card-radius to a concrete px value so GSAP can tween
-        // (and reverse) it cleanly. getComputedStyle on a custom property
-        // returns the unresolved clamp() string, which GSAP can't reverse;
-        // borderRadius is the shorthand, which IS resolved to px.
+        // Resolve --card-radius to a concrete px value *before* the card
+        // is re-parented. getComputedStyle on a custom property returns
+        // the unresolved clamp() string, which GSAP can't tween or
+        // reverse; borderRadius is the shorthand, which IS resolved to
+        // px — but only after styles have applied against the current
+        // ancestor chain. Read it now while the card is still in its
+        // grid slot, fully styled. (If we read after appendChild(body),
+        // the computed value can come back 0 in a race with the
+        // re-parent, which silently squashes the rounded corners.)
         const initialRadiusPx =
           parseFloat(getComputedStyle(card).borderRadius) || 0;
 
+        const placeholder = document.createElement("div");
+        placeholder.className = card.className;
+        // WR-02: placeholder carries the image semantics so screen-reader
+        // reading order stays inside the section. The body-fixed card
+        // below is marked aria-hidden as the decorative visual.
+        placeholder.setAttribute("role", "img");
+        placeholder.setAttribute(
+          "aria-label",
+          "Tasktrox marketing landing"
+        );
+        // The card visual now lives on <body> for ScrollTrigger reasons;
+        // hide it from AT so the alt text isn't announced at the end of
+        // the document, orphaned from the case-study context.
+        card.setAttribute("aria-hidden", "true");
+        card.setAttribute("role", "presentation");
+        // Stamp inline rules so the placeholder mirrors the card's outer
+        // box without rendering shadow / radius / children — invisible,
+        // non-interactive, but layout-active.
+        placeholder.style.visibility = "hidden";
+        placeholder.style.boxShadow = "none";
+        placeholder.style.borderRadius = "0";
+        placeholder.style.pointerEvents = "none";
+        // WR-03: .imageCard sets will-change to 5 props; inheriting that
+        // on a measurement-only div pins a permanent compositor layer for
+        // nothing. The placeholder never animates, so opt out explicitly.
+        placeholder.style.willChange = "auto";
+        if (originalParent) {
+          originalParent.insertBefore(placeholder, card);
+        }
+        document.body.appendChild(card);
+
+        // Reads the placeholder's current rect (which always reflects
+        // the live, post-resize layout slot) and re-applies the
+        // fixed-position coordinates to the card.
+        const placeCard = () => {
+          const r = placeholder.getBoundingClientRect();
+          if (r.width === 0 || r.height === 0) return;
+          gsap.set(card, {
+            left: r.left,
+            top: r.top,
+            width: r.width,
+            height: r.height,
+          });
+        };
+
         gsap.set(card, {
           position: "fixed",
-          left: fixedAt.left,
-          top: fixedAt.top,
-          width: fixedAt.width,
-          height: fixedAt.height,
           margin: 0,
           zIndex: 5,
           autoAlpha: 0,
           "--card-radius": initialRadiusPx + "px",
         });
+        placeCard();
 
         // ── ON-LOAD card fade-in ── Card box is locked in place by the
         // gsap.set above, so a pure autoAlpha tween won't perturb the
@@ -296,13 +339,26 @@ export function Hero() {
         const masterTL = gsap
           .timeline()
           // Intro fade — plays in the first 0.5 units of the timeline.
-          .to(
+          // Explicit fromTo (with immediateRender:false on the FROM
+          // vars so the entrance tweens still own the initial paint).
+          // Why explicit: the master ScrollTrigger has
+          // invalidateOnRefresh:true, which on every resize calls
+          // .invalidate() on these tweens. A lazy `to(...)` would then
+          // re-record its FROM by reading the DOM at the *exact* frame
+          // the pin is being rebuilt — capturing the un-pinned, mid-
+          // reflow position — and render one bad frame at progress~0
+          // before settling. fromTo's FROM is config, not DOM-derived,
+          // so invalidate is a no-op for the start state and the text
+          // stays put through pin-spacer churn.
+          .fromTo(
             [metaRef.current, ledeRef.current],
+            { autoAlpha: 1, y: 0, immediateRender: false },
             { autoAlpha: 0, y: -20, ease: "power2.in", duration: 0.5 },
             0
           )
-          .to(
+          .fromTo(
             titleRef.current,
+            { autoAlpha: 1, y: 0, immediateRender: false },
             { autoAlpha: 0, y: 60, ease: "power2.in", duration: 0.5 },
             0.05
           )
@@ -338,8 +394,19 @@ export function Hero() {
             0.25
           )
           // Hold rounded corners until ~80% of the grow, then snap.
-          .to(
+          // Explicit fromTo with immediateRender:false. Why: the master
+          // ScrollTrigger has invalidateOnRefresh:true, which on every
+          // refresh wipes recorded from/to and lookahead-renders each
+          // tween to re-capture them. A lazy `to({--card-radius:'0px'})`
+          // has no explicit FROM, so the lookahead pass writes TO ('0px')
+          // to the DOM and never undoes it — leaving the card flat-
+          // cornered at progress 0. fromTo's FROM is config, so the
+          // lookahead can't override it, and immediateRender:false keeps
+          // the value untouched until the tween's time-1.05 slot
+          // actually plays during scrub.
+          .fromTo(
             card,
+            { "--card-radius": initialRadiusPx + "px", immediateRender: false },
             {
               "--card-radius": "0px",
               ease: "power2.out",
@@ -357,6 +424,11 @@ export function Hero() {
           scrub: 0.5,
           animation: masterTL,
           anticipatePin: 1,
+          // Force function-based start/end values AND the tween end-values
+          // (e.g. width: () => window.innerWidth) inside masterTL to
+          // re-evaluate on every refresh. Refresh fires automatically on
+          // window resize — exactly what the resize fix needs.
+          invalidateOnRefresh: true,
         });
 
         // ── BADGE SCROLL-FADE ── Lives outside the master timeline so
@@ -378,6 +450,7 @@ export function Hero() {
           end: () => "+=" + window.innerHeight * 0.5,
           scrub: 0.5,
           animation: badgeFadeTL,
+          invalidateOnRefresh: true,
         });
 
         // ── EXIT (unpinned, 1:1 scrub) ── As the page scrolls 1 vh
@@ -406,14 +479,52 @@ export function Hero() {
           invalidateOnRefresh: true,
         });
 
+        // ── RESIZE RECOVERY ── ScrollTrigger fires `refresh` on window
+        // resize (after the browser has reflowed). At that moment the
+        // placeholder's rect reflects the new layout slot, so re-running
+        // `placeCard()` snaps the body-fixed card back to where it
+        // would naturally sit. No progress guard — the previous
+        // `progress <= 0` guard tripped on microscopic float noise (e.g.
+        // 8e-7 from scrub lag / `anticipatePin: 1`) and silently skipped
+        // recovery on every refresh after the first. The master
+        // ScrollTrigger has `invalidateOnRefresh: true`, so the grow
+        // tween will re-record its FROM values against the freshly
+        // placed card the next time progress moves; mid-scrub, this
+        // matches the new natural slot exactly. `refreshInit` fires
+        // before the browser reflow and reads stale placeholder
+        // coordinates, so it cannot be used here.
+        const onRefresh = () => {
+          placeCard();
+        };
+        ScrollTrigger.addEventListener("refresh", onRefresh);
+
         return () => {
+          ScrollTrigger.removeEventListener("refresh", onRefresh);
           cardEntranceTween.kill();
+          // WR-01: st.kill() defaults to false and leaves masterTL,
+          // badgeFadeTL, and exitTL (plus their nested tweens with refs
+          // into the card / meta / title / lede DOM) in memory across
+          // mount/unmount cycles. Pass true so the bound animations get
+          // killed alongside their triggers.
           ScrollTrigger.getAll().forEach((st) => {
-            if (st.trigger === section || st.pin === card) st.kill();
+            if (st.trigger === section || st.pin === card) st.kill(true);
           });
           gsap.set(card, { clearProps: "all" });
+          // WR-02: drop the AT-hiding attributes we stamped on the card
+          // so the next mount cycle starts from a clean slate.
+          card.removeAttribute("aria-hidden");
+          card.removeAttribute("role");
+          if (placeholder.isConnected) {
+            placeholder.remove();
+          }
           if (originalParent?.isConnected && card.parentElement !== originalParent) {
             originalParent.appendChild(card);
+          } else if (card.parentElement === document.body) {
+            // CR-01: original slot is gone (section unmounted — route
+            // change, hot reload, matchMedia revocation). Without this
+            // branch the card stays parented to <body> for the rest of
+            // the page lifetime as an orphan fixed-position figure.
+            card.remove();
           }
         };
       });

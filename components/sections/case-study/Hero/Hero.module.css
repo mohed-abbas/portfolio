@@ -244,6 +244,16 @@
     letter-spacing: -0.04rem;
     font-size: var(--font-size-hero);
     text-align: center;
+    /* Wordmark must never wrap — it's a single token. During a window
+       resize the vw-based font-size snaps to the new value instantly,
+       but ScrollTrigger's pin-spacer (which constrains .hero's
+       effective width while pinned) only rebuilds after a debounced
+       refresh. For ~200ms the container is at the pre-resize width
+       while the glyphs are at the post-resize size; without nowrap,
+       the last letter drops to a second line until the pin-spacer
+       catches up. .hero has overflow:hidden so any brief horizontal
+       overshoot during that window is invisibly clipped instead. */
+    white-space: nowrap;
 }
 
 /* Per-letter mask for the on-load portal stagger. Mask clips the inner
