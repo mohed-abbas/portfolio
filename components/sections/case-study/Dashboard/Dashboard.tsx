@@ -44,7 +44,12 @@ export function Dashboard() {
         });
 
         return () => {
-          pin.kill();
+          // WR-01: ScrollTrigger.kill() defaults revert:false, which
+          // leaves the bound timeline (and its inner fromTo tween that
+          // holds a ref to `image`) alive across remounts. Pass true so
+          // the timeline + tween are killed alongside the trigger —
+          // same teardown-leak class as the Hero pin cleanup.
+          pin.kill(true);
           gsap.set(image, { clearProps: "all" });
         };
       });

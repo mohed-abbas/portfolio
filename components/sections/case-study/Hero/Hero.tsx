@@ -314,6 +314,14 @@ export function Hero() {
           margin: 0,
           zIndex: 5,
           autoAlpha: 0,
+          // UI-BLOCKER: the body-fixed card has no interactive children
+          // (the back link lives in .metaCol, not inside the figure), and
+          // after the exit timeline translates the card to top:-vh its
+          // lower edge sits flush with y=0 of the viewport — intercepting
+          // clicks on downstream sections (e.g. Toggle's "List" button at
+          // scroll ≈ 7560px). Drop pointer-events from the start so the
+          // figure is purely decorative w.r.t. hit-testing.
+          pointerEvents: "none",
           "--card-radius": initialRadiusPx + "px",
         });
         placeCard();

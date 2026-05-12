@@ -39,6 +39,13 @@ export function useBlockFadeIn(
           if (g.els.length) gsap.set(g.els, { autoAlpha: 0, y: g.y ?? 24 });
         });
 
+        // WR-02: the fade-in tweens are created lazily inside onEnter,
+        // *after* useGSAP's gsap-context capture window has closed, so
+        // context cleanup never reaches them. Track each tween so we
+        // can kill it from the cleanup branch if the section unmounts
+        // mid-flight.
+        const activeTweens: gsap.core.Tween[] = [];
+
         const trigger = ScrollTrigger.create({
           trigger: section,
           start,
@@ -46,7 +53,7 @@ export function useBlockFadeIn(
           onEnter: () => {
             resolved.forEach((g) => {
               if (!g.els.length) return;
-              gsap.to(g.els, {
+              const tween = gsap.to(g.els, {
                 autoAlpha: 1,
                 y: 0,
                 duration: g.duration ?? 0.9,
@@ -55,12 +62,14 @@ export function useBlockFadeIn(
                 stagger: g.stagger ?? 0,
                 clearProps: "transform",
               });
+              activeTweens.push(tween);
             });
           },
         });
 
         return () => {
           trigger.kill();
+          activeTweens.forEach((t) => t.kill());
           const allEls = resolved.flatMap((g) => g.els);
           if (allEls.length) gsap.set(allEls, { clearProps: "all" });
         };

@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useCallback } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { gsap } from '@/lib/gsap';
 import { navigation, content } from '@/data';
 import { useLenis } from '@/lib/LenisProvider';
@@ -37,6 +38,8 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
   const socialSectionRef = useRef<HTMLDivElement>(null);
   const isAnimating = useRef(false);
   const { scrollTo } = useLenis();
+  const pathname = usePathname();
+  const router = useRouter();
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -271,15 +274,34 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
   }, [isOpen, onCloseComplete, onRevealStart]);
 
   const handleLinkClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    if (isAnimating.current) return;
+    if (isAnimating.current) {
+      e.preventDefault();
+      return;
+    }
 
+    // CR-01: nav targets (#projects, #philosophy, #services, #contact)
+    // only exist on the home page. When the menu is opened from a
+    // case-study route (e.g. /work/tasktrox), Lenis can't resolve the
+    // selector against a DOM that doesn't contain those sections, so
+    // the unconditional preventDefault + scrollTo silently no-ops and
+    // the menu becomes dead. Detect cross-route and push to `/` + hash
+    // so Next.js handles the navigation; the anchor scroll then resolves
+    // naturally on the home page.
+    if (href.startsWith('#') && pathname !== '/') {
+      e.preventDefault();
+      onClose();
+      router.push('/' + href);
+      return;
+    }
+
+    // On-home: preserve smooth-scroll behaviour.
+    e.preventDefault();
     onClose();
     // Delay scroll to allow menu close animation
     setTimeout(() => {
       scrollTo(href, { duration: 1.8 }); // Lenis smooth scroll with custom duration
     }, 800);
-  }, [onClose, scrollTo]);
+  }, [onClose, scrollTo, pathname, router]);
 
   return (
     <div ref={menuRef} id="main-menu" className={`${styles.menu} ${isOpen ? styles.isOpen : ''}`}>
