@@ -71,11 +71,20 @@ const triggerPortalLoop = (letterElement: HTMLElement) => {
 // COLOR INTERPOLATION
 // ============================================
 
-const PRIMARY_COLOR = '#1b2028';
+const getPrimaryTextColor = (): string => {
+  if (typeof window === 'undefined') return '#1b2028';
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-primary-text')
+    .trim() || '#1b2028';
+};
+
+// Browsers may canonicalize #RRGGBB to #RGB when read via getComputedStyle.
+const expandHex = (hex: string): string =>
+  hex.length === 3 ? hex.split('').map((c) => c + c).join('') : hex;
 
 const interpolateColor = (color1: string, color2: string, progress: number): string => {
-  const hex1 = color1.replace('#', '');
-  const hex2 = color2.replace('#', '');
+  const hex1 = expandHex(color1.replace('#', ''));
+  const hex2 = expandHex(color2.replace('#', ''));
   const r1 = parseInt(hex1.substring(0, 2), 16);
   const g1 = parseInt(hex1.substring(2, 4), 16);
   const b1 = parseInt(hex1.substring(4, 6), 16);
@@ -278,7 +287,7 @@ export function RevealText({ text, highlights }: RevealTextProps) {
           const easedProgress = adjustedProgress < 0.5
             ? 2 * adjustedProgress * adjustedProgress
             : 1 - Math.pow(-2 * adjustedProgress + 2, 2) / 2;
-          const color = interpolateColor(PRIMARY_COLOR, currentAccent, easedProgress);
+          const color = interpolateColor(getPrimaryTextColor(), currentAccent, easedProgress);
           letters.forEach((el) => {
             el.style.color = color;
           });
@@ -314,7 +323,7 @@ export function RevealText({ text, highlights }: RevealTextProps) {
       const easedProgress = adjustedProgress < 0.5
         ? 2 * adjustedProgress * adjustedProgress
         : 1 - Math.pow(-2 * adjustedProgress + 2, 2) / 2;
-      const color = interpolateColor(PRIMARY_COLOR, accentColor, easedProgress);
+      const color = interpolateColor(getPrimaryTextColor(), accentColor, easedProgress);
       letters.forEach((el) => {
         el.style.color = color;
       });

@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import { Menu } from './Menu';
@@ -19,6 +20,19 @@ export function Navbar() {
   const hamburgerLinesRef = useRef<HTMLSpanElement[]>([]);
   const brandWrapperRef = useRef<HTMLDivElement>(null);
   const { cycleColor } = useAccentColor();
+  const pathname = usePathname();
+  const isHome = pathname === '/';
+
+  // The brand mark's CSS default is opacity:0 because on home the Hero's
+  // scroll timeline animates inline opacity from 0 → 1. On every other
+  // route there's no Hero to drive it, so we tag the element with
+  // data-on-home and let CSS force opacity:1 there. The clearProps below
+  // wipes any inline opacity left behind by the Hero timeline so the CSS
+  // rule isn't shadowed when we land on a non-home route.
+  useGSAP(() => {
+    const brand = document.getElementById('navbar-brand');
+    if (brand) gsap.set(brand, { clearProps: 'opacity' });
+  }, { dependencies: [isHome] });
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => {
@@ -233,7 +247,11 @@ export function Navbar() {
         </button>
 
         <div ref={brandWrapperRef} className={styles.navCenterWrapper}>
-          <div id="navbar-brand" className={styles.navCenter}>
+          <div
+            id="navbar-brand"
+            className={styles.navCenter}
+            data-on-home={String(isHome)}
+          >
             <span id="navbar-brand-m" className={styles.brandLetter}>{INITIALS.first}</span>
             <span className={styles.brandSpacer} />
             <span id="navbar-brand-a" className={styles.brandLetter}>{INITIALS.last}</span>

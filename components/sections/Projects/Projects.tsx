@@ -3,6 +3,7 @@
 import { useRef, useEffect } from 'react';
 import { gsap } from '@/lib/gsap';
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './Projects.module.css';
 import { content } from '@/data';
 
@@ -89,14 +90,9 @@ export const Projects = () => {
   return (
     <div ref={containerRef} className={styles.section} id='projects'>
        
-       {projects.items.map((project) => (
-           <div 
-             key={project.id} 
-             className={styles.projectSection} 
-             data-color={project.themeColor}
-           >
-               <div className={styles.projectSticky}>
-                   
+       {projects.items.map((project) => {
+           const cardInner = (
+               <>
                    {/* Image */}
                    <div className={styles.imageCard}>
                         <div className={styles.projectImgWrapper}>
@@ -113,15 +109,15 @@ export const Projects = () => {
                    </div>
 
                    {/* Funky Badge */}
-                   <div 
+                   <div
                     className={styles.funkyBadge}
                     style={{
-                        backgroundColor: project.badgeColor, 
+                        backgroundColor: project.badgeColor,
                         color: project.badgeTextColor,
                         boxShadow: `5px 5px 0px ${project.badgeShadowColor || 'black'}`
                     }}
                    >
-                       <span dangerouslySetInnerHTML={{__html: project.badge}} /> 
+                       <span dangerouslySetInnerHTML={{__html: project.badge}} />
                    </div>
 
                    {/* Text Splitter */}
@@ -141,10 +137,31 @@ export const Projects = () => {
                        <div className={styles.pill}>{project.year}</div>
                        <div className={styles.pill}>{project.category}</div>
                    </div>
+               </>
+           );
 
+           return (
+               <div
+                 key={project.id}
+                 className={styles.projectSection}
+                 data-color={project.themeColor}
+               >
+                   {project.caseStudyHref ? (
+                       <Link
+                         href={project.caseStudyHref}
+                         className={styles.projectSticky}
+                         aria-label={`Open ${project.title} case study`}
+                       >
+                           {cardInner}
+                       </Link>
+                   ) : (
+                       <div className={styles.projectSticky}>
+                           {cardInner}
+                       </div>
+                   )}
                </div>
-           </div>
-       ))}
+           );
+       })}
 
        <div className={styles.spacer}>Fin.</div>
     </div>

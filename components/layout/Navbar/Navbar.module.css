@@ -105,9 +105,16 @@
     font-size: clamp(2rem, 3.5vw, 52px);
     color: var(--color-primary-text);
     line-height: 0.85;
-    opacity: 0;
+    /* On home the Hero's scroll timeline reveals the brand by tweening
+       inline opacity 0 → 1. Off-home routes have no Hero, so the brand
+       must be visible by default. */
+    opacity: 1;
     pointer-events: none;
     letter-spacing: -6px;
+}
+
+.navCenter[data-on-home="true"] {
+    opacity: 0;
 }
 .navCenter::after{
     content: ".";

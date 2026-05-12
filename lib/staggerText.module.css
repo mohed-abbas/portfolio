@@ -1,0 +1,18 @@
+/* ============================================================
+   Per-word masks used by useWordLineReveal — match the recipe
+   from Case-Study Hero's lede animation: each word is wrapped
+   in an overflow:hidden mask so its inner span can slide up
+   from yPercent:110 → 0 without affecting wrap behaviour.
+   ============================================================ */
+
+.word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+}
+
+.wordInner {
+    display: inline-block;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}

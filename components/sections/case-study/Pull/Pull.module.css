@@ -1,0 +1,53 @@
+/* ============================================================
+   CASE STUDY · PULL — testimonial blockquote between editorial
+   sections. Bordered above and below for editorial weight.
+   ============================================================ */
+
+.pull {
+    padding: clamp(80px, 14vh, 160px) var(--spacing-nav-side);
+    border-top: 2px solid var(--color-primary-text);
+    border-bottom: 2px solid var(--color-primary-text);
+}
+
+.quote {
+    margin: 0 auto;
+    max-width: var(--canvas-max-width);
+    font-family: var(--font-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(36px, 5.5vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--color-primary-text);
+}
+
+.quoteAccent {
+    color: var(--color-accent-purple);
+}
+
+.attr {
+    margin: clamp(36px, 5vh, 56px) auto 0;
+    max-width: var(--canvas-max-width);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-navbar);
+    font-size: 16px;
+    color: var(--color-gray-dark);
+}
+
+.avatar {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-accent-purple), #2C7E94);
+    border: 2px solid var(--color-primary-text);
+    box-shadow: 4px 4px 0 var(--color-primary-text);
+}
+
+.attrText b {
+    color: var(--color-primary-text);
+    display: block;
+    font-weight: 400;
+}

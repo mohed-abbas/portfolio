@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useCallback, createContext, useContext, ReactNode, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
@@ -9,14 +10,10 @@ import { gsap, ScrollTrigger } from '@/lib/gsap';
 // ============================================
 interface LenisContextValue {
   scrollTo: (target: string | number | HTMLElement, options?: { offset?: number; duration?: number }) => void;
-  stop: () => void;
-  start: () => void;
 }
 
 const LenisContext = createContext<LenisContextValue>({
   scrollTo: () => {},
-  stop: () => {},
-  start: () => {},
 });
 
 export const useLenis = () => useContext(LenisContext);
@@ -30,6 +27,8 @@ interface LenisProviderProps {
 
 export function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
+  const firstRouteRef = useRef(true);
 
   useEffect(() => {
     // Initialize Lenis
@@ -55,6 +54,13 @@ export function LenisProvider({ children }: LenisProviderProps) {
         lenis.raf(time * 1000);
       }
     };
+    // Capture so StrictMode dev-mount→unmount→remount doesn't permanently
+    // disable lagSmoothing. Zero-arg getter is supported at runtime but not
+    // in GSAP's d.ts; cast around it. Getter returns the threshold only —
+    // restoring collapses adjustedLag to GSAP default 33.
+    const prevLagSmoothing = (
+      gsap.ticker.lagSmoothing as unknown as () => number
+    )();
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0); // Required by Lenis to keep scroll timing accurate
 
@@ -70,31 +76,40 @@ export function LenisProvider({ children }: LenisProviderProps) {
     // Cleanup
     return () => {
       gsap.ticker.remove(tick);
+      gsap.ticker.lagSmoothing(prevLagSmoothing);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       lenis.destroy();
       lenisRef.current = null;
     };
   }, []);
 
-  // Stable callback functions that access ref internally (safe in callbacks)
+  // Reset scroll + ScrollTrigger world on client-side route changes.
+  // Cold load is handled by the inline scrollTo(0,0) in layout.tsx, so the
+  // very first run of this effect must be a no-op — otherwise Lenis fights
+  // the inline reset and ScrollTrigger.refresh() runs before any page-level
+  // triggers exist.
+  useEffect(() => {
+    if (firstRouteRef.current) {
+      firstRouteRef.current = false;
+      return;
+    }
+    const lenis = lenisRef.current;
+    if (lenis) {
+      lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
+    ScrollTrigger.refresh();
+    ScrollTrigger.update();
+  }, [pathname]);
+
   const scrollTo = useCallback((target: string | number | HTMLElement, options?: { offset?: number; duration?: number }) => {
     lenisRef.current?.scrollTo(target, options);
   }, []);
 
-  const stop = useCallback(() => {
-    lenisRef.current?.stop();
-  }, []);
-
-  const start = useCallback(() => {
-    lenisRef.current?.start();
-  }, []);
-
-  // Memoize context value to prevent unnecessary re-renders
   const contextValue = useMemo<LenisContextValue>(() => ({
     scrollTo,
-    stop,
-    start,
-  }), [scrollTo, stop, start]);
+  }), [scrollTo]);
 
   return (
     <LenisContext.Provider value={contextValue}>

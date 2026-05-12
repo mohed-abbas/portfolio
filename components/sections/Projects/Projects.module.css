@@ -37,6 +37,12 @@
     justify-content: center;
     perspective: 1000px; /* For 3D rotation effects */
     contain: layout style;
+    color: inherit;
+    text-decoration: none;
+}
+
+a.projectSticky {
+    cursor: pointer;
 }
 
 /* THE SPLIT TEXT */
