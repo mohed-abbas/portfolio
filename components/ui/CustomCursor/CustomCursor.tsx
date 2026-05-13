@@ -48,6 +48,10 @@ export function CustomCursor() {
   const animateFnRef = useRef<(() => void) | null>(null);
   const idleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // PERF: gate the show-trails fan-out to one tween per visibility transition
+  // instead of firing 4 redundant gsap.to() calls on every mousemove > 2px.
+  const trailVisibleRef = useRef(false);
+
   // Smooth lerp factor for main cursor
   const lerpFactor = 0.15;
 
@@ -67,6 +71,9 @@ export function CustomCursor() {
     const triggerBurst = () => {
       if (hasBurst.current || isSpotlightActive.current) return;
       hasBurst.current = true;
+      // Trails are about to fade out (opacity:0, scale:0). Drop the gate so
+      // the next mousemove fires the show-trails fan-out exactly once.
+      trailVisibleRef.current = false;
 
       // Animate each trail sphere to burst into the main cursor
       trailSpheresRef.current.forEach((sphere, index) => {
@@ -127,10 +134,22 @@ export function CustomCursor() {
         isMoving.current = true;
         hasBurst.current = false;
 
-        // Show trail spheres when moving (ONLY if spotlight is NOT active)
-        if (!isSpotlightActive.current) {
+        // Show trail spheres when moving (ONLY if spotlight is NOT active AND
+        // trails are currently hidden). trailVisibleRef gates the fan-out to
+        // one tween per visibility transition instead of firing 4 redundant
+        // gsap.to() per mousemove tick. Reset by triggerBurst and
+        // handleSpotlightEnter when trails are faded out.
+        if (!isSpotlightActive.current && !trailVisibleRef.current) {
+          trailVisibleRef.current = true;
           trailSpheresRef.current.forEach(sphere => {
             if (sphere.element) {
+              // Kill any in-flight burst tween's opacity/scale on this sphere
+              // (including ones still in their stagger delay). Without this,
+              // the burst keeps writing opacity:0 after this show tween
+              // completes its 0.2s — and the trail invisibly disappears
+              // mid-movement. x/y stay on the GSAP cache and continue to be
+              // overridden per frame by animate(), so they're safe to leave.
+              gsap.killTweensOf(sphere.element, 'opacity,scale');
               gsap.to(sphere.element, {
                 opacity: 1,
                 scale: 1,
@@ -176,6 +195,24 @@ export function CustomCursor() {
       };
     });
 
+    // PERF: xPercent/yPercent never change at runtime — set once so the
+    // per-frame animate() only updates x/y via quickSetter. quickSetter is
+    // GSAP's optimized hot-path writer (~3–5× faster than gsap.set on warm
+    // cache) while preserving the _gsap matrix tracking that burst, hover-
+    // scale, and spotlight tweens rely on.
+    gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+    trailSpheresRef.current.forEach(sphere => {
+      if (sphere.element) gsap.set(sphere.element, { xPercent: -50, yPercent: -50 });
+    });
+
+    type QuickSetter = (value: number) => void;
+    const setCursorX = gsap.quickSetter(cursor, 'x', 'px') as QuickSetter;
+    const setCursorY = gsap.quickSetter(cursor, 'y', 'px') as QuickSetter;
+    const trailSetters = trailSpheresRef.current.map(sphere => ({
+      setX: sphere.element ? (gsap.quickSetter(sphere.element, 'x', 'px') as QuickSetter) : null,
+      setY: sphere.element ? (gsap.quickSetter(sphere.element, 'y', 'px') as QuickSetter) : null,
+    }));
+
     // Track mouse movement
     window.addEventListener('mousemove', handleMouseMove);
 
@@ -211,50 +248,55 @@ export function CustomCursor() {
       }, 150);
     };
 
-    // Animate with GSAP ticker for smooth 60fps updates
+    // Animate with GSAP ticker for smooth 60fps updates.
+    // PERF: hot path — uses quickSetter (Track A), gates DOM writes on a
+    // 0.1px sub-pixel threshold (Track C). Each element settles independently,
+    // so the slow trail-tail (lerp 0.04) stops writing the moment it converges
+    // instead of writing the same value for ~20 frames while the head settles.
+    const SUBPIXEL = 0.1;
     const animate = () => {
       if (!hasMovedMouse.current) return;
 
-      // Lerp main cursor position
-      cursorPos.current.x += (mousePos.current.x - cursorPos.current.x) * lerpFactor;
-      cursorPos.current.y += (mousePos.current.y - cursorPos.current.y) * lerpFactor;
+      // Lerp main cursor
+      const newCx = cursorPos.current.x + (mousePos.current.x - cursorPos.current.x) * lerpFactor;
+      const newCy = cursorPos.current.y + (mousePos.current.y - cursorPos.current.y) * lerpFactor;
+      if (Math.abs(newCx - cursorPos.current.x) > SUBPIXEL || Math.abs(newCy - cursorPos.current.y) > SUBPIXEL) {
+        cursorPos.current.x = newCx;
+        cursorPos.current.y = newCy;
+        setCursorX(newCx);
+        setCursorY(newCy);
 
-      // Apply transforms to main cursor
-      gsap.set(cursor, {
-        x: cursorPos.current.x,
-        y: cursorPos.current.y,
-        xPercent: -50,
-        yPercent: -50,
-      });
-
-      // PERF: --cursor-x / --cursor-y are only consumed by the spotlight reveal mask.
-      // Skip the per-frame style recalculation when spotlight is inactive.
-      if (isSpotlightActive.current) {
-        document.documentElement.style.setProperty('--cursor-x', `${cursorPos.current.x}px`);
-        document.documentElement.style.setProperty('--cursor-y', `${cursorPos.current.y}px`);
+        // --cursor-x / --cursor-y are only consumed by the spotlight reveal mask.
+        // Skip the per-frame style recalculation when spotlight is inactive.
+        if (isSpotlightActive.current) {
+          document.documentElement.style.setProperty('--cursor-x', `${newCx}px`);
+          document.documentElement.style.setProperty('--cursor-y', `${newCy}px`);
+        }
       }
 
-      // Update trail spheres - each follows the one ahead
+      // Update trail spheres — each follows the one ahead
       trailSpheresRef.current.forEach((sphere, index) => {
-        if (!sphere.element) return;
+        const setters = trailSetters[index];
+        if (!sphere.element || !setters?.setX || !setters?.setY) return;
 
         // First sphere follows cursor, others follow the sphere ahead
         const target = index === 0
           ? cursorPos.current
           : trailSpheresRef.current[index - 1].pos;
 
-        sphere.pos.x += (target.x - sphere.pos.x) * sphere.lerpFactor;
-        sphere.pos.y += (target.y - sphere.pos.y) * sphere.lerpFactor;
-
-        gsap.set(sphere.element, {
-          x: sphere.pos.x,
-          y: sphere.pos.y,
-          xPercent: -50,
-          yPercent: -50,
-        });
+        const newX = sphere.pos.x + (target.x - sphere.pos.x) * sphere.lerpFactor;
+        const newY = sphere.pos.y + (target.y - sphere.pos.y) * sphere.lerpFactor;
+        if (Math.abs(newX - sphere.pos.x) > SUBPIXEL || Math.abs(newY - sphere.pos.y) > SUBPIXEL) {
+          sphere.pos.x = newX;
+          sphere.pos.y = newY;
+          setters.setX(newX);
+          setters.setY(newY);
+        }
       });
 
-      // PERF: Check if settled and schedule idle (1px threshold)
+      // Idle-timer gate stays at 1px (coarser than the sub-pixel write skip)
+      // so the ticker stops once the head converges, not when individual
+      // sub-pixel writes are skipped.
       const dx = Math.abs(mousePos.current.x - cursorPos.current.x);
       const dy = Math.abs(mousePos.current.y - cursorPos.current.y);
       if (dx < 1 && dy < 1) {
@@ -360,6 +402,9 @@ export function CustomCursor() {
           });
         }
       });
+      // Trails are hidden during spotlight; drop the gate so the show-trails
+      // fan-out fires once when the user moves again after spotlight leaves.
+      trailVisibleRef.current = false;
     };
 
     const handleSpotlightLeave = () => {

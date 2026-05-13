@@ -122,7 +122,7 @@
 /* Hover: white layer fills up from bottom, revealing ~60% */
 .linkItem:hover .linkFill {
     /* Reveal from bottom: top 40% clipped, bottom 60% visible */
-    clip-path: inset(40% 0 0 0);
+    clip-path: inset(40% -2% 0 0);
 }
 
 /* Link description - positioned absolutely to prevent layout shift */

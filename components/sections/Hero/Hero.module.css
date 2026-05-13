@@ -49,4 +49,11 @@
     z-index: 15;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* PERF: pre-promote to its own compositor layer so the scrub-driven
+       transform animation starts on the GPU from the first frame instead
+       of hitching as Firefox promotes the layer mid-tween. */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }

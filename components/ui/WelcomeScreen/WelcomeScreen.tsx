@@ -112,10 +112,9 @@ export const WelcomeScreen = () => {
             yPercent: -50
         });
 
-        gsap.set(initialsRef.current, { 
-            scale: 1.5, 
+        gsap.set(initialsRef.current, {
+            scale: 1.5,
             opacity: 0,
-            filter: 'blur(0px)'
         });
 
         // 2. The Rapid Flash Sequence
@@ -138,21 +137,20 @@ export const WelcomeScreen = () => {
         });
 
         // 3. Initials Reveal
-        // Smooth reveal instead of hard snap
-        tl.fromTo(initialsRef.current, 
+        // PERF: dropped filter:blur — paint-heavy on Firefox/Linux. scale+opacity
+        // alone provide the same perceptual reveal at compositor-only cost.
+        tl.fromTo(initialsRef.current,
             {
                 scale: 1.2,
                 opacity: 0,
-                filter: 'blur(5px)'
             },
             {
                 scale: 1,
                 opacity: 1,
-                filter: 'blur(0px)',
                 duration: 0.5,
                 ease: "power2.out"
             }
-        ); 
+        );
     }
 
       // 4. The Travel Transition
@@ -222,15 +220,13 @@ export const WelcomeScreen = () => {
             delay: flightDuration - handoffDuration
           });
 
-          // D. Fade out background — keep source RGB, only kill alpha so
-          // the tween works in both light and dark themes.
+          // D. Fade out container — opacity is compositor-only, whereas the
+          // previous backgroundColor tween triggered paint every frame. By the
+          // time this delay fires, all children (greetings, initials) have
+          // already faded, so opacity on the container is visually equivalent.
           if (containerRef.current) {
-            const startBg = getComputedStyle(containerRef.current).backgroundColor;
-            const transparentBg = startBg.startsWith("rgba")
-              ? startBg.replace(/[\d.]+\s*\)$/, "0)")
-              : startBg.replace("rgb(", "rgba(").replace(")", ", 0)");
             gsap.to(containerRef.current, {
-              backgroundColor: transparentBg,
+              opacity: 0,
               duration: 0.8,
               ease: "power2.inOut",
               delay: 0.4

@@ -68,6 +68,23 @@ export function Hero() {
       return { x: r.left - h.left, y: r.top - h.top };
     };
 
+    // PERF: read fontSize once and animate via `scale` (transform-only).
+    // Animating fontSize in the timeline triggered layout invalidation on every
+    // scrub frame — the dominant cause of 60Hz jank in the FLIP. transform-origin
+    // is set to top-left so the letter shrinks toward its anchored (x, y), which
+    // is the navbar target's top-left from getRelPos.
+    const seedFlyingLetterTypography = () => {
+      gsap.set(flyingM, {
+        fontSize: parseFloat(getComputedStyle(targetM).fontSize),
+        transformOrigin: '0% 0%',
+      });
+      gsap.set(flyingA, {
+        fontSize: parseFloat(getComputedStyle(targetA).fontSize),
+        transformOrigin: '0% 0%',
+      });
+    };
+    seedFlyingLetterTypography();
+
     // ============================================
     // BUILD MASTER TIMELINE
     // Timeline durations are proportional (0-1 range),
@@ -76,17 +93,15 @@ export function Hero() {
     const tl = gsap.timeline();
 
     // --- PHASE 0: Snap flying letters to hero letter positions (instant) ---
-    // NOTE: fontSize uses functional getters so values recalculate on viewport resize
+    // Functional getters keep x/y in sync with viewport resize via invalidateOnRefresh
     tl.to(flyingM, {
       x: () => getRelPos(targetM).x,
       y: () => getRelPos(targetM).y,
-      fontSize: () => parseFloat(getComputedStyle(targetM).fontSize),
       duration: 0.001,
     }, 0)
     .to(flyingA, {
       x: () => getRelPos(targetA).x,
       y: () => getRelPos(targetA).y,
-      fontSize: () => parseFloat(getComputedStyle(targetA).fontSize),
       duration: 0.001,
     }, 0);
 
@@ -120,20 +135,23 @@ export function Hero() {
       tl.to(skillsBar, { opacity: 0, duration: 0.15, ease: 'power2.in' }, 0.71);
     }
 
-    // --- PHASE 5: Fly + shrink to navbar center (includes scale settle) ---
+    // --- PHASE 5: Fly + shrink to navbar center (via SCALE, not fontSize) ---
+    // PERF: scale shrink is GPU-composited; fontSize would trigger reflow per frame.
+    // Ratio is computed at tween-time via functional getter so resize stays correct
+    // (invalidateOnRefresh re-evaluates these on ScrollTrigger.refresh).
     tl.to(flyingM, {
       x: () => getRelPos(navBrandM).x,
       y: () => getRelPos(navBrandM).y,
-      fontSize: () => parseFloat(getComputedStyle(navBrandM).fontSize),
-      scale: 1,
+      scale: () => parseFloat(getComputedStyle(navBrandM).fontSize)
+        / parseFloat(getComputedStyle(targetM).fontSize),
       duration: 0.65,
       ease: 'power2.inOut',
     }, 0.06)
     .to(flyingA, {
       x: () => getRelPos(navBrandA).x,
       y: () => getRelPos(navBrandA).y,
-      fontSize: () => parseFloat(getComputedStyle(navBrandA).fontSize),
-      scale: 1,
+      scale: () => parseFloat(getComputedStyle(navBrandA).fontSize)
+        / parseFloat(getComputedStyle(targetA).fontSize),
       duration: 0.65,
       ease: 'power2.inOut',
     }, 0.06);
@@ -151,12 +169,15 @@ export function Hero() {
       trigger: spacer,
       start: 'top top',
       end: () => `+=${window.innerHeight * 1.0}`,
-      scrub: 2.5,
+      scrub: 1.75,
       animation: tl,
       invalidateOnRefresh: true,
       onRefresh: () => {
         // Recalculate spacer height on resize/refresh
         spacer.style.height = `${hero.offsetHeight + window.innerHeight * 1.0}px`;
+        // Re-seed source fontSize so the scale ratio in Phase 5 resolves
+        // against the post-resize target sizes (clamp() CSS may change values)
+        seedFlyingLetterTypography();
       },
     });
 

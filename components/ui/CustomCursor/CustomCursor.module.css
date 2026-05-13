@@ -18,8 +18,11 @@
     z-index: var(--z-cursor);
     will-change: transform;
 
-    /* Ensure cursor elements don't interfere with page interactions */
-    transform: translate(-50%, -50%);
+    /* PERF: GSAP applies xPercent/yPercent: -50 per frame, so the CSS
+       `translate(-50%, -50%)` was overwritten on the first tween — but until
+       then it caused a one-frame snap. translate3d(0,0,0) keeps the layer
+       GPU-promoted without conflicting with GSAP's transform authority. */
+    transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
@@ -67,8 +70,10 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 
-    /* PERF: Minimal glow - box-shadow is expensive, reduced blur radius */
-    box-shadow: 0 0 4px currentColor;
+    /* PERF: Minimal glow. box-shadow blur composites every transform tick on
+       Firefox; with 4 trail spheres animating at 60fps, 4px was visibly
+       coloring frame budget. 2px keeps the glow perceptible at half the cost. */
+    box-shadow: 0 0 2px currentColor;
 
     /* Performance containment */
     contain: layout style;
