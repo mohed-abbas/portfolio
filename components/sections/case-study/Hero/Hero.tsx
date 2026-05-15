@@ -297,6 +297,16 @@ export function Hero() {
         // Reads the placeholder's current rect (which always reflects
         // the live, post-resize layout slot) and re-applies the
         // fixed-position coordinates to the card.
+        //
+        // Defensive `y: 0`: the exit timeline animates `y` (transform)
+        // independently of `top`. Without an explicit reset here, a
+        // resize triggered while the user has scrolled past the exit
+        // range would leave the previous translateY in place during
+        // the brief window before the exit ScrollTrigger re-renders
+        // its scrub. invalidateOnRefresh on the exit trigger immediately
+        // re-writes the correct `y` for the new viewport, but starting
+        // each placeCard pass from a deterministic transform state
+        // avoids one-frame visual hiccups.
         const placeCard = () => {
           const r = placeholder.getBoundingClientRect();
           if (r.width === 0 || r.height === 0) return;
@@ -305,6 +315,7 @@ export function Hero() {
             top: r.top,
             width: r.width,
             height: r.height,
+            y: 0,
           });
         };
 

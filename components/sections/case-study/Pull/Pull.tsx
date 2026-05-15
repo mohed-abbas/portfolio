@@ -38,8 +38,20 @@ export function Pull() {
     >
       <figure className={styles.figure}>
         <div ref={stickyRef} className={styles.sticky}>
-          <figcaption ref={act1Ref} className={styles.act1}>
-            <span className={styles.avatar} aria-hidden />
+          {/* Pre-set aria-label on the attribution + the two quote
+              acts: splitTextIntoWords synthesises an aria-label on any
+              root it splits when none exists, which would (a) double-
+              announce the testimonial alongside the <blockquote>'s
+              own aria-label and (b) replace the <b> semantics of the
+              name with an upper-cased flat string. The blockquote's
+              aria-label below is the single source of truth for the
+              quote; the figcaption supplies the speaker. */}
+          <figcaption
+            ref={act1Ref}
+            className={styles.act1}
+            aria-label="Léa Marchand, Principal, Atelier Marchand, Lyon"
+          >
+            <span className={styles.avatar} aria-hidden="true" />
             <span className={styles.attrText}>
               <b>Léa Marchand</b>
               <span>Principal, Atelier Marchand, Lyon</span>
@@ -50,7 +62,7 @@ export function Pull() {
             className={styles.quote}
             aria-label="For the first time the software respects the way our studio actually thinks."
           >
-            <div ref={act2Ref} className={styles.act2}>
+            <div ref={act2Ref} className={styles.act2} aria-hidden="true">
               {ACT2_LINES.map((line, i) => (
                 <span
                   key={i}
@@ -64,7 +76,7 @@ export function Pull() {
                 </span>
               ))}
             </div>
-            <div ref={act3Ref} className={styles.act3}>
+            <div ref={act3Ref} className={styles.act3} aria-hidden="true">
               {ACT3_LINES.map((line, i) => (
                 <span key={i} className={styles.quoteLine}>
                   {line.text}

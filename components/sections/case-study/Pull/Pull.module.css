@@ -118,6 +118,18 @@
     font-style: italic;
 }
 
+/* Italic-glyph clipping override, scoped to Pull only.
+   splitTextIntoWords stamps every word with [data-split-word]; using
+   that attribute lets us reach the hashed staggerText `.word` masks
+   without coupling to their generated class names, and the .act2/.act3
+   ancestor selector keeps the override out of the seven other
+   case-study sections that consume the same staggerText module. */
+.act2 [data-split-word],
+.act3 [data-split-word] {
+    overflow: clip;
+    overflow-clip-margin: 0.15em;
+}
+
 /* ── Static fallback ──── mobile + reduced motion ──── */
 @media (max-width: 768px) {
     .pull {
@@ -180,5 +192,14 @@
         right: auto;
         top: auto;
         bottom: auto;
+    }
+
+    /* Desktop + reduced-motion: the giant pinned font stacked
+       vertically would overflow the section. Match the mobile
+       fallback's smaller typography. */
+    .act2,
+    .act3 {
+        font-size: clamp(36px, 6vw, 72px);
+        text-align: left;
     }
 }
