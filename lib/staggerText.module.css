@@ -1,13 +1,17 @@
 /* ============================================================
    Per-word masks used by useWordLineReveal — match the recipe
    from Case-Study Hero's lede animation: each word is wrapped
-   in an overflow:hidden mask so its inner span can slide up
-   from yPercent:110 → 0 without affecting wrap behaviour.
+   in an overflow:clip mask so its inner span can slide up from
+   yPercent:110 → 0 without affecting wrap behaviour.
+   `overflow: clip` + `overflow-clip-margin` paints italic glyph
+   overhang past the natural word box (otherwise the final letter
+   of an italic word like "RESPECTS" gets sliced at the mask edge).
    ============================================================ */
 
 .word {
     display: inline-block;
-    overflow: hidden;
+    overflow: clip;
+    overflow-clip-margin: 0.15em;
     vertical-align: bottom;
 }
 
