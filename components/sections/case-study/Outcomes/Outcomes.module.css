@@ -4,6 +4,8 @@
 
 .outcomes {
     padding: clamp(80px, 12vh, 140px) var(--spacing-nav-side);
+    min-height: 100vh;
+    width: 100%;
 }
 
 .head {
