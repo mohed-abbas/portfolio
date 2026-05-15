@@ -1,21 +1,68 @@
 /* ============================================================
-   CASE STUDY · DASHBOARD — full-bleed sticky-pin cinematic.
-   Image parallaxes (subtle scale + y) during pinned scroll.
+   CASE STUDY · DASHBOARD — full-bleed pin that shrinks the image
+   down to the case-study Hero's imageCard slot. Mirrors Hero's
+   grow-from-slot animation in reverse: enters at 100vw × 100vh,
+   pins, scrubs through a shrink + radius/shadow recovery, and
+   parks at the slot rect before unpinning.
    ============================================================ */
 
 .dashboard {
     position: relative;
     height: 100vh;
     overflow: hidden;
-    padding: clamp(20px, 3vh, 40px) var(--spacing-nav-side);
 }
 
-.frame {
-    position: relative;
-    height: 100%;
+/* Hidden, layout-active placeholder. The .slot's rendered rect is
+   the destination the frame tweens into — same width/aspect rule
+   as Hero's imageCard so the two animations bookend at matching
+   sizes. Wrapper recreates Hero's `.middle` constraints (canvas
+   max-width, nav-side padding, centered) so the 54% width
+   resolves against the same effective canvas. */
+.slotWrap {
+    position: absolute;
+    inset: 0;
+    padding: 0 var(--spacing-nav-side);
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.slotContainer {
+    width: 100%;
+    max-width: var(--canvas-max-width);
+    display: flex;
+    justify-content: center;
+}
+
+.slot {
+    width: clamp(420px, 54%, 920px);
+    aspect-ratio: 16 / 10;
     border-radius: var(--radius-portrait);
+}
+
+/* ---------- FRAME — the animated card ---------- */
+/* CSS defaults give the no-JS / reduced-motion path a full-bleed
+   image. The motion-enabled path overrides everything inline.
+   --card-radius is the GSAP-tweenable variable that drives
+   border-radius — using a custom property sidesteps the
+   inconsistent serialization of getComputedStyle(...).borderRadius
+   (some browsers return an empty shorthand when the value comes
+   from a clamp()-resolved CSS variable). Mirrors the Hero card
+   pattern. */
+.frame {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    --card-radius: 0px;
+    border-radius: var(--card-radius);
     overflow: hidden;
-    box-shadow: 0 30px 80px -20px rgba(27, 32, 40, 0.18);
+    box-shadow: none;
+    /* will-change intentionally omitted: width/height/left/top cause
+       reflow regardless of layer promotion, so a permanent compositor
+       layer on a fullscreen element is wasted memory for an animation
+       that runs only during the brief pin scrub. The inner .image
+       keeps will-change:transform for its parallax. */
 }
 
 .image {

@@ -8,49 +8,151 @@ import styles from "./Dashboard.module.css";
 
 export function Dashboard() {
   const sectionRef = useRef<HTMLElement>(null);
+  const frameRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLSpanElement>(null);
+  const cornerRef = useRef<HTMLElement>(null);
 
   useGSAP(
     () => {
       const section = sectionRef.current;
+      const frame = frameRef.current;
       const image = imageRef.current;
-      if (!section || !image) return;
+      const slot = slotRef.current;
+      if (!section || !frame || !image || !slot) return;
 
+      // useGSAP scope auto-reverts mm on unmount; no explicit
+      // mm.revert() needed in the cleanup return.
       const mm = gsap.matchMedia();
 
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Pin the section for an extra 80vh of scroll while the image
-        // does a subtle parallax (scale 1.06 → 1.0, y -3% → 3%).
-        // CSS sticky doesn't work in this project (overflow-x:hidden
-        // on body promotes body to sticky scroll-ancestor while Lenis
-        // scrolls html), so ScrollTrigger.pin with pinType:"fixed" is
-        // used in its place.
-        const tl = gsap.timeline().fromTo(
-          image,
-          { scale: 1.06, yPercent: -3 },
-          { scale: 1, yPercent: 3, ease: "none", duration: 1 },
-          0
-        );
+        // Hidden placeholder defines the parked rect — same width /
+        // aspect-ratio rule as the case-study Hero's `imageCard`
+        // (clamp(420px, 54%, 920px) / 16:10) so the two animations
+        // bookend at matching sizes. Coordinates are returned
+        // relative to the section, since the frame is absolutely
+        // positioned inside it. Zero-rect guard mirrors Hero's
+        // placeCard(): if the slot is briefly mid-reflow the rect
+        // can return 0×0, which would otherwise tween the frame to
+        // a zero-size collapse — fall back to full-bleed so the
+        // visible state stays at the FROM until the next valid
+        // measurement.
+        const computeTarget = () => {
+          const t = slot.getBoundingClientRect();
+          if (t.width === 0 || t.height === 0) {
+            return {
+              left: 0,
+              top: 0,
+              width: window.innerWidth,
+              height: window.innerHeight,
+            };
+          }
+          const s = section.getBoundingClientRect();
+          return {
+            left: t.left - s.left,
+            top: t.top - s.top,
+            width: t.width,
+            height: t.height,
+          };
+        };
+
+        // Read the slot's resolved corner radius from a per-corner
+        // property — `borderRadius` (shorthand) can serialize as an
+        // empty string or a 4-value string depending on the browser
+        // when the value originates from a clamp()-resolved variable,
+        // which then parseFloats to 0 and silently kills the radius
+        // tween. `borderTopLeftRadius` always returns a single
+        // resolved length. Called inline from the tween function-based
+        // vars so each `invalidateOnRefresh` re-evaluation re-reads
+        // the post-resize value — no staleness window from listener
+        // ordering of the `refresh` event.
+        const readRadius = () =>
+          parseFloat(getComputedStyle(slot).borderTopLeftRadius) || 0;
+
+        // ── PINNED SHRINK TIMELINE ──
+        // Frame starts at full-bleed of the pinned section
+        // (inset:0, radius:0, no shadow) and tweens to the placeholder
+        // slot rect. Inner image keeps the subtle parallax that lived
+        // on the previous Dashboard animation. Badge + corner fade in
+        // only after the card has parked, so the overlays never crowd
+        // the full-bleed phase.
+        const masterTL = gsap
+          .timeline()
+          .fromTo(
+            frame,
+            {
+              left: 0,
+              top: 0,
+              width: () => window.innerWidth,
+              height: () => window.innerHeight,
+              "--card-radius": "0px",
+              boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
+              immediateRender: false,
+            },
+            {
+              left: () => computeTarget().left,
+              top: () => computeTarget().top,
+              width: () => computeTarget().width,
+              height: () => computeTarget().height,
+              "--card-radius": () => readRadius() + "px",
+              boxShadow:
+                "0 30px 80px -20px rgba(27, 32, 40, 0.18)",
+              ease: "power2.inOut",
+              duration: 0.85,
+            },
+            0
+          )
+          .fromTo(
+            image,
+            { scale: 1.06, yPercent: -3 },
+            {
+              scale: 1,
+              yPercent: 0,
+              ease: "none",
+              duration: 0.85,
+            },
+            0
+          )
+          .fromTo(
+            [badgeRef.current, cornerRef.current],
+            { autoAlpha: 0, immediateRender: false },
+            {
+              autoAlpha: 1,
+              duration: 0.15,
+              ease: "power2.out",
+              stagger: 0.04,
+            },
+            0.9
+          );
 
         const pin = ScrollTrigger.create({
           trigger: section,
           start: "top top",
-          end: () => "+=" + window.innerHeight * 0.8,
+          // 1.2 × vh: 0.85 shrink + 0.05 gap + 0.15 overlay fade-in
+          // (1.05 timeline units total) + ~0.15 vh hold tail past the
+          // parked state before unpin.
+          end: () => "+=" + window.innerHeight * 1.2,
           pin: true,
           pinType: "fixed",
-          scrub: true,
-          animation: tl,
+          scrub: 0.5,
+          animation: masterTL,
           anticipatePin: 1,
+          invalidateOnRefresh: true,
         });
 
         return () => {
-          // WR-01: ScrollTrigger.kill() defaults revert:false, which
-          // leaves the bound timeline (and its inner fromTo tween that
-          // holds a ref to `image`) alive across remounts. Pass true so
-          // the timeline + tween are killed alongside the trigger —
-          // same teardown-leak class as the Hero pin cleanup.
+          // WR-01: pass true so the bound timeline (and its nested
+          // tweens with refs into frame / image / badge / corner) is
+          // killed alongside the trigger.
           pin.kill(true);
-          gsap.set(image, { clearProps: "all" });
+          gsap.set(frame, { clearProps: "all" });
+          // Scoped clearProps so cleanup doesn't strip next/image's
+          // inline placeholder styles in dev StrictMode double-mount.
+          gsap.set(image, { clearProps: "scale,yPercent,transform" });
+          gsap.set([badgeRef.current, cornerRef.current], {
+            clearProps: "all",
+          });
         };
       });
     },
@@ -58,12 +160,17 @@ export function Dashboard() {
   );
 
   return (
-    <section
-      ref={sectionRef}
-      className={styles.dashboard}
-      aria-label="Tasktrox studio dashboard"
-    >
-      <figure className={styles.frame}>
+    <section ref={sectionRef} className={styles.dashboard}>
+      <div className={styles.slotWrap} aria-hidden="true">
+        <div className={styles.slotContainer}>
+          <div
+            ref={slotRef}
+            className={styles.slot}
+            role="presentation"
+          />
+        </div>
+      </div>
+      <figure ref={frameRef} className={styles.frame}>
         <Image
           ref={imageRef}
           className={styles.image}
@@ -73,14 +180,14 @@ export function Dashboard() {
           height={1500}
           sizes="(min-width: 1512px) 1440px, 100vw"
         />
-        <span className={styles.badge} aria-hidden>
+        <span ref={badgeRef} className={styles.badge} aria-hidden>
           Live
           <br />
           Demo
         </span>
-        <span className={styles.corner}>
+        <figcaption ref={cornerRef} className={styles.corner}>
           Fig. 04 · Studio dashboard · 06 / 24
-        </span>
+        </figcaption>
       </figure>
     </section>
   );
