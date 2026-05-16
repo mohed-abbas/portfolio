@@ -238,7 +238,7 @@ export function Navbar() {
         backgroundColor: 'var(--nav-fg)',
         duration: 0.4,
         ease: 'power2.out',
-        onComplete: () => gsap.set(line1, { clearProps: 'backgroundColor' }),
+        onComplete: () => { gsap.set(line1, { clearProps: 'backgroundColor' }); },
       });
       gsap.to(line2, {
         opacity: 1,
@@ -253,7 +253,7 @@ export function Navbar() {
         backgroundColor: 'var(--nav-fg)',
         duration: 0.4,
         ease: 'power2.out',
-        onComplete: () => gsap.set(line3, { clearProps: 'backgroundColor' }),
+        onComplete: () => { gsap.set(line3, { clearProps: 'backgroundColor' }); },
       });
 
       // 2. Text Animation: CLOSE exits down, MENU enters from up
