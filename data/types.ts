@@ -357,3 +357,147 @@ export interface Features {
   menu: MenuConfig;
   accentColorRotation: AccentColorConfig;
 }
+
+// ============================================
+// Case Study Types
+// ============================================
+export interface CaseStudyHeroContent {
+  title: string;
+  lede: string;
+  image: string;
+  alt: string;
+  pills?: string[];
+  badge?: string;
+  year?: string;
+  backHref?: string;
+}
+
+export interface LedgerEntry {
+  label: string;
+  primary: string;
+  secondary: string;
+}
+
+export interface LedgerContent {
+  entries: LedgerEntry[];
+}
+
+export interface ContextContent {
+  label: string;
+  facts: string[];
+  body: string[];
+}
+
+export interface VisionContent {
+  label: string;
+  titleLine1: string;
+  titleLine2: string;
+  titleAccent: string;
+  body: string[];
+}
+
+export interface PullLine {
+  text: string;
+  accent?: boolean;
+}
+
+export interface PullAttribution {
+  name: string;
+  role: string;
+  location?: string;
+}
+
+export interface PullContent {
+  attribution: PullAttribution;
+  act2: PullLine[];
+  act3: PullLine[];
+}
+
+export interface ProductContent {
+  label: string;
+  titleLine1: string;
+  titleLine2: string;
+  titleAccent: string;
+  body: string[];
+}
+
+export interface DashboardContent {
+  badge?: string;
+  figcaption?: string;
+  image: string;
+  alt: string;
+}
+
+export interface ToggleScreen {
+  num: string;
+  name: string;
+  image: string;
+  color: string;
+  description: string;
+  meta: string;
+  hasGalleryCaption?: boolean;
+}
+
+export interface ToggleContent {
+  label: string;
+  titleLine1: string;
+  titleAccent: string;
+  screens: ToggleScreen[];
+}
+
+export interface OutcomeMetric {
+  value: string;
+  unit?: string;
+  title: string;
+  caption: string;
+}
+
+export interface OutcomesContent {
+  label: string;
+  titleLine1: string;
+  titleLine2: string;
+  titleAccent: string;
+  metrics: OutcomeMetric[];
+}
+
+export interface ColophonCredit {
+  role: string;
+  primary: string;
+  secondary: string;
+}
+
+export interface ColophonAction {
+  label: string;
+  href?: string;
+}
+
+export interface ColophonContent {
+  leftLabel: string;
+  titleLine1: string;
+  titleAccent: string;
+  credits: ColophonCredit[];
+  rightLabel: string;
+  bio: string[];
+  actions: ColophonAction[];
+}
+
+export interface NextCaseContent {
+  slug: string;
+  counter: string;
+}
+
+export interface CaseStudy {
+  hero?: CaseStudyHeroContent;
+  ledger?: LedgerContent;
+  context?: ContextContent;
+  vision?: VisionContent;
+  pull?: PullContent;
+  product?: ProductContent;
+  dashboard?: DashboardContent;
+  toggle?: ToggleContent;
+  outcomes?: OutcomesContent;
+  colophon?: ColophonContent;
+  nextCase?: NextCaseContent;
+}
+
+export type CaseStudies = Record<string, CaseStudy>;
