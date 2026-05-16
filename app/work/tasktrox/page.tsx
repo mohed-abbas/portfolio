@@ -29,7 +29,7 @@ export default function TasktroxCaseStudy() {
       <Vision />
       <Pull />
       <Product />
-      <Dashboard />
+      {cs.dashboard && <Dashboard {...cs.dashboard} />}
       <Toggle />
       <Outcomes />
       <Colophon />

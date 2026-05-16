@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import type { DashboardContent } from "@/data";
 import styles from "./Dashboard.module.css";
 
-export function Dashboard() {
+export const Dashboard = ({ badge, figcaption, image, alt }: DashboardContent) => {
   const sectionRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
@@ -174,21 +175,28 @@ export function Dashboard() {
         <Image
           ref={imageRef}
           className={styles.image}
-          src="/images/work/tasktrox/Dashboard.jpg"
-          alt="Tasktrox studio dashboard"
+          src={image}
+          alt={alt}
           width={2400}
           height={1500}
           sizes="(min-width: 1512px) 1440px, 100vw"
         />
-        <span ref={badgeRef} className={styles.badge} aria-hidden>
-          Live
-          <br />
-          Demo
-        </span>
-        <figcaption ref={cornerRef} className={styles.corner}>
-          Fig. 04 · Studio dashboard · 06 / 24
-        </figcaption>
+        {badge && (
+          <span ref={badgeRef} className={styles.badge} aria-hidden>
+            {badge.split("\n").map((line, i, arr) => (
+              <Fragment key={i}>
+                {line}
+                {i < arr.length - 1 && <br />}
+              </Fragment>
+            ))}
+          </span>
+        )}
+        {figcaption && (
+          <figcaption ref={cornerRef} className={styles.corner}>
+            {figcaption}
+          </figcaption>
+        )}
       </figure>
     </section>
   );
-}
+};
