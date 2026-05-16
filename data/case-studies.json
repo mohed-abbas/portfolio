@@ -11,11 +11,27 @@
     },
     "ledger": {
       "entries": [
-        { "label": "Client", "primary": "Tasktrox", "secondary": "Internal venture" },
+        {
+          "label": "Client",
+          "primary": "Tasktrox",
+          "secondary": "Internal venture"
+        },
         { "label": "Year", "primary": "2024", "secondary": "April → November" },
-        { "label": "Role", "primary": "Lead", "secondary": "Brand · Product · Web" },
-        { "label": "Stack", "primary": "Next · GSAP", "secondary": "Lenis · Tailwind" },
-        { "label": "Reach", "primary": "+38", "secondary": "Studios in private beta" }
+        {
+          "label": "Role",
+          "primary": "Lead",
+          "secondary": "Brand · Product · Web"
+        },
+        {
+          "label": "Stack",
+          "primary": "Next · GSAP",
+          "secondary": "Lenis · Tailwind"
+        },
+        {
+          "label": "Reach",
+          "primary": "+38",
+          "secondary": "Studios in private beta"
+        }
       ]
     },
     "context": {
@@ -147,10 +163,29 @@
       "titleLine2": "in",
       "titleAccent": "numbers.",
       "metrics": [
-        { "value": "38", "unit": "+", "title": "Studios", "caption": "onboarded in private beta" },
-        { "value": "2.4", "unit": "×", "title": "Time saved", "caption": "weekly admin hours" },
-        { "value": "94", "unit": "%", "title": "Retention", "caption": "3-month active studios" },
-        { "value": "01", "title": "Tool replaced", "caption": "Notion · Trello · sheets" }
+        {
+          "value": "38",
+          "unit": "+",
+          "title": "Studios",
+          "caption": "onboarded in private beta"
+        },
+        {
+          "value": "2.4",
+          "unit": "×",
+          "title": "Time saved",
+          "caption": "weekly admin hours"
+        },
+        {
+          "value": "94",
+          "unit": "%",
+          "title": "Retention",
+          "caption": "3-month active studios"
+        },
+        {
+          "value": "01",
+          "title": "Tool replaced",
+          "caption": "Notion · Trello · sheets"
+        }
       ]
     },
     "colophon": {
@@ -158,10 +193,26 @@
       "titleLine1": "Made with a small",
       "titleAccent": "circle.",
       "credits": [
-        { "role": "Design Lead", "primary": "Mohed Abbas", "secondary": "Brand · Product · Motion" },
-        { "role": "Engineering", "primary": "Aria Cole", "secondary": "Sven Ortega" },
-        { "role": "Product", "primary": "Mira Tarek", "secondary": "Strategy & PM" },
-        { "role": "Special thanks", "primary": "Atelier Marchand", "secondary": "Studio Petralla, Cadence Works" }
+        {
+          "role": "Design Lead",
+          "primary": "Mohed Abbas",
+          "secondary": "Brand · Product · Motion"
+        },
+        {
+          "role": "Engineering",
+          "primary": "Aria Cole",
+          "secondary": "Sven Ortega"
+        },
+        {
+          "role": "Product",
+          "primary": "Mira Tarek",
+          "secondary": "Strategy & PM"
+        },
+        {
+          "role": "Special thanks",
+          "primary": "Atelier Marchand",
+          "secondary": "Studio Petralla, Cadence Works"
+        }
       ],
       "rightLabel": "About M.A",
       "bio": [
@@ -177,6 +228,233 @@
     "nextCase": {
       "slug": "permitto",
       "counter": "Next case · 02 / 02"
+    }
+  },
+  "permitto": {
+    "hero": {
+      "title": "PERMITTO",
+      "lede": "Digitising the permit-to-work system for heavy industry moving high-risk job coordination off paper, radio chatter, and signature walks into a single audit-ready surface shared by crews, supervisors, and the control room.",
+      "image": "/images/work/tasktrox/Hero.jpg",
+      "alt": "Placeholder · Tasktrox marketing landing (Permitto art forthcoming)",
+      "pills": ["EHS · Heavy industry", "Brand · Product · Field UX"],
+      "badge": "View\nCase",
+      "backHref": "/"
+    },
+    "ledger": {
+      "entries": [
+        {
+          "label": "Client",
+          "primary": "Permitto",
+          "secondary": "Industrial EHS platform"
+        },
+        { "label": "Year", "primary": "2025", "secondary": "January → August" },
+        {
+          "label": "Role",
+          "primary": "Lead",
+          "secondary": "Brand · Product · Field UX"
+        },
+        {
+          "label": "Stack",
+          "primary": "Next · Capacitor",
+          "secondary": "Postgres · Mapbox"
+        },
+        {
+          "label": "Reach",
+          "primary": "12",
+          "secondary": "Sites across 4 operators"
+        }
+      ]
+    },
+    "context": {
+      "label": "Context",
+      "facts": [
+        "**Discipline**Brand · Product · Field UX",
+        "**Duration**28 weeks",
+        "**Team**1 designer · 3 engineers · 1 HSE specialist · 1 PM"
+      ],
+      "body": [
+        "**Permitto arrived** with a binder. Three centimetres thick, sweat-warped, missing the page that mattered. A paper permit-to-work form for a hot-work job, lost somewhere between the contractor's pickup and the control-room window.",
+        "The brief was concrete: replace the binder. The real problem was harder. Every site we visited had a different paper template, a different signature ritual, a different unwritten rule about when you could finally light the torch. Auditors arrived twice a year and the binders had a quiet habit of going on holiday the week before they did.",
+        "We threw out the SaaS playbook on day one. **No dashboards for the foreman, no AI-as-mascot, no enterprise gradients.** Instead we anchored the system in the language of the field: gloves on, glare bright, radio crackling, one hand free."
+      ]
+    },
+    "vision": {
+      "label": "The Vision",
+      "titleLine1": "A permit that holds",
+      "titleLine2": "the",
+      "titleAccent": "line.",
+      "body": [
+        "Three principles shaped every screen. **One: the field is the source of truth.** Approvals begin on the tablet at the worksite, not in an office two buildings away. Isolations, gas tests and signatures are captured where they happen, by the people who did them.",
+        "**Two: glove-ready, glare-ready.** Type sized for safety glasses, contrast tuned for direct sun, hit targets sized for a leather work glove. **Three: stop the work, not the worker.** If a gas reading lapses or an isolation drifts, the permit pauses and the path back to safe is one tap — not a help-desk ticket."
+      ]
+    },
+    "pull": {
+      "attribution": {
+        "name": "Diego Sarmiento",
+        "role": "HSE Manager",
+        "location": "Cerro Verde plant, Antofagasta"
+      },
+      "act2": [
+        { "text": "“For the first time" },
+        { "text": "the paperwork" },
+        { "text": "follows", "accent": true }
+      ],
+      "act3": [{ "text": "the crew" }, { "text": "into the field.”" }]
+    },
+    "product": {
+      "label": "The Product",
+      "titleLine1": "The permit,",
+      "titleLine2": "shaped like a",
+      "titleAccent": "checklist.",
+      "body": [
+        "The permit treats every high-risk job as a sequenced checklist. **Hazards declared, isolations mapped, signatures gated** the right rail tracks state, never instructions, lifted directly from the way crews actually walk a job.",
+        "Each step aligns to the 8-pt grid but breathes for thumbs in gloves. No two approval states look identical without reason. Motion is 200ms expo.out, fast enough to confirm a tap, slow enough to read in direct sun."
+      ]
+    },
+    "dashboard": {
+      "badge": "Live\nDemo",
+      "figcaption": "Fig. 04 · Control-room overview · 06 / 24",
+      "image": "/images/work/tasktrox/Dashboard.jpg",
+      "alt": "Placeholder · Tasktrox studio dashboard (Permitto art forthcoming)"
+    },
+    "toggle": {
+      "label": "The Build",
+      "titleLine1": "All",
+      "titleAccent": "screens.",
+      "screens": [
+        {
+          "num": "01",
+          "name": "Field tablet permit",
+          "image": "/images/work/tasktrox/Hero.jpg",
+          "color": "#E6F4F8",
+          "description": "Hot-work permit, step-gated approvals",
+          "meta": "2400 × 1500"
+        },
+        {
+          "num": "02",
+          "name": "Control-room overview",
+          "image": "/images/work/tasktrox/Dashboard.jpg",
+          "color": "#FBE4E5",
+          "description": "Active permits, isolation map",
+          "meta": "2400 × 1500"
+        },
+        {
+          "num": "03",
+          "name": "Isolation registry",
+          "image": "/images/work/tasktrox/Product.jpg",
+          "color": "#FFF0DB",
+          "description": "LOTO chain, tag history, energy state",
+          "meta": "2400 × 1500",
+          "hasGalleryCaption": true
+        },
+        {
+          "num": "04",
+          "name": "Crew profile",
+          "image": "/images/work/tasktrox/About.jpg",
+          "color": "#E8EFEA",
+          "description": "Competencies, certifications, expiry",
+          "meta": "2400 × 1500",
+          "hasGalleryCaption": true
+        },
+        {
+          "num": "05",
+          "name": "Audit trail",
+          "image": "/images/work/tasktrox/Price.jpg",
+          "color": "#ECEFFF",
+          "description": "Signature chain, time-stamped, exportable",
+          "meta": "2400 × 1500",
+          "hasGalleryCaption": true
+        },
+        {
+          "num": "06",
+          "name": "Incident replay",
+          "image": "/images/work/tasktrox/testimonials.jpg",
+          "color": "#EFE8D3",
+          "description": "Timeline reconstruction, post-job review",
+          "meta": "2400 × 1500",
+          "hasGalleryCaption": true
+        },
+        {
+          "num": "07",
+          "name": "Site footer",
+          "image": "/images/work/tasktrox/footer.jpg",
+          "color": "#F4E8F0",
+          "description": "Closing marquee, site index",
+          "meta": "2400 × 1500",
+          "hasGalleryCaption": true
+        }
+      ]
+    },
+    "outcomes": {
+      "label": "Outcome",
+      "titleLine1": "What changed,",
+      "titleLine2": "in",
+      "titleAccent": "numbers.",
+      "metrics": [
+        {
+          "value": "12",
+          "title": "Sites",
+          "caption": "live across four operators"
+        },
+        {
+          "value": "47",
+          "unit": "%",
+          "title": "Approval time",
+          "caption": "median, paper → tablet"
+        },
+        {
+          "value": "0",
+          "title": "Lost permits",
+          "caption": "since rollout, 11 months in"
+        },
+        {
+          "value": "100",
+          "unit": "%",
+          "title": "Audit pass",
+          "caption": "first regulatory cycle"
+        }
+      ]
+    },
+    "colophon": {
+      "leftLabel": "Colophon",
+      "titleLine1": "Made with a small",
+      "titleAccent": "circle.",
+      "credits": [
+        {
+          "role": "Design Lead",
+          "primary": "Mohed Abbas",
+          "secondary": "Brand · Product · Field UX"
+        },
+        {
+          "role": "Engineering",
+          "primary": "Noor Rashid",
+          "secondary": "Iván Petrov · Hana Yusof"
+        },
+        {
+          "role": "HSE",
+          "primary": "Diego Sarmiento",
+          "secondary": "Field consultant"
+        },
+        {
+          "role": "Special thanks",
+          "primary": "Cerro Verde",
+          "secondary": "Permitto pilot working group"
+        }
+      ],
+      "rightLabel": "About M.A",
+      "bio": [
+        "Mohed Abbas is an independent designer working at the seam of brand, product and the small motion details that make software feel made. Selected work from 2018 → present.",
+        "Currently taking on one new engagement per quarter, typically a 6 to 14-week sprint covering identity, a flagship surface, and the design system that holds them together."
+      ],
+      "actions": [
+        { "label": "Start a project →" },
+        { "label": "Read approach" },
+        { "label": "All works" }
+      ]
+    },
+    "nextCase": {
+      "slug": "tasktrox",
+      "counter": "Next case · 01 / 02"
     }
   }
 }
