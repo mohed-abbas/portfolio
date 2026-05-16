@@ -4,26 +4,13 @@ import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { animationConfig } from "@/data";
+import type { OutcomesContent } from "@/data";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Outcomes.module.css";
 
 const cs = animationConfig.caseStudy;
 
-type Metric = {
-  value: string;
-  unit?: string;
-  title: string;
-  caption: string;
-};
-
-const METRICS: readonly Metric[] = [
-  { value: "38", unit: "+", title: "Studios", caption: "onboarded in private beta" },
-  { value: "2.4", unit: "×", title: "Time saved", caption: "weekly admin hours" },
-  { value: "94", unit: "%", title: "Retention", caption: "3-month active studios" },
-  { value: "01", title: "Tool replaced", caption: "Notion · Trello · sheets" },
-] as const;
-
-export function Outcomes() {
+export const Outcomes = ({ label, titleLine1, titleLine2, titleAccent, metrics }: OutcomesContent) => {
   const sectionRef = useRef<HTMLElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -60,17 +47,18 @@ export function Outcomes() {
           id="outcomes-eyebrow"
           className={styles.eyebrow}
         >
-          Outcome
+          {label}
         </SectionLabel>
         <h2 ref={titleRef} className={styles.title}>
-          What changed,
+          {titleLine1}
           <br />
-          in <span className={styles.titleAccent}>numbers.</span>
+          {titleLine2}{" "}
+          <span className={styles.titleAccent}>{titleAccent}</span>
         </h2>
       </div>
 
       <div ref={gridRef} className={styles.grid}>
-        {METRICS.map((m) => (
+        {metrics.map((m) => (
           <div key={m.title} className={styles.metric}>
             <span className={styles.value}>
               {m.value}
@@ -85,4 +73,4 @@ export function Outcomes() {
       </div>
     </section>
   );
-}
+};

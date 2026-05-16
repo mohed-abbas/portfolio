@@ -31,7 +31,7 @@ export default function TasktroxCaseStudy() {
       {cs.product && <Product {...cs.product} />}
       {cs.dashboard && <Dashboard {...cs.dashboard} />}
       <Toggle />
-      <Outcomes />
+      {cs.outcomes && <Outcomes {...cs.outcomes} />}
       <Colophon />
       <NextCase />
     </main>
