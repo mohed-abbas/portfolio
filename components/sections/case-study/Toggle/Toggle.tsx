@@ -6,6 +6,7 @@ import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { animationConfig } from "@/data";
+import type { ToggleContent, ToggleScreen } from "@/data";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Toggle.module.css";
 
@@ -13,109 +14,12 @@ const cs = animationConfig.caseStudy;
 
 type Mode = "gallery" | "list";
 
-type Screen = {
-  src: string;
-  alt: string;
-  previewColor: string;
-  galleryCaption?: { label: string };
-  list: { num: string; name: string; desc: string; meta: string };
-};
+export const Toggle = ({ label, titleLine1, titleAccent, screens }: ToggleContent) => {
+  const totalPad = String(screens.length).padStart(2, "0");
+  const galleryEntries: { screen: ToggleScreen; indexInAll: number }[] = screens.flatMap(
+    (s, i) => (s.hasGalleryCaption ? [{ screen: s, indexInAll: i }] : [])
+  );
 
-const SCREENS: readonly Screen[] = [
-  {
-    src: "/images/work/tasktrox/Hero.jpg",
-    alt: "Marketing landing",
-    previewColor: "#E6F4F8",
-    list: {
-      num: "01",
-      name: "Marketing landing",
-      desc: "Hero composition, scroll-led greeting",
-      meta: "2400 × 1500",
-    },
-  },
-  {
-    src: "/images/work/tasktrox/Dashboard.jpg",
-    alt: "Studio dashboard",
-    previewColor: "#FBE4E5",
-    list: {
-      num: "02",
-      name: "Studio dashboard",
-      desc: "Sectional header + living grid",
-      meta: "2400 × 1500",
-    },
-  },
-  {
-    src: "/images/work/tasktrox/Product.jpg",
-    alt: "Product surface",
-    previewColor: "#FFF0DB",
-    galleryCaption: { label: "02 · Product surface" },
-    list: {
-      num: "03",
-      name: "Product surface",
-      desc: "Card system, 8-pt grid",
-      meta: "2400 × 1500",
-    },
-  },
-  {
-    src: "/images/work/tasktrox/About.jpg",
-    alt: "Studio profile",
-    previewColor: "#E8EFEA",
-    galleryCaption: { label: "03 · Studio profile" },
-    list: {
-      num: "04",
-      name: "Studio profile",
-      desc: "Folio-style team page",
-      meta: "2400 × 1500",
-    },
-  },
-  {
-    src: "/images/work/tasktrox/Price.jpg",
-    alt: "Pricing",
-    previewColor: "#ECEFFF",
-    galleryCaption: { label: "04 · Pricing" },
-    list: {
-      num: "05",
-      name: "Pricing",
-      desc: "Three tiers, no asterisks",
-      meta: "2400 × 1500",
-    },
-  },
-  {
-    src: "/images/work/tasktrox/testimonials.jpg",
-    alt: "Testimonials",
-    previewColor: "#EFE8D3",
-    galleryCaption: { label: "05 · Testimonials" },
-    list: {
-      num: "06",
-      name: "Testimonials",
-      desc: "Studio quotes, marginalia",
-      meta: "2400 × 1500",
-    },
-  },
-  {
-    src: "/images/work/tasktrox/footer.jpg",
-    alt: "Footer marquee",
-    previewColor: "#F4E8F0",
-    galleryCaption: { label: "06 · Footer marquee" },
-    list: {
-      num: "07",
-      name: "Footer marquee",
-      desc: "Closing flourish",
-      meta: "2400 × 1500",
-    },
-  },
-] as const;
-
-type GalleryScreen = Screen & { galleryCaption: NonNullable<Screen["galleryCaption"]> };
-type GalleryEntry = { screen: GalleryScreen; indexInAll: number };
-
-const TOTAL_PAD = String(SCREENS.length).padStart(2, "0");
-
-const GALLERY_ENTRIES: readonly GalleryEntry[] = SCREENS.flatMap((s, i) =>
-  s.galleryCaption ? [{ screen: s as GalleryScreen, indexInAll: i }] : []
-);
-
-export function Toggle() {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const modesRef = useRef<HTMLDivElement>(null);
@@ -246,11 +150,11 @@ export function Toggle() {
     >
       <div className={styles.controls}>
         <div>
-          <SectionLabel id="toggle-eyebrow">
-            The Build
-          </SectionLabel>
+          <SectionLabel id="toggle-eyebrow">{label}</SectionLabel>
           <h2 ref={titleRef} className={styles.title}>
-            All <span className={styles.titleAccent}>{SCREENS.length}</span> screens.
+            {titleLine1}{" "}
+            <span className={styles.titleAccent}>{screens.length}</span>{" "}
+            {titleAccent}
           </h2>
         </div>
 
@@ -290,21 +194,21 @@ export function Toggle() {
       <div ref={viewRef}>
         {mode === "gallery" ? (
           <div className={styles.gallery}>
-            {GALLERY_ENTRIES.map(({ screen: s, indexInAll }) => (
-              <figure key={s.src}>
+            {galleryEntries.map(({ screen: s, indexInAll }) => (
+              <figure key={s.image}>
                 <div className={styles.frame}>
                   <Image
-                    src={s.src}
-                    alt={s.alt}
+                    src={s.image}
+                    alt={s.name}
                     width={2400}
                     height={1500}
                     sizes="(min-width: 1024px) 33vw, 100vw"
                   />
                 </div>
                 <figcaption className={styles.caption}>
-                  <span>{s.galleryCaption.label}</span>
+                  <span>{`${s.num} · ${s.name}`}</span>
                   <span>
-                    {String(indexInAll + 1).padStart(2, "0")} / {TOTAL_PAD}
+                    {String(indexInAll + 1).padStart(2, "0")} / {totalPad}
                   </span>
                 </figcaption>
               </figure>
@@ -312,18 +216,18 @@ export function Toggle() {
           </div>
         ) : (
           <div className={styles.list}>
-            {SCREENS.map((s, idx) => (
+            {screens.map((s, idx) => (
               <div
-                key={s.src}
+                key={s.image}
                 className={styles.row}
                 onMouseEnter={handleRowEnter(idx)}
                 onMouseLeave={handleRowLeave}
                 onMouseMove={handleRowMove}
               >
-                <span className={styles.rowN}>{s.list.num}</span>
-                <span className={styles.rowName}>{s.list.name}</span>
-                <span className={styles.rowDesc}>{s.list.desc}</span>
-                <span className={styles.rowMeta}>{s.list.meta}</span>
+                <span className={styles.rowN}>{s.num}</span>
+                <span className={styles.rowName}>{s.name}</span>
+                <span className={styles.rowDesc}>{s.description}</span>
+                <span className={styles.rowMeta}>{s.meta}</span>
               </div>
             ))}
           </div>
@@ -347,17 +251,17 @@ export function Toggle() {
           className={styles.previewSlider}
           style={{ transform: `translateY(-${preview.index * 100}%)` }}
         >
-          {SCREENS.map((s) => (
+          {screens.map((s) => (
             <div
-              key={s.src}
+              key={s.image}
               className={styles.previewCard}
-              style={{ background: s.previewColor }}
+              style={{ background: s.color }}
             >
-              <Image src={s.src} alt="" width={560} height={400} sizes="360px" />
+              <Image src={s.image} alt="" width={560} height={400} sizes="360px" />
             </div>
           ))}
         </div>
       </div>
     </section>
   );
-}
+};
