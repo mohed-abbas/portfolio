@@ -32,7 +32,7 @@ export default function TasktroxCaseStudy() {
       {cs.dashboard && <Dashboard {...cs.dashboard} />}
       <Toggle />
       {cs.outcomes && <Outcomes {...cs.outcomes} />}
-      <Colophon />
+      {cs.colophon && <Colophon {...cs.colophon} />}
       <NextCase />
     </main>
   );

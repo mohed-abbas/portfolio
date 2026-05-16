@@ -4,25 +4,23 @@ import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { animationConfig } from "@/data";
+import type { ColophonContent } from "@/data";
+import { renderInline } from "@/lib/renderInline";
 import { SectionLabel } from "../SectionLabel";
 import styles from "./Colophon.module.css";
 
 const cs = animationConfig.caseStudy;
 
-type Credit = {
-  role: string;
-  primary: string;
-  secondary?: string;
+// Position-encoded action styling preserves the original 3-button visual
+// (idx 0 = pillSolid, idx 1 = pill, idx 2 = pillGhost) without adding a
+// variant field to ColophonAction. Data only carries label + optional href.
+const actionClassFor = (index: number): string => {
+  if (index === 0) return `${styles.pill} ${styles.pillSolid}`;
+  if (index === 2) return `${styles.pill} ${styles.pillGhost}`;
+  return styles.pill;
 };
 
-const CREDITS: readonly Credit[] = [
-  { role: "Design Lead", primary: "Mohed Abbas", secondary: "Brand · Product · Motion" },
-  { role: "Engineering", primary: "Aria Cole", secondary: "Sven Ortega" },
-  { role: "Product", primary: "Mira Tarek", secondary: "Strategy & PM" },
-  { role: "Special thanks", primary: "Atelier Marchand", secondary: "Studio Petralla, Cadence Works" },
-] as const;
-
-export function Colophon() {
+export const Colophon = ({ leftLabel, titleLine1, titleAccent, credits, rightLabel, bio, actions }: ColophonContent) => {
   const sectionRef = useRef<HTMLElement>(null);
   const leftEyebrowRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -66,14 +64,14 @@ export function Colophon() {
             id="colophon-eyebrow"
             className={styles.eyebrow}
           >
-            Colophon
+            {leftLabel}
           </SectionLabel>
           <h2 ref={titleRef} className={styles.title}>
-            Made with a small{" "}
-            <span className={styles.titleAccent}>circle.</span>
+            {titleLine1}{" "}
+            <span className={styles.titleAccent}>{titleAccent}</span>
           </h2>
           <dl ref={creditsRef} className={styles.credits}>
-            {CREDITS.map((c) => (
+            {credits.map((c) => (
               <div key={c.role} className={styles.credit}>
                 <dt>{c.role}</dt>
                 <dd>{c.primary}</dd>
@@ -85,39 +83,28 @@ export function Colophon() {
 
         <div className={styles.bio}>
           <SectionLabel ref={rightEyebrowRef} className={styles.eyebrow}>
-            About M.A
+            {rightLabel}
           </SectionLabel>
           <div ref={bioRef}>
-            <p>
-              Mohed Abbas is an independent designer working at the seam of
-              brand, product and the small motion details that make software
-              feel made. Selected work from 2018 → present.
-            </p>
-            <p>
-              Currently taking on one new engagement per quarter, typically a
-              6 to 14-week sprint covering identity, a flagship surface, and
-              the design system that holds them together.
-            </p>
+            {bio.map((paragraph, i) => (
+              <p key={i}>{renderInline(paragraph)}</p>
+            ))}
           </div>
           <div ref={actionsRef} className={styles.actions}>
-            <button
-              type="button"
-              className={`${styles.pill} ${styles.pillSolid}`}
-            >
-              Start a project →
-            </button>
-            <button type="button" className={styles.pill}>
-              Read approach
-            </button>
-            <button
-              type="button"
-              className={`${styles.pill} ${styles.pillGhost}`}
-            >
-              All works
-            </button>
+            {actions.map((action, i) =>
+              action.href ? (
+                <a key={action.label} href={action.href} className={actionClassFor(i)}>
+                  {action.label}
+                </a>
+              ) : (
+                <button key={action.label} type="button" className={actionClassFor(i)}>
+                  {action.label}
+                </button>
+              )
+            )}
           </div>
         </div>
       </div>
     </section>
   );
-}
+};
