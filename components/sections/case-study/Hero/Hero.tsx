@@ -5,13 +5,8 @@ import Link from "next/link";
 import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import type { CaseStudyHeroContent } from "@/data";
 import styles from "./Hero.module.css";
-
-const TITLE = "TASKTROX";
-
-const LEDE_TEXT =
-  "A complete identity and product redesign for a project-management platform built for architecture studios, moving from spreadsheet sprawl to a single, sensorial workspace.";
-const LEDE_WORDS = LEDE_TEXT.split(" ");
 
 // Portal-entry directions (matches landing hero — letter slides in from
 // outside its own mask along one of four cardinal axes).
@@ -25,7 +20,16 @@ const PORTAL_DIRECTIONS = [
 const randomPortalDirection = () =>
   PORTAL_DIRECTIONS[Math.floor(Math.random() * PORTAL_DIRECTIONS.length)];
 
-export function Hero() {
+export function Hero({
+  title,
+  lede,
+  image,
+  alt,
+  pills,
+  badge,
+  backHref,
+}: CaseStudyHeroContent) {
+  const ledeWords = lede.split(" ");
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +40,7 @@ export function Hero() {
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   // ── ON-LOAD entrance ──
-  // (a) TASKTROX title — each letter sits inside its own overflow:hidden
+  // (a) Title — each letter sits inside its own overflow:hidden
   //     mask; the inner span starts pushed 110% along a random cardinal
   //     direction and slides home with a staggered cascade. Mirrors the
   //     landing-hero portal pattern so the case-study reads as a
@@ -269,10 +273,7 @@ export function Hero() {
         // reading order stays inside the section. The body-fixed card
         // below is marked aria-hidden as the decorative visual.
         placeholder.setAttribute("role", "img");
-        placeholder.setAttribute(
-          "aria-label",
-          "Tasktrox marketing landing"
-        );
+        placeholder.setAttribute("aria-label", alt);
         // The card visual now lives on <body> for ScrollTrigger reasons;
         // hide it from AT so the alt text isn't announced at the end of
         // the document, orphaned from the case-study context.
@@ -567,7 +568,7 @@ export function Hero() {
           inline-block structure so its rendered width matches the
           visible title to the pixel. See .titleSizer in CSS. */}
       <span className={styles.titleSizer} aria-hidden="true">
-        {TITLE.split("").map((letter, i) => (
+        {title.split("").map((letter, i) => (
           <span key={i} className={styles.titleLetter}>
             {letter}
           </span>
@@ -577,24 +578,35 @@ export function Hero() {
         <div ref={metaRef} className={styles.metaRow}>
           <Link
             ref={backRef}
-            href="/"
+            href={backHref ?? "/"}
             className={styles.backLink}
             aria-label="Back to home"
           >
             <span aria-hidden="true">←</span>
           </Link>
-          <span className={styles.pill}>Architecture · SaaS</span>
-          <span className={`${styles.pill} ${styles.pillSolid}`}>
-            Brand · Product · Web
-          </span>
+          {pills?.map((pillText, i) => {
+            const isLast = i === pills.length - 1;
+            return (
+              <span
+                key={pillText}
+                className={
+                  isLast
+                    ? `${styles.pill} ${styles.pillSolid}`
+                    : styles.pill
+                }
+              >
+                {pillText}
+              </span>
+            );
+          })}
         </div>
         <p ref={ledeRef} className={styles.lede}>
-          {LEDE_WORDS.map((word, i) => (
+          {ledeWords.map((word, i) => (
             <Fragment key={i}>
               <span className={styles.ledeWord}>
                 <span className={styles.ledeWordInner}>{word}</span>
               </span>
-              {i < LEDE_WORDS.length - 1 ? " " : null}
+              {i < ledeWords.length - 1 ? " " : null}
             </Fragment>
           ))}
         </p>
@@ -604,23 +616,28 @@ export function Hero() {
         <figure ref={cardRef} className={styles.imageCard}>
           <div ref={innerRef} className={styles.imageInner}>
             <Image
-              src="/images/work/tasktrox/Hero.jpg"
-              alt="Tasktrox marketing landing"
+              src={image}
+              alt={alt}
               width={2400}
               height={1500}
               priority
             />
           </div>
-          <span ref={badgeRef} className={styles.badge} aria-hidden="true">
-            View
-            <br />
-            Case
-          </span>
+          {badge && (
+            <span ref={badgeRef} className={styles.badge} aria-hidden="true">
+              {badge.split("\n").map((line, i, arr) => (
+                <Fragment key={i}>
+                  {line}
+                  {i < arr.length - 1 && <br />}
+                </Fragment>
+              ))}
+            </span>
+          )}
         </figure>
       </div>
 
-      <h1 ref={titleRef} className={styles.titleText} aria-label={TITLE}>
-        {TITLE.split("").map((letter, index) => (
+      <h1 ref={titleRef} className={styles.titleText} aria-label={title}>
+        {title.split("").map((letter, index) => (
           <span
             key={index}
             className={styles.titleLetter}

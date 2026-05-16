@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getCaseStudy } from "@/data";
 import { Hero } from "@/components/sections/case-study/Hero";
 import { Ledger } from "@/components/sections/case-study/Ledger";
 import { Context } from "@/components/sections/case-study/Context";
@@ -18,9 +19,11 @@ export const metadata: Metadata = {
 };
 
 export default function TasktroxCaseStudy() {
+  const cs = getCaseStudy("tasktrox");
+  if (!cs?.hero) return null;
   return (
     <main>
-      <Hero />
+      <Hero {...cs.hero} />
       <Ledger />
       <Context />
       <Vision />
