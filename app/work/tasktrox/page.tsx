@@ -33,7 +33,18 @@ export default function TasktroxCaseStudy() {
       {cs.toggle && <Toggle {...cs.toggle} />}
       {cs.outcomes && <Outcomes {...cs.outcomes} />}
       {cs.colophon && <Colophon {...cs.colophon} />}
-      <NextCase />
+      {cs.nextCase && (() => {
+        const next = getCaseStudy(cs.nextCase.slug);
+        const target = next?.hero
+          ? {
+              title: next.hero.title,
+              image: next.hero.image,
+              alt: next.hero.alt,
+              year: next.hero.year,
+            }
+          : undefined;
+        return <NextCase {...cs.nextCase} target={target} />;
+      })()}
     </main>
   );
 }
