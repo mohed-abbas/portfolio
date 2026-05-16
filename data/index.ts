@@ -8,6 +8,8 @@ import type {
   DesignTokens,
   AnimationConfig,
   Features,
+  CaseStudy,
+  CaseStudies,
 } from './types';
 
 // Import JSON files
@@ -17,6 +19,7 @@ import navigationJson from './navigation.json';
 import designTokensJson from './design-tokens.json';
 import animationConfigJson from './animation-config.json';
 import featuresJson from './features.json';
+import caseStudiesJson from './case-studies.json';
 
 // Export typed data
 export const siteMetadata: SiteMetadata = siteMetadataJson;
@@ -25,6 +28,7 @@ export const navigation: Navigation = navigationJson;
 export const designTokens: DesignTokens = designTokensJson;
 export const animationConfig: AnimationConfig = animationConfigJson;
 export const features: Features = featuresJson;
+export const caseStudies: CaseStudies = caseStudiesJson;
 
 // Re-export types for convenience
 export type {
@@ -47,6 +51,27 @@ export type {
   EasingConfig,
   CustomCursorConfig,
   InteractiveBackgroundConfig,
+  // Case study types
+  CaseStudy,
+  CaseStudies,
+  CaseStudyHeroContent,
+  LedgerContent,
+  LedgerEntry,
+  ContextContent,
+  VisionContent,
+  PullContent,
+  PullLine,
+  PullAttribution,
+  ProductContent,
+  DashboardContent,
+  ToggleContent,
+  ToggleScreen,
+  OutcomesContent,
+  OutcomeMetric,
+  ColophonContent,
+  ColophonCredit,
+  ColophonAction,
+  NextCaseContent,
 } from './types';
 
 // Convenience helpers
@@ -69,3 +94,8 @@ export const getCssEasing = (key: keyof typeof animationConfig.easing.css) =>
 
 export const getFramerMotionEasing = (key: keyof typeof animationConfig.easing.framerMotion) =>
   animationConfig.easing.framerMotion[key];
+
+// Case study helpers
+export const getCaseStudy = (slug: string): CaseStudy | undefined => caseStudies[slug];
+
+export const getCaseStudySlugs = (): string[] => Object.keys(caseStudies);
