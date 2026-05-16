@@ -5,7 +5,9 @@ import { gsap } from '@/lib/gsap';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './Projects.module.css';
-import { content } from '@/data';
+import { content, getCaseStudySlugs } from '@/data';
+
+const caseStudySlugs = new Set(getCaseStudySlugs());
 
 export const Projects = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -146,9 +148,9 @@ export const Projects = () => {
                  className={styles.projectSection}
                  data-color={project.themeColor}
                >
-                   {project.caseStudyHref ? (
+                   {caseStudySlugs.has(project.id) ? (
                        <Link
-                         href={project.caseStudyHref}
+                         href={`/work/${project.id}`}
                          className={styles.projectSticky}
                          aria-label={`Open ${project.title} case study`}
                        >
