@@ -3,8 +3,9 @@
 import { useRef, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { gsap } from '@/lib/gsap';
-import { navigation, content, getAccentColors } from '@/data';
+import { navigation, content } from '@/data';
 import { useLenis } from '@/lib/LenisProvider';
+import { useAccentColor } from '@/lib/AccentColorContext';
 import { useTransition } from '@/components/transitions';
 import styles from './Menu.module.css';
 
@@ -41,6 +42,7 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
   const { scrollTo } = useLenis();
   const pathname = usePathname();
   const { triggerTransition } = useTransition();
+  const { color: currentAccent } = useAccentColor();
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -294,7 +296,7 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
       triggerTransition({
         href: '/' + href,
         origin: { x: e.clientX, y: e.clientY },
-        payload: { accent: getAccentColors()[0] },
+        payload: { accent: currentAccent },
       });
       return;
     }
@@ -306,7 +308,7 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
     setTimeout(() => {
       scrollTo(href, { duration: 1.8 }); // Lenis smooth scroll with custom duration
     }, 800);
-  }, [onClose, scrollTo, pathname, triggerTransition]);
+  }, [onClose, scrollTo, pathname, triggerTransition, currentAccent]);
 
   return (
     <div ref={menuRef} id="main-menu" className={`${styles.menu} ${isOpen ? styles.isOpen : ''}`}>

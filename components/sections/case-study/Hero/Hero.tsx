@@ -5,7 +5,7 @@ import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { TransitionLink } from "@/components/transitions";
-import { getAccentColors } from "@/data";
+import { useAccentColor } from "@/lib/AccentColorContext";
 import type { CaseStudyHeroContent } from "@/data";
 import styles from "./Hero.module.css";
 
@@ -31,6 +31,7 @@ export function Hero({
   backHref,
 }: CaseStudyHeroContent) {
   const ledeWords = lede.split(" ");
+  const { color: currentAccent } = useAccentColor();
   const sectionRef = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -582,7 +583,7 @@ export function Hero({
             href={backHref ?? "/"}
             className={styles.backLink}
             aria-label="Back to home"
-            payload={{ accent: getAccentColors()[0] }}
+            payload={{ accent: currentAccent }}
           >
             <span aria-hidden="true">←</span>
           </TransitionLink>
