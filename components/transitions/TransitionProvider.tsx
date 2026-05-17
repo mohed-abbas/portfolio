@@ -189,26 +189,48 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
   );
 
   // ----- effect-driven phase advancement -----
+  //
+  // Side effects (router.push, ScrollTrigger.refresh, unlockScroll) must NOT
+  // run inside a setState updater. React 18+ may invoke updaters during a
+  // concurrent render, which would trigger a setState on Router *while
+  // TransitionProvider is mid-render* — surfaced as the "Cannot update a
+  // component while rendering a different component" warning.
+  //
+  // Instead we read the latest state from a ref (synced via effect),
+  // branch imperatively, perform side effects, and call setState once with
+  // the resolved next state. onPhaseComplete itself stays stable across
+  // state changes (deps unchanged).
+  //
+  // Sync-via-effect is safe here because onPhaseComplete is only invoked
+  // from a GSAP timeline's onComplete callback, which fires on a rAF tick
+  // after React has committed — the ref is guaranteed to be up to date.
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   const onPhaseComplete = useCallback(
     (phase: TransitionPhase) => {
-      setState((s) => {
-        if (s.kind === 'idle') return s;
-        if (phase === 'exit' && s.kind === 'exit') {
-          // Exit done. Kick off navigation; hold the curtain up via 'pending'.
-          // TransitionStage will flip the effect's `phase` prop to 'enter'
-          // as soon as usePathname() catches up with our target.
-          router.push(s.href);
-          return { ...s, kind: 'pending' };
-        }
-        if (phase === 'enter' && s.kind === 'pending') {
-          // Done. Refresh ScrollTrigger so the new page's pinned sections
-          // compute their offsets against the now-visible document height.
-          ScrollTrigger.refresh();
-          unlockScroll();
-          return { kind: 'idle' };
-        }
-        return s;
-      });
+      const s = stateRef.current;
+      if (s.kind === 'idle') return;
+
+      if (phase === 'exit' && s.kind === 'exit') {
+        // Exit done. Flip to 'pending' first so the effect holds its
+        // exit-end frame, then kick the route change. TransitionStage will
+        // flip the effect's `phase` prop to 'enter' as soon as
+        // usePathname() catches up with our target.
+        setState({ ...s, kind: 'pending' });
+        router.push(s.href);
+        return;
+      }
+
+      if (phase === 'enter' && s.kind === 'pending') {
+        // Refresh ScrollTrigger so the new page's pinned sections compute
+        // their offsets against the now-visible document height.
+        ScrollTrigger.refresh();
+        unlockScroll();
+        setState({ kind: 'idle' });
+      }
     },
     [router, unlockScroll]
   );
