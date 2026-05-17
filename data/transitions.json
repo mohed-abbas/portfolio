@@ -1,5 +1,5 @@
 {
-  "defaultEffect": "iris-bloom",
+  "defaultEffect": "color-curtain-stack",
   "durations": {
     "exit": 0.8,
     "enter": 1.4
