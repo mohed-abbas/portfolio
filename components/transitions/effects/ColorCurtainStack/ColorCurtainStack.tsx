@@ -1,11 +1,35 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { gsap, ANIMATION_CONFIG } from '@/lib/gsap';
-import { transitionsConfig, getAccentColors } from '@/data';
+import { content, transitionsConfig, getAccentColors } from '@/data';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import type { TransitionEffectProps } from '../../types';
 import styles from './ColorCurtainStack.module.css';
+
+/** 4-pointed star — same path the SkillsBar marquee uses. Inlined here
+ *  (instead of importing the Hero/StarIcon component) to avoid pulling
+ *  SkillsBar.module.css styles into the curtain bundle and to let the
+ *  star inherit the curtain's ghost tone via `currentColor`. */
+const STAR_PATH =
+  'M12 0C12 0 14.5 9.5 24 12C14.5 14.5 12 24 12 24C12 24 9.5 14.5 0 12C9.5 9.5 12 0 12 0Z';
+
+function Star({ variant }: { variant: 'outline' | 'filled' }) {
+  return (
+    <svg
+      className={styles.star}
+      viewBox="0 0 24 24"
+      fill={variant === 'filled' ? 'currentColor' : 'none'}
+      stroke={variant === 'outline' ? 'currentColor' : undefined}
+      strokeWidth={variant === 'outline' ? 1.5 : undefined}
+      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d={STAR_PATH} />
+    </svg>
+  );
+}
 
 /**
  * Color Curtain Stack — three full-screen panels slide in from different
@@ -60,13 +84,70 @@ interface CurtainConfig {
   labels: { tl?: string; tr?: string; bl?: string; br?: string };
 }
 
+/** Sample three distinct skills from content.skills.marqueeItems for the
+ *  back-to-home curtain. Pulled at-build-time via useMemo([payload]) so the
+ *  picks are stable across the exit → hold → enter phases of a single
+ *  transition but vary across separate transitions for visual freshness. */
+function sampleSkills(): [string, string, string] {
+  const all = content.skills.marqueeItems;
+  if (all.length < 3) {
+    // Degenerate fallback — pad with whatever is available.
+    return [all[0] ?? 'DESIGN', all[1] ?? 'CODE', all[2] ?? 'CRAFT'];
+  }
+  // Fisher–Yates partial shuffle, take 3.
+  const pool = [...all];
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return [pool[0], pool[1], pool[2]];
+}
+
 function buildCurtains(payload: TransitionEffectProps['payload']): CurtainConfig[] {
-  const title = payload.title?.trim() || 'Studio';
+  const hasTitle = !!payload.title?.trim();
+  const panelColor = resolvePanelColor();
+
+  // ── Back-to-home branch ──
+  // No destination title in the payload (the three back paths pass none).
+  // Show one skill from the home SkillsBar per curtain so the transition
+  // previews the breadth of work the user is landing on.
+  if (!hasTitle) {
+    const [s1, s2, s3] = sampleSkills();
+    return [
+      {
+        background: INK,
+        textWord: s1,
+        textTone: 'ink',
+        labelTone: 'paper',
+        scrollClass: styles.trackScrollLeft,
+        labels: { tl: 'Curtain · 01', br: 'M.A · Studio' },
+      },
+      {
+        background: panelColor,
+        textWord: s2,
+        textTone: 'paper',
+        labelTone: 'ink',
+        scrollClass: styles.trackScrollRight,
+        labels: { tr: 'Skill · 02', bl: 'Mohed Abbas' },
+      },
+      {
+        background: INK,
+        textWord: s3,
+        textTone: 'ink',
+        labelTone: 'paper',
+        scrollClass: styles.trackScrollLeftFast,
+        labels: { tl: 'Skill · 03', br: 'Now' },
+      },
+    ];
+  }
+
+  // ── Forward branch (home → case study, case study → case study) ──
+  // Split the destination title across the three panels.
+  const title = payload.title!.trim();
   const year = payload.year || '';
   const category = payload.category || 'Case Study';
   const titleHead = title.split(/\s+/)[0] || title;
   const titleTail = title.split(/\s+/).slice(1).join(' ') || category;
-  const panelColor = resolvePanelColor();
 
   return [
     {
@@ -239,10 +320,10 @@ export function ColorCurtainStack({
         ].join(' ')}
       >
         {Array.from({ length: REPEAT }).map((_, i) => (
-          <span key={`p-${i}`} className={styles.word}>
-            {word}
-            <span className={styles.wordItalic}>{word}</span>
-          </span>
+          <Fragment key={`p-${i}`}>
+            <span className={styles.word}>{word}</span>
+            <Star variant={i % 2 === 0 ? 'outline' : 'filled'} />
+          </Fragment>
         ))}
       </div>
     );
