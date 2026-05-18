@@ -4,6 +4,7 @@ import { Fragment, useCallback, useMemo, useRef, type MouseEvent } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, ANIMATION_CONFIG } from '@/lib/gsap';
 import { useReducedMotion } from '@/lib/useReducedMotion';
+import { useAccentColor } from '@/lib/AccentColorContext';
 import { TransitionLink } from '@/components/transitions';
 import { content } from '@/data';
 import styles from './Archive.module.css';
@@ -84,6 +85,7 @@ export function Archive() {
   const abortControllerRef = useRef<AbortController | null>(null);
   const timeoutsRef = useRef<number[]>([]);
   const reducedMotion = useReducedMotion();
+  const { color: currentAccent } = useAccentColor();
 
   const { archive } = content;
 
@@ -309,10 +311,12 @@ export function Archive() {
             className={styles.cta}
             aria-label={`${archive.cta} — full index of works`}
             payload={{
-              // Palette-gated by TransitionProvider — passing the default
-              // accent here means the works index lands at the current accent
-              // without an unwanted forced change.
-              accent: '#62b6cb',
+              // Use the LIVE current accent (same pattern as Menu and the
+              // /work2 back-link). Hardcoding a palette value here would
+              // force-write that color into --color-accent-purple at exit
+              // and stick on the destination page until the user clicks
+              // back, which is the bug we were seeing.
+              accent: currentAccent,
               title: 'Works',
               slug: 'works',
               category: 'Index',
