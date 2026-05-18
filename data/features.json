@@ -53,5 +53,10 @@
     "enabled": true,
     "defaultColorIndex": 0,
     "cssVariableName": "--color-accent-purple"
+  },
+  "backToTop": {
+    "enabled": true,
+    "scrollThreshold": 400,
+    "scrollDuration": 1.2
   }
 }

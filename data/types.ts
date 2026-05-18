@@ -382,6 +382,12 @@ export interface AccentColorConfig {
   cssVariableName: string;
 }
 
+export interface BackToTopConfig {
+  enabled: boolean;
+  scrollThreshold: number;
+  scrollDuration: number;
+}
+
 export interface Features {
   customCursor: CustomCursorConfig;
   interactiveBackground: InteractiveBackgroundConfig;
@@ -389,6 +395,7 @@ export interface Features {
   smoothScroll: SmoothScrollConfig;
   menu: MenuConfig;
   accentColorRotation: AccentColorConfig;
+  backToTop: BackToTopConfig;
 }
 
 // ============================================
