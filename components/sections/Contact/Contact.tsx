@@ -1,16 +1,40 @@
 'use client';
 
-import { useRef, useState, useEffect, useMemo, FormEvent, ReactNode } from 'react';
+import { useRef, useState, useEffect, FormEvent, ReactNode } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { content } from '@/data';
 import styles from './Contact.module.css';
 
-// One <span> per character so the typewriter reveal can tween each glyph
-// independently. Text passed here MUST be static across re-renders — keys
-// are positional, so dynamic text would smear GSAP's stored opacity values
-// across the wrong glyphs.
+const c = content.contact;
+
+// Scrub-timeline pacing (in timeline units; each row consumes 1 unit).
+// Inside a row:
+//   chars   : 0.00 → 0.65        typewriter stagger
+//   inputs  : 0.25 → 0.65        input wrap fade-up
+//   borders : 0.30 → 0.80        underline width 0% → 100%
+//   chips   : 0.55 → 0.95        chip group fade-up
+//   gap     : 0.95 → 1.00        small breather before next row
+const TIMING = {
+  CHAR_DURATION: 0.65,
+  CHAR_STAGGER: 0.018,
+  INPUT_DURATION: 0.4,
+  INPUT_STAGGER: 0.08,
+  INPUT_OFFSET: 0.25,
+  BORDER_DURATION: 0.5,
+  BORDER_STAGGER: 0.1,
+  BORDER_OFFSET: 0.3,
+  CHIP_DURATION: 0.4,
+  CHIP_STAGGER: 0.08,
+  CHIP_OFFSET: 0.55,
+  SUBMIT_DURATION: 0.5,
+} as const;
+
+// Render a static string as one <span> per character so each glyph can be
+// tweened independently. Whitespace is rendered as a non-breaking space so it
+// doesn't collapse when each char is `display: inline-block` and the parent
+// switches to `white-space: normal` at mobile breakpoints.
 function splitChars(text: string): ReactNode {
   return Array.from(text).map((ch, i) => (
     <span key={i} className={styles.char}>
@@ -19,9 +43,20 @@ function splitChars(text: string): ReactNode {
   ));
 }
 
+// Content is a static JSON import — splits never change, so build them once
+// at module scope instead of memoizing per render.
+const SPLITS = {
+  row1Lead: splitChars(`${c.row1.greeting} ${c.row1.recipient}${c.row1.afterName} `),
+  row1Between: splitChars(` ${c.row1.between} `),
+  row2Lead: splitChars(`${c.row2.lead} `),
+  row3Lead: splitChars(`${c.row3.lead} `),
+  row4Lead: splitChars(`${c.row4.lead} `),
+};
+
+const SUBMIT_CHARS = Array.from(c.submit);
+
 export function Contact() {
-  const c = content.contact;
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const reducedMotion = useReducedMotion();
@@ -35,30 +70,41 @@ export function Contact() {
   const [emailError, setEmailError] = useState(false);
 
   useGSAP(() => {
-    if (!wrapperRef.current || !panelRef.current || !formRef.current) return;
+    if (!sectionRef.current || !panelRef.current || !formRef.current) return;
 
     const form = formRef.current;
+    const panel = panelRef.current;
 
-    // Reduced motion: just show everything static, skip pin.
+    const chars = form.querySelectorAll<HTMLElement>(`.${styles.char}`);
+    const revealItems = form.querySelectorAll<HTMLElement>(`.${styles.revealItem}`);
+    const inputBorders = form.querySelectorAll<HTMLElement>(`.${styles.inputBorder}`);
+    const submit = form.querySelector<HTMLElement>(`.${styles.submit}`);
+
+    // SSR ships visible content; JS hides immediately on mount before the
+    // first animation frame, then animates in. This avoids a flash of
+    // invisible content for non-reduced-motion users between hydration and
+    // the first GSAP tick.
+    gsap.set(chars, { opacity: 0 });
+    gsap.set(revealItems, { opacity: 0, y: 14 });
+    gsap.set(inputBorders, { width: 0 });
+    if (submit) gsap.set(submit, { opacity: 0, y: 20 });
+
     if (reducedMotion) {
-      gsap.set(form.querySelectorAll(`.${styles.char}`), { opacity: 1 });
-      gsap.set(form.querySelectorAll(`.${styles.revealItem}`), { opacity: 1, y: 0 });
-      gsap.set(form.querySelectorAll(`.${styles.inputBorder}`), { width: '100%' });
-      gsap.set(form.querySelectorAll(`.${styles.submit}`), { opacity: 1, y: 0 });
+      // No scroll animation — just reveal everything.
+      gsap.set(chars, { opacity: 1 });
+      gsap.set(revealItems, { opacity: 1, y: 0 });
+      gsap.set(inputBorders, { width: '100%' });
+      if (submit) gsap.set(submit, { opacity: 1, y: 0 });
       return;
     }
 
-    const wrapper = wrapperRef.current;
-    const panel = panelRef.current;
-
-    // Scrub-driven master timeline. The panel pins at the top of the
-    // viewport and the typewriter + input borders + chips + submit reveal
-    // across +=400% of scroll distance. (Pinning at 'top top' rather than
-    // 'top bottom' so the panel scrolls into view normally first; pinning
-    // earlier would freeze it at the viewport bottom.)
+    // Scrub-driven master timeline. Trigger and pin target are the same
+    // element (the panel) so the trigger origin and pin spacer agree on
+    // every ScrollTrigger.refresh() — otherwise font-load or Lenis resize
+    // can drift the pin start.
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: wrapper,
+        trigger: panel,
         start: 'top top',
         end: '+=400%',
         pin: panel,
@@ -70,221 +116,218 @@ export function Contact() {
       defaults: { ease: 'none' },
     });
 
-    // ── Per-row reveal ────────────────────────────────────────────────────
-    // Each row occupies 1 timeline unit. Inside that unit:
-    //   chars   : t = [rowIdx + 0.00 → rowIdx + 0.65]   typewriter stagger
-    //   borders : t = [rowIdx + 0.30 → rowIdx + 0.80]   input underline draws
-    //   chips   : t = [rowIdx + 0.55 → rowIdx + 0.95]   chip group fades in
-    //   gap     : t = [rowIdx + 0.95 → rowIdx + 1.00]   small breather
-    // Borders draw IN SYNC with the surrounding text reveal — the underline
-    // catches up to the letters that have just been typed, mirroring the
-    // inspiration's overlap.
     const rows = form.querySelectorAll<HTMLElement>(`.${styles.row}`);
     rows.forEach((row, rowIdx) => {
       const start = rowIdx;
-      const chars = row.querySelectorAll<HTMLElement>(`.${styles.char}`);
-      const borders = row.querySelectorAll<HTMLElement>(`.${styles.inputBorder}`);
-      const inputs = row.querySelectorAll<HTMLElement>(`.${styles.inputWrap}`);
-      const chips = row.querySelectorAll<HTMLElement>(`.${styles.chip}`);
+      const rowChars = row.querySelectorAll<HTMLElement>(`.${styles.char}`);
+      const rowBorders = row.querySelectorAll<HTMLElement>(`.${styles.inputBorder}`);
+      const rowInputs = row.querySelectorAll<HTMLElement>(`.${styles.inputWrap}`);
+      const rowChips = row.querySelectorAll<HTMLElement>(`.${styles.chip}`);
 
-      if (chars.length) {
+      if (rowChars.length) {
         tl.to(
-          chars,
-          { opacity: 1, duration: 0.65, stagger: { each: 0.018, from: 'start' } },
+          rowChars,
+          {
+            opacity: 1,
+            duration: TIMING.CHAR_DURATION,
+            stagger: { each: TIMING.CHAR_STAGGER, from: 'start' },
+          },
           start
         );
       }
 
-      if (inputs.length) {
-        tl.to(inputs, { opacity: 1, y: 0, duration: 0.4, stagger: 0.08 }, start + 0.25);
+      if (rowInputs.length) {
+        tl.to(
+          rowInputs,
+          { opacity: 1, y: 0, duration: TIMING.INPUT_DURATION, stagger: TIMING.INPUT_STAGGER },
+          start + TIMING.INPUT_OFFSET
+        );
       }
 
-      if (borders.length) {
-        tl.to(borders, { width: '100%', duration: 0.5, stagger: 0.1 }, start + 0.3);
+      if (rowBorders.length) {
+        tl.to(
+          rowBorders,
+          { width: '100%', duration: TIMING.BORDER_DURATION, stagger: TIMING.BORDER_STAGGER },
+          start + TIMING.BORDER_OFFSET
+        );
       }
 
-      if (chips.length) {
-        tl.to(chips, { opacity: 1, y: 0, duration: 0.4, stagger: 0.08 }, start + 0.55);
+      if (rowChips.length) {
+        tl.to(
+          rowChips,
+          { opacity: 1, y: 0, duration: TIMING.CHIP_DURATION, stagger: TIMING.CHIP_STAGGER },
+          start + TIMING.CHIP_OFFSET
+        );
       }
     });
 
-    // Submit at the end.
-    const submit = form.querySelector<HTMLElement>(`.${styles.submit}`);
     if (submit) {
-      tl.to(submit, { opacity: 1, y: 0, duration: 0.5 }, rows.length);
+      tl.to(submit, { opacity: 1, y: 0, duration: TIMING.SUBMIT_DURATION }, rows.length);
     }
 
-    return () => {
-      // kill(true) reverts the pin spacer; without it, Fast Refresh leaves
-      // orphan spacer nodes that throw off subsequent layout.
-      tl.scrollTrigger?.kill(true);
-      tl.kill();
-    };
-  }, { scope: wrapperRef, dependencies: [reducedMotion] });
+    // No explicit cleanup — useGSAP's scope handles timeline.kill() (which
+    // internally kills attached ScrollTriggers) and reverts pin layout on
+    // unmount/Fast Refresh.
+  }, { scope: sectionRef, dependencies: [reducedMotion] });
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    const emailOk = /^\S+@\S+\.\S+$/.test(email.trim());
+    const trimmedEmail = email.trim();
+    const emailOk = /^\S+@\S+\.\S+$/.test(trimmedEmail);
     if (!emailOk) {
       setEmailError(true);
       return;
     }
     setEmailError(false);
 
-    const subject = encodeURIComponent(`${topic ?? 'New message'} — ${name || 'A friend'}`);
+    const trimmedName = name.trim();
+    const trimmedCountry = country.trim();
+    const trimmedMessage = message.trim();
+
+    const subject = encodeURIComponent(`${topic ?? 'New message'} — ${trimmedName || 'A friend'}`);
     // CRLF is required by RFC 6068; Outlook collapses LF-only into one paragraph.
     const body = encodeURIComponent(
       [
         `Hi ${c.row1.recipient},`,
         '',
-        `I'm ${name || '—'}, reaching out from ${country || '—'}.`,
+        `I'm ${trimmedName || '—'}, reaching out from ${trimmedCountry || '—'}.`,
         `Topic: ${topic ?? '—'}.`,
-        `Best channel: ${channel ?? '—'} (${email || '—'}).`,
+        `Best channel: ${channel ?? '—'} (${trimmedEmail || '—'}).`,
         '',
-        message || '—',
+        trimmedMessage || '—',
       ].join('\r\n')
     );
     window.location.href = `mailto:${c.fallback.email}?subject=${subject}&body=${body}`;
   }
 
-  // Memoize static splits — content is static, so this runs once.
-  const splits = useMemo(() => ({
-    row1Lead: splitChars(`${c.row1.greeting} ${c.row1.recipient}${c.row1.afterName} `),
-    row1Between: splitChars(` ${c.row1.between} `),
-    row2Lead: splitChars(`${c.row2.lead} `),
-    row3Lead: splitChars(`${c.row3.lead} `),
-    row4Lead: splitChars(`${c.row4.lead} `),
-  }), [
-    c.row1.greeting,
-    c.row1.recipient,
-    c.row1.afterName,
-    c.row1.between,
-    c.row2.lead,
-    c.row3.lead,
-    c.row4.lead,
-  ]);
-
   return (
-    <div ref={wrapperRef} className={styles.wrapper}>
-      <section className={styles.section} id="contact">
-        <h2 className={styles.srOnly}>Contact</h2>
+    <section
+      ref={sectionRef}
+      className={styles.section}
+      id="contact"
+      aria-labelledby="contact-heading"
+    >
+      <h2 id="contact-heading" className={styles.srOnly}>Contact</h2>
 
-        <div ref={panelRef} className={styles.panel}>
-          <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate>
-            {/* Row 1 — greeting + name + country */}
-            <div className={styles.row}>
-              <span className={styles.text}>{splits.row1Lead}</span>
-              <RevealInput
-                value={name}
-                onChange={setName}
-                placeholder={c.row1.nameLabel}
-                ariaLabel={c.row1.nameLabel}
-                name="name"
-              />
-              <span className={styles.text}>{splits.row1Between}</span>
-              <RevealInput
-                value={country}
-                onChange={setCountry}
-                placeholder={c.row1.countryLabel}
-                ariaLabel={c.row1.countryLabel}
-                name="country"
-              />
+      <div ref={panelRef} className={styles.panel}>
+        <form ref={formRef} className={styles.form} onSubmit={handleSubmit} noValidate>
+          {/* Row 1 — greeting + name + country */}
+          <div className={styles.row}>
+            <span className={styles.text}>{SPLITS.row1Lead}</span>
+            <RevealInput
+              value={name}
+              onChange={setName}
+              placeholder={c.row1.nameLabel}
+              name="name"
+            />
+            <span className={styles.text}>{SPLITS.row1Between}</span>
+            <RevealInput
+              value={country}
+              onChange={setCountry}
+              placeholder={c.row1.countryLabel}
+              name="country"
+            />
+          </div>
+
+          {/* Row 2 — topic chips */}
+          <div className={styles.row}>
+            <span className={styles.text}>{SPLITS.row2Lead}</span>
+            <div className={styles.chipGroup} role="group" aria-label="Topic">
+              {c.row2.options.map((opt) => (
+                <Chip
+                  key={opt}
+                  label={opt}
+                  selected={topic === opt}
+                  onSelect={() => setTopic(topic === opt ? null : opt)}
+                />
+              ))}
             </div>
+          </div>
 
-            {/* Row 2 — topic chips */}
-            <div className={styles.row}>
-              <span className={styles.text}>{splits.row2Lead}</span>
-              <div className={styles.chipGroup} role="group" aria-label="Topic">
-                {c.row2.options.map((opt) => (
-                  <Chip
-                    key={opt}
-                    label={opt}
-                    selected={topic === opt}
-                    onSelect={() => setTopic(topic === opt ? null : opt)}
-                  />
+          {/* Row 3 — email + channel chips */}
+          <div className={styles.row}>
+            <span className={styles.text}>{SPLITS.row3Lead}</span>
+            <RevealInput
+              value={email}
+              onChange={(v) => { setEmail(v); if (emailError) setEmailError(false); }}
+              placeholder={c.row3.emailLabel}
+              name="email"
+              type="email"
+              error={emailError}
+            />
+            <div className={styles.chipGroup} role="group" aria-label="Channel">
+              {c.row3.options.map((opt) => (
+                <Chip
+                  key={opt}
+                  label={opt}
+                  selected={channel === opt}
+                  onSelect={() => setChannel(channel === opt ? null : opt)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Row 4 — message */}
+          <div className={styles.row}>
+            <span className={styles.text}>{SPLITS.row4Lead}</span>
+            <RevealInput
+              value={message}
+              onChange={setMessage}
+              placeholder={c.row4.label}
+              name="message"
+              grow
+            />
+          </div>
+
+          <button type="submit" className={styles.submit}>
+            <span className={styles.submitTextWrap}>
+              <span className={styles.submitTextBase}>
+                {SUBMIT_CHARS.map((char, i) => (
+                  <span
+                    key={i}
+                    className={styles.submitChar}
+                    style={{ transitionDelay: `${i * 0.025}s` }}
+                  >
+                    {char === ' ' ? ' ' : char}
+                  </span>
                 ))}
-              </div>
-            </div>
-
-            {/* Row 3 — email + channel chips */}
-            <div className={styles.row}>
-              <span className={styles.text}>{splits.row3Lead}</span>
-              <RevealInput
-                value={email}
-                onChange={(v) => { setEmail(v); if (emailError) setEmailError(false); }}
-                placeholder={c.row3.emailLabel}
-                ariaLabel={c.row3.emailLabel}
-                name="email"
-                type="email"
-                error={emailError}
-              />
-              <div className={styles.chipGroup} role="group" aria-label="Channel">
-                {c.row3.options.map((opt) => (
-                  <Chip
-                    key={opt}
-                    label={opt}
-                    selected={channel === opt}
-                    onSelect={() => setChannel(channel === opt ? null : opt)}
-                  />
+              </span>
+              <span className={styles.submitTextClone} aria-hidden="true">
+                {SUBMIT_CHARS.map((char, i) => (
+                  <span
+                    key={i}
+                    className={styles.submitChar}
+                    style={{ transitionDelay: `${i * 0.025}s` }}
+                  >
+                    {char === ' ' ? ' ' : char}
+                  </span>
                 ))}
-              </div>
-            </div>
-
-            {/* Row 4 — message */}
-            <div className={styles.row}>
-              <span className={styles.text}>{splits.row4Lead}</span>
-              <RevealInput
-                value={message}
-                onChange={setMessage}
-                placeholder={c.row4.label}
-                ariaLabel={c.row4.label}
-                name="message"
-                grow
-              />
-            </div>
-
-            <button type="submit" className={styles.submit}>
-              <span className={styles.submitTextWrap}>
-                <span className={styles.submitTextBase}>
-                  {Array.from(c.submit).map((char, i) => (
-                    <span
-                      key={i}
-                      className={styles.submitChar}
-                      style={{ transitionDelay: `${i * 0.025}s` }}
-                    >
-                      {char === ' ' ? ' ' : char}
-                    </span>
-                  ))}
-                </span>
-                <span className={styles.submitTextClone} aria-hidden="true">
-                  {Array.from(c.submit).map((char, i) => (
-                    <span
-                      key={i}
-                      className={styles.submitChar}
-                      style={{ transitionDelay: `${i * 0.025}s` }}
-                    >
-                      {char === ' ' ? ' ' : char}
-                    </span>
-                  ))}
-                </span>
               </span>
-              <span className={styles.submitArrow} aria-hidden="true">
-                {/* Diagonal ↗ with two perpendicular caps — geometry matches
-                    the inspiration's arrow, color uses our accent token. */}
-                <svg viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M1.25 17.75L17.75 1.25M17.75 1.25L17.75 17.75M17.75 1.25L1.25 1.25"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                  />
-                </svg>
-              </span>
-            </button>
-          </form>
-        </div>
-      </section>
-    </div>
+            </span>
+            <span className={styles.submitArrow} aria-hidden="true">
+              {/* Diagonal ↗ with two perpendicular caps — geometry matches
+                  the inspiration's arrow, color uses our accent token. */}
+              <svg viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M1.25 17.75L17.75 1.25M17.75 1.25L17.75 17.75M17.75 1.25L1.25 1.25"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                />
+              </svg>
+            </span>
+          </button>
+
+          {/* Fallback for users without a configured mail handler. */}
+          <p className={styles.fallback}>
+            {c.fallback.label}{' '}
+            <a className={styles.fallbackLink} href={`mailto:${c.fallback.email}`}>
+              {c.fallback.email}
+            </a>
+          </p>
+        </form>
+      </div>
+    </section>
   );
 }
 
@@ -292,7 +335,8 @@ interface RevealInputProps {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
-  ariaLabel: string;
+  /** Optional override; defaults to `placeholder`. */
+  ariaLabel?: string;
   name: string;
   type?: string;
   grow?: boolean;
@@ -302,7 +346,16 @@ interface RevealInputProps {
 const INPUT_WIDTH_BUFFER_MIN = 12;
 const INPUT_WIDTH_BUFFER_RATIO = 0.3;
 
-function RevealInput({ value, onChange, placeholder, ariaLabel, name, type = 'text', grow = false, error = false }: RevealInputProps) {
+function RevealInput({
+  value,
+  onChange,
+  placeholder,
+  ariaLabel = placeholder,
+  name,
+  type = 'text',
+  grow = false,
+  error = false,
+}: RevealInputProps) {
   const mirrorRef = useRef<HTMLSpanElement>(null);
   const [width, setWidth] = useState(0);
 
@@ -326,7 +379,9 @@ function RevealInput({ value, onChange, placeholder, ariaLabel, name, type = 'te
     // Re-measure after the custom font loads — initial paint uses fallback.
     if (typeof document !== 'undefined' && document.fonts?.ready) {
       let cancelled = false;
-      document.fonts.ready.then(() => { if (!cancelled) measure(); });
+      document.fonts.ready
+        .then(() => { if (!cancelled) measure(); })
+        .catch(() => { /* fonts.ready shouldn't reject; ignore quirks. */ });
       return () => { cancelled = true; };
     }
   }, [value, placeholder, grow]);
@@ -350,7 +405,7 @@ function RevealInput({ value, onChange, placeholder, ariaLabel, name, type = 'te
         autoComplete="off"
         style={!grow && width ? { width: `${width}px` } : undefined}
       />
-      {/* Animated underline — width drives 0%→100% during scroll reveal. */}
+      {/* Animated underline — width drives 0% → 100% during scroll reveal. */}
       <span className={styles.inputBorder} aria-hidden="true" />
     </span>
   );
@@ -364,16 +419,16 @@ interface ChipProps {
 
 function Chip({ label, selected, onSelect }: ChipProps) {
   // Two stacked layers (base + clone), each split into per-character spans.
-  // Base sits resting; clone is offset translateY(100%). On hover the base
-  // slides up off-canvas and the clone slides into place, with a per-char
-  // transition-delay creating a left-to-right cascade. Same pattern as the
-  // submit button below and the Archive CTA.
+  // Base rests; clone sits at translateY(100%). On hover the base slides up
+  // off-canvas and the clone slides into place, with a per-char transition
+  // delay creating a left-to-right cascade. The clone is aria-hidden so it
+  // doesn't duplicate the accessible name; visible base spans concatenate
+  // into the button name automatically.
   const chars = Array.from(label);
   return (
     <button
       type="button"
       aria-pressed={selected}
-      aria-label={label}
       onClick={onSelect}
       className={`${styles.chip} ${styles.revealItem} ${selected ? styles.chipSelected : ''}`}
     >

@@ -16,11 +16,6 @@
      • Submit appears in the final beat
    ============================================ */
 
-.wrapper {
-    position: relative;
-    width: 100%;
-}
-
 .section {
     position: relative;
     width: 100%;
@@ -98,19 +93,21 @@
 
 /* ============================================
    Per-character spans
+
+   No initial `opacity: 0` here — that gets applied by `gsap.set()` on mount
+   instead, so SSR-rendered HTML ships visible content (avoids FOUC of
+   invisible text between hydration and the first animation frame).
    ============================================ */
 .char {
     display: inline-block;
-    opacity: 0;
     will-change: opacity;
 }
 
 /* ============================================
-   Reveal items (inputs/chips) — start hidden, animated in by GSAP
+   Reveal items (inputs/chips) — initial hidden state applied by GSAP.
+   See note on `.char` above.
    ============================================ */
 .revealItem {
-    opacity: 0;
-    transform: translateY(14px);
     will-change: opacity, transform;
 }
 
@@ -120,7 +117,6 @@
 .inputWrap {
     position: relative;
     display: inline-flex;
-    align-items: baseline;
     min-width: 140px;
     max-width: 100%;
     padding-bottom: 4px;
@@ -310,9 +306,33 @@
     justify-content: center;
     gap: clamp(14px, 1.6vw, 28px);
 
-    opacity: 0;
-    transform: translateY(20px);
+    /* Initial hidden state applied by GSAP on mount (avoids SSR FOUC). */
     will-change: opacity, transform;
+}
+
+/* ============================================
+   Fallback — secondary mailto link for users without a configured mail
+   handler (window.location.href = mailto: fails silently on some devices).
+   ============================================ */
+.fallback {
+    margin: clamp(20px, 3vw, 36px) 0 0;
+    text-align: center;
+    font-family: var(--font-primary);
+    font-size: clamp(14px, 1.3vw, 18px);
+    color: color-mix(in oklab, var(--color-primary-text) 70%, transparent);
+}
+
+.fallbackLink {
+    color: var(--color-primary-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color var(--duration-normal) var(--ease-out-quart);
+}
+
+.fallbackLink:hover,
+.fallbackLink:focus-visible {
+    color: var(--color-accent-purple);
 }
 
 .submitTextWrap {
