@@ -89,6 +89,9 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
         if (!(child instanceof HTMLElement)) return;
         if (child === menuAncestor) return;
         if (child.hasAttribute('inert')) return;
+        // Keep the menu trigger's host (e.g. the navbar) interactive — its
+        // toggle button doubles as the close affordance while the menu is open.
+        if (child.querySelector('[aria-controls="main-menu"]')) return;
         child.setAttribute('inert', '');
         inertedSiblings.push(child);
       });
