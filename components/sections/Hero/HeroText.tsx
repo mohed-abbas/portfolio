@@ -4,6 +4,7 @@ import { useRef, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import { content, getHeroLetters } from '@/data';
+import { cursorBus } from '@/lib/cursorBus';
 import styles from './HeroText.module.css';
 
 // ============================================
@@ -123,6 +124,9 @@ export function HeroText() {
   // PERF: Track spotlight ticker state - only run when hovering tagline
   const spotlightTickerRef = useRef<(() => void) | null>(null);
   const spotlightTickerActiveRef = useRef(false);
+  // Refresh cached rect during hover — registered on enter, removed on leave
+  // so we don't pay per-scroll cost when the spotlight isn't active.
+  const updateRectRef = useRef<(() => void) | null>(null);
 
   useGSAP(() => {
     const container = taglineContainerRef.current;
@@ -132,19 +136,20 @@ export function HeroText() {
       cachedRect.current = container.getBoundingClientRect();
     };
     updateRect();
+    updateRectRef.current = updateRect;
 
+    // Resize is always relevant; scroll listener is attached on hover only
+    // (see handleTaglineMouseEnter / Leave).
     window.addEventListener('resize', updateRect);
-    window.addEventListener('scroll', updateRect, { passive: true });
 
     const updateSpotlight = () => {
       if (!cachedRect.current) return;
 
-      // Read global lerped cursor position from CSS variables
-      const globalX = parseFloat(document.documentElement.style.getPropertyValue('--cursor-x')) || 0;
-      const globalY = parseFloat(document.documentElement.style.getPropertyValue('--cursor-y')) || 0;
-
-      const x = globalX - cachedRect.current.left;
-      const y = globalY - cachedRect.current.top;
+      // Read shared cursor coordinate directly from the bus instead of
+      // parseFloat-ing the inline style of <html>. Faster, and decouples this
+      // consumer from CustomCursor's CSS-var write gate.
+      const x = cursorBus.x - cachedRect.current.left;
+      const y = cursorBus.y - cachedRect.current.top;
 
       // Update CSS variables on the CONTAINER so all layers share them
       container.style.setProperty('--spotlight-x', `${x}px`);
@@ -165,7 +170,10 @@ export function HeroText() {
         taglineContainerRef.current.classList.remove(styles.spotlightActive);
       }
       window.removeEventListener('resize', updateRect);
+      // If we unmount mid-hover, the scroll listener registered by
+      // handleTaglineMouseEnter would otherwise leak.
       window.removeEventListener('scroll', updateRect);
+      updateRectRef.current = null;
     };
   }, []); // Run once on mount
 
@@ -177,6 +185,12 @@ export function HeroText() {
     container.style.setProperty('--spotlight-size', `${SPOTLIGHT_SIZE}px`);
     // PERF: promote spotlight layers only while hovering
     container.classList.add(styles.spotlightActive);
+
+    // Refresh rect on scroll only while the spotlight is being tracked.
+    if (updateRectRef.current) {
+      updateRectRef.current();
+      window.addEventListener('scroll', updateRectRef.current, { passive: true });
+    }
 
     // PERF: Start spotlight ticker only on hover
     if (!spotlightTickerActiveRef.current && spotlightTickerRef.current) {
@@ -202,6 +216,10 @@ export function HeroText() {
     if (spotlightTickerActiveRef.current && spotlightTickerRef.current) {
       gsap.ticker.remove(spotlightTickerRef.current);
       spotlightTickerActiveRef.current = false;
+    }
+
+    if (updateRectRef.current) {
+      window.removeEventListener('scroll', updateRectRef.current);
     }
 
     // Notify cursor to reset

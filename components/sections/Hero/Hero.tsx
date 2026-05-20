@@ -22,8 +22,10 @@ export function Hero() {
     const onComplete = () => setWelcomeDone(true);
     window.addEventListener('welcome-complete', onComplete, { once: true });
 
-    // Fallback: if welcome already completed (e.g., component remounted)
-    const wrapper = document.querySelector('[class*="welcomeWrapper"]');
+    // Fallback: if welcome already completed (e.g., component remounted).
+    // CSS-module substring selectors break under Next 16 + Turbopack hashed
+    // class names, so we key on a stable data attribute instead.
+    const wrapper = document.querySelector('[data-welcome-wrapper]');
     if (wrapper && (wrapper as HTMLElement).style.display === 'none') {
       queueMicrotask(() => setWelcomeDone(true));
     }
@@ -85,6 +87,20 @@ export function Hero() {
     };
     seedFlyingLetterTypography();
 
+    // PERF: cache the scale ratios used by Phase 5 so each ScrollTrigger
+    // invalidation reads fontSize twice (in onRefresh below), not four times
+    // per ratio per refresh inside the functional getters. Reading fontSize
+    // forces a layout flush; caching collapses 8N reads to 2N per refresh.
+    let scaleRatioM = 1;
+    let scaleRatioA = 1;
+    const recomputeScaleRatios = () => {
+      scaleRatioM = parseFloat(getComputedStyle(navBrandM).fontSize)
+        / parseFloat(getComputedStyle(targetM).fontSize);
+      scaleRatioA = parseFloat(getComputedStyle(navBrandA).fontSize)
+        / parseFloat(getComputedStyle(targetA).fontSize);
+    };
+    recomputeScaleRatios();
+
     // ============================================
     // BUILD MASTER TIMELINE
     // Timeline durations are proportional (0-1 range),
@@ -142,16 +158,14 @@ export function Hero() {
     tl.to(flyingM, {
       x: () => getRelPos(navBrandM).x,
       y: () => getRelPos(navBrandM).y,
-      scale: () => parseFloat(getComputedStyle(navBrandM).fontSize)
-        / parseFloat(getComputedStyle(targetM).fontSize),
+      scale: () => scaleRatioM,
       duration: 0.65,
       ease: 'power2.inOut',
     }, 0.06)
     .to(flyingA, {
       x: () => getRelPos(navBrandA).x,
       y: () => getRelPos(navBrandA).y,
-      scale: () => parseFloat(getComputedStyle(navBrandA).fontSize)
-        / parseFloat(getComputedStyle(targetA).fontSize),
+      scale: () => scaleRatioA,
       duration: 0.65,
       ease: 'power2.inOut',
     }, 0.06);
@@ -175,9 +189,10 @@ export function Hero() {
       onRefresh: () => {
         // Recalculate spacer height on resize/refresh
         spacer.style.height = `${hero.offsetHeight + window.innerHeight * 1.0}px`;
-        // Re-seed source fontSize so the scale ratio in Phase 5 resolves
-        // against the post-resize target sizes (clamp() CSS may change values)
+        // Re-seed source fontSize + cached scale ratios so Phase 5 resolves
+        // against the post-resize target sizes (clamp() CSS may change values).
         seedFlyingLetterTypography();
+        recomputeScaleRatios();
       },
     });
 

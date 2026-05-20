@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from '@/lib/gsap';
 import { features } from '@/data';
+import { cursorBus } from '@/lib/cursorBus';
 import styles from './CustomCursor.module.css';
 
 // Trail sphere configuration from features data
@@ -111,6 +112,8 @@ export function CustomCursor() {
     // Mouse move handler
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
+      cursorBus.x = e.clientX;
+      cursorBus.y = e.clientY;
 
       // Show cursor on first mouse move
       if (!hasMovedMouse.current) {
@@ -378,9 +381,16 @@ export function CustomCursor() {
       document.documentElement.style.setProperty('--spotlight-active', '1');
       document.documentElement.style.setProperty('--spotlight-size', `${spotlightSize / 2}px`);
       // Seed cursor position vars so the spotlight is correctly placed on the
-      // first paint (per-frame writes are gated on spotlight state).
-      document.documentElement.style.setProperty('--cursor-x', `${cursorPos.current.x}px`);
-      document.documentElement.style.setProperty('--cursor-y', `${cursorPos.current.y}px`);
+      // first paint. Use mousePos (most recent raw input) rather than
+      // cursorPos (last *settled* eased position) — when the ticker is idle
+      // because the cursor sat still, cursorPos is the previous hover origin
+      // and the spotlight pops in at the wrong place until the next mousemove.
+      cursorPos.current.x = mousePos.current.x;
+      cursorPos.current.y = mousePos.current.y;
+      document.documentElement.style.setProperty('--cursor-x', `${mousePos.current.x}px`);
+      document.documentElement.style.setProperty('--cursor-y', `${mousePos.current.y}px`);
+      // Resume the ticker so per-frame writes start immediately.
+      startTicker();
 
       // Hide the main cursor so the spotlight (reveal mask) takes over completely
       // This prevents color clashing (difference mode vs purple background)
@@ -428,38 +438,43 @@ export function CustomCursor() {
     window.addEventListener('tagline-spotlight-enter', handleSpotlightEnter);
     window.addEventListener('tagline-spotlight-leave', handleSpotlightLeave);
 
-    // PERF: Use event delegation instead of adding listeners to every element
-    // This handles dynamically added elements and reduces memory usage
+    // Event delegation via bubbling pointerover / pointerout instead of
+    // capture-phase mouseenter / mouseleave. The capture-phase pair fires for
+    // every node entry/leave across the entire document tree on every cursor
+    // movement; pointerover/out bubble, so a single handler at the document
+    // root fires once per actual element crossing.
     const INTERACTIVE_SELECTOR = 'a, button, [role="button"], input, textarea, select';
 
-    const handleInteractiveEnter = (e: Event) => {
+    const handleInteractiveEnter = (e: PointerEvent) => {
       const target = e.target;
-      // Ensure target is an Element with closest method
-      if (target instanceof Element && target.closest(INTERACTIVE_SELECTOR)) {
-        handleLinkHover();
-      }
-    };
-
-    const handleInteractiveLeave = (e: Event) => {
-      const target = e.target;
-      const relatedTarget = (e as MouseEvent).relatedTarget;
-
-      // Ensure target is an Element with closest method
       if (!(target instanceof Element)) return;
-
-      // Only trigger leave if not moving to another interactive element
-      if (target.closest(INTERACTIVE_SELECTOR)) {
-        const isRelatedInteractive = relatedTarget instanceof Element &&
-          relatedTarget.closest(INTERACTIVE_SELECTOR);
-        if (!isRelatedInteractive) {
-          handleLinkLeave();
-        }
-      }
+      const entered = target.closest(INTERACTIVE_SELECTOR);
+      if (!entered) return;
+      // Suppress when moving within the same interactive element.
+      const related = e.relatedTarget;
+      if (related instanceof Element && related.closest(INTERACTIVE_SELECTOR) === entered) return;
+      handleLinkHover();
     };
 
-    // Use capture phase for better delegation performance
-    document.addEventListener('mouseenter', handleInteractiveEnter, true);
-    document.addEventListener('mouseleave', handleInteractiveLeave, true);
+    const handleInteractiveLeave = (e: PointerEvent) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const left = target.closest(INTERACTIVE_SELECTOR);
+      if (!left) return;
+      // Suppress when moving to a child of the same interactive element, or
+      // sliding onto another interactive element (handleLinkHover will fire
+      // for the new one via pointerover and overwrite the scale tween).
+      const related = e.relatedTarget;
+      if (related instanceof Element) {
+        const relatedInteractive = related.closest(INTERACTIVE_SELECTOR);
+        if (relatedInteractive === left) return;
+        if (relatedInteractive) return;
+      }
+      handleLinkLeave();
+    };
+
+    document.addEventListener('pointerover', handleInteractiveEnter);
+    document.addEventListener('pointerout', handleInteractiveLeave);
 
     // Cleanup
     return () => {
@@ -485,8 +500,8 @@ export function CustomCursor() {
       }
 
       // PERF: Remove delegated event listeners
-      document.removeEventListener('mouseenter', handleInteractiveEnter, true);
-      document.removeEventListener('mouseleave', handleInteractiveLeave, true);
+      document.removeEventListener('pointerover', handleInteractiveEnter);
+      document.removeEventListener('pointerout', handleInteractiveLeave);
 
       // Remove trail elements
       trailSpheresRef.current.forEach(sphere => {

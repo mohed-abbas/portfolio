@@ -195,6 +195,13 @@ export function InteractiveBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // GPU resources captured by closure so cleanup / context-restore can
+    // release / rebuild them deterministically.
+    let program: WebGLProgram | null = null;
+    let vert: WebGLShader | null = null;
+    let frag: WebGLShader | null = null;
+    let buf: WebGLBuffer | null = null;
+
     const setupGL = (): boolean => {
       const opts: WebGLContextAttributes = {
         alpha: true,
@@ -212,10 +219,10 @@ export function InteractiveBackground() {
         console.info('[InteractiveBackground] mode=fallback reason=no-webgl');
         return false;
       }
-      const vert = compileShader(gl, gl.VERTEX_SHADER, VERT_SRC);
-      const frag = compileShader(gl, gl.FRAGMENT_SHADER, FRAG_SRC);
+      vert = compileShader(gl, gl.VERTEX_SHADER, VERT_SRC);
+      frag = compileShader(gl, gl.FRAGMENT_SHADER, FRAG_SRC);
       if (!vert || !frag) return false;
-      const program = gl.createProgram();
+      program = gl.createProgram();
       if (!program) return false;
       gl.attachShader(program, vert);
       gl.attachShader(program, frag);
@@ -226,7 +233,7 @@ export function InteractiveBackground() {
       }
       gl.useProgram(program);
 
-      const buf = gl.createBuffer();
+      buf = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.bufferData(
         gl.ARRAY_BUFFER,
@@ -369,10 +376,27 @@ export function InteractiveBackground() {
       startTicker();
     };
     const onLost = (ev: Event) => {
+      // preventDefault marks the loss as recoverable so the browser will fire
+      // webglcontextrestored on recovery. Stop the ticker; keep the canvas
+      // mounted so it can rebind on restore.
       ev.preventDefault();
-      console.warn('[InteractiveBackground] WebGL context lost — falling back');
+      console.warn('[InteractiveBackground] WebGL context lost — awaiting restore');
       stopTicker();
-      setMode('fallback');
+      glRef.current = null;
+      program = null;
+      vert = null;
+      frag = null;
+      buf = null;
+      uniformsRef.current = {};
+    };
+    const onRestored = () => {
+      console.info('[InteractiveBackground] WebGL context restored — rebuilding');
+      if (!setupGL()) {
+        setMode('fallback');
+        return;
+      }
+      resize();
+      startTicker();
     };
 
     window.addEventListener('mousemove', onMove, { passive: true });
@@ -380,6 +404,7 @@ export function InteractiveBackground() {
     window.addEventListener('blur', onLeave);
     window.addEventListener('resize', onResize);
     canvas.addEventListener('webglcontextlost', onLost);
+    canvas.addEventListener('webglcontextrestored', onRestored);
 
     return () => {
       stopTicker();
@@ -388,7 +413,20 @@ export function InteractiveBackground() {
       window.removeEventListener('blur', onLeave);
       window.removeEventListener('resize', onResize);
       canvas.removeEventListener('webglcontextlost', onLost);
+      canvas.removeEventListener('webglcontextrestored', onRestored);
+      // Release GPU resources before dropping the context. Without this,
+      // HMR / remount / route changes leak shaders, programs, and buffers
+      // toward Chrome's ~16-context cap.
+      const gl = glRef.current;
+      if (gl) {
+        if (program) gl.deleteProgram(program);
+        if (vert) gl.deleteShader(vert);
+        if (frag) gl.deleteShader(frag);
+        if (buf) gl.deleteBuffer(buf);
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      }
       glRef.current = null;
+      uniformsRef.current = {};
     };
   }, [effectiveMode, startTicker, stopTicker]);
 

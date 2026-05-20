@@ -24,6 +24,7 @@ export const WelcomeScreen = () => {
     // absence here means we got here via in-app navigation.
     if (features.welcomeScreen.skipOnReturn && !window.__freshLoad) {
       if (containerRef.current) {
+        containerRef.current.setAttribute('aria-hidden', 'true');
         containerRef.current.style.display = 'none';
       }
       const handoffTimer = setTimeout(() => {
@@ -55,6 +56,7 @@ export const WelcomeScreen = () => {
     // handoff/complete events so Hero & HeroText proceed normally.
     if (reducedMotion) {
       if (containerRef.current) {
+        containerRef.current.setAttribute('aria-hidden', 'true');
         containerRef.current.style.display = 'none';
       }
       // Defer to next tick so sibling components have attached their listeners.
@@ -67,6 +69,10 @@ export const WelcomeScreen = () => {
 
     // Context for flight tweens to ensure proper cleanup
     const flightCtx = gsap.context(() => {});
+    // Handoff delayedCall is created later inside tl.call; track it so the
+    // cleanup return can kill it. Without this, an unmount mid-flight (HMR,
+    // dev navigation) lets the call fire after the DOM is gone.
+    let handoffCall: gsap.core.Tween | null = null;
 
     // Failure handler — guarantees we don't leave scroll locked or the rest
     // of the app waiting on handoff/complete events if timeline setup throws.
@@ -74,6 +80,7 @@ export const WelcomeScreen = () => {
       console.error('[WelcomeScreen] Animation setup failed, bailing out:', err);
       unlockScroll();
       if (containerRef.current) {
+        containerRef.current.setAttribute('aria-hidden', 'true');
         containerRef.current.style.display = 'none';
       }
       window.dispatchEvent(new CustomEvent('welcome-handoff'));
@@ -112,10 +119,9 @@ export const WelcomeScreen = () => {
             yPercent: -50
         });
 
-        gsap.set(initialsRef.current, {
-            scale: 1.5,
-            opacity: 0,
-        });
+        // Initial state for initials is set by the fromTo tween below
+        // (scale: 1.2, opacity: 0). A standalone gsap.set here would be
+        // overwritten by fromTo's starting frame — dead code.
 
         // 2. The Rapid Flash Sequence
         // Show each greeting for a short burst
@@ -235,8 +241,9 @@ export const WelcomeScreen = () => {
         });
 
         // C. Trigger HeroText Fade IN when cross-fade starts
-        // Keep this OUTSIDE flightCtx so it's not killed by revert()
-        gsap.delayedCall(flightDuration - handoffDuration, () => {
+        // Kept OUTSIDE flightCtx (revert() would kill it) but captured in
+        // handoffCall so the cleanup path can kill it on unmount.
+        handoffCall = gsap.delayedCall(flightDuration - handoffDuration, () => {
           window.dispatchEvent(new CustomEvent('welcome-handoff'));
         });
       }, [], "flightStart");
@@ -249,13 +256,19 @@ export const WelcomeScreen = () => {
 
     // Cleanup on unmount
     return () => {
+      handoffCall?.kill();
+      tl.kill();
       flightCtx.revert();
       unlockScroll();
     };
   }, { scope: containerRef, dependencies: [reducedMotion] });
 
   return (
-    <div ref={containerRef} className={styles.welcomeWrapper}>
+    <div
+      ref={containerRef}
+      data-welcome-wrapper
+      className={styles.welcomeWrapper}
+    >
       <div className={styles.textContainer}>
         {/* Centered Greetings (Stacked) */}
         {GREETINGS.map((text, i) => (
