@@ -148,7 +148,7 @@ export function Hero() {
       tl.to(taglineContainer, { opacity: 0, duration: 0.2, ease: 'power2.in' }, 0.08);
     }
     if (skillsBar) {
-      tl.to(skillsBar, { opacity: 0, duration: 0.15, ease: 'power2.in' }, 0.71);
+      tl.to(skillsBar, { yPercent: 300, duration: 0.30, ease: 'power2.in' }, 0.385);
     }
 
     // --- PHASE 5: Fly + shrink to navbar center (via SCALE, not fontSize) ---
