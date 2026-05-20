@@ -64,7 +64,9 @@ export function useWordLineReveal(
 
         // Wait for the real font to load before measuring offsetTop —
         // fallback-font wrap positions don't match the rendered layout.
-        const start = () => {
+        // Renamed from `start` so it doesn't shadow the `start` option
+        // destructured above (which would silently ignore caller overrides).
+        const setupReveal = () => {
           if (cancelled || !root.isConnected) return;
           split = splitTextIntoWords(
             root,
@@ -82,7 +84,7 @@ export function useWordLineReveal(
 
           trigger = ScrollTrigger.create({
             trigger: root,
-            start: options.start ?? "top 85%",
+            start,
             once: true,
             onEnter: () => tl?.play(),
           });
@@ -106,7 +108,7 @@ export function useWordLineReveal(
           typeof document !== "undefined" && document.fonts?.ready
             ? document.fonts.ready
             : Promise.resolve();
-        ready.then(start);
+        ready.then(setupReveal);
 
         return () => {
           cancelled = true;

@@ -46,9 +46,13 @@ export function WorksPreview({ entries, activeIndex, visible }: WorksPreviewProp
   const yToRef = useRef<ReturnType<typeof gsap.quickTo> | null>(null);
   // Mirrors `visible` for the mousemove handler — without it, the listener
   // captures the boolean at attach time and can't tell rising-edge from
-  // steady-state. The handler reads the ref each tick.
+  // steady-state. The handler reads the ref each tick. The sync runs in an
+  // effect (not during render) so it doesn't violate React's rules and
+  // survives Strict Mode's double-invocation.
   const visibleRef = useRef(visible);
-  visibleRef.current = visible;
+  useEffect(() => {
+    visibleRef.current = visible;
+  }, [visible]);
 
   useEffect(() => {
     const el = rootRef.current;
