@@ -83,7 +83,9 @@
   align-items: center;
   gap: 12px;
   padding: 14px clamp(24px, 5vw, 48px);
-  border-top: 1px solid var(--color-rule);
+  /* No top border on the rail — the tools band immediately below has its own
+     thick top border (the "panel" treatment), which doubles as the visual
+     rule above the rail. */
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -171,32 +173,59 @@
   color: var(--color-accent-purple);
 }
 
+/* Tools band — mirrors the SkillsBar (Hero) design:
+   thick top border, solid background panel, full-bleed,
+   horizontally scrolling marquee inside. Font size is intentionally
+   kept smaller than the SkillsBar so it sits at the bottom of the
+   drum without competing with the bigword for visual weight. */
 .tools {
+  position: relative;
+  width: 100%;
+  background-color: var(--color-background);
+  border-top: clamp(3px, 0.4vw, 5px) solid var(--color-primary-text);
+  border-bottom: clamp(3px, 0.4vw, 5px) solid var(--color-primary-text);
+  overflow: hidden;
+  margin-bottom: 30px;
+  /* contain layout/paint so the marquee animation stays GPU-bound and
+     doesn't invalidate the rest of the pin on every frame. */
+  contain: content;
+}
+
+.toolsTrack {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: clamp(8px, 1.2vw, 18px);
-  padding: clamp(20px, 3vh, 32px) clamp(24px, 5vw, 48px);
-  border-top: 1px solid var(--color-rule);
-  /* Transparent — same reason as .pin. */
-  background: transparent;
+  gap: clamp(20px, 3vw, 50px);
+  padding: clamp(16px, 2.2vh, 24px) 0;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  color: var(--color-accent-purple);
+  white-space: nowrap;
+  line-height: 1;
+
+  /* Set by JS (measureToolsScrollWidth) — half the rendered items'
+     width, used by the keyframe below for exact-pixel seamless loop. */
+  --scroll-width: 0px;
+
+  animation: services-tools-scroll 40s linear infinite;
+
+  /* Performance: GPU compositing layer, isolate from layout reads. */
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .tool {
-  display: inline-block;
-  overflow: hidden;
-  flex: 0 1 auto;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 22px);
+  flex-shrink: 0;
 }
 
 .glyph {
-  display: inline-block;
-  will-change: transform;
+  flex-shrink: 0;
   font-size: clamp(13px, 1.4vw, 20px);
-  font-weight: 500;
   letter-spacing: -0.005em;
-  color: var(--color-primary-text);
-  backface-visibility: hidden;
+  color: inherit;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -205,10 +234,29 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  width: 10px;
-  height: 10px;
-  color: var(--color-text-muted);
-  opacity: 0.6;
+  width: clamp(10px, 1.1vw, 14px);
+  height: clamp(10px, 1.1vw, 14px);
+  color: var(--color-accent-purple);
+}
+
+@keyframes services-tools-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(calc(var(--scroll-width) * -1), 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Defense in depth: useReducedMotion() in Services.tsx already swaps to
+     <StaticServices /> for reduced-motion users, but during the SSR→client
+     transition there's a single frame where <DrumServices /> hydrates with
+     .toolsTrack in the DOM. This rule suppresses the marquee for that frame. */
+  .toolsTrack {
+    animation: none;
+    transform: none;
+  }
 }
 
 .descript {
@@ -346,11 +394,6 @@
 
   .descript {
     grid-template-columns: 1fr;
-  }
-
-  .tools {
-    flex-wrap: nowrap;
-    overflow: hidden;
   }
 
   .glyph {
