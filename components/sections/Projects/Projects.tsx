@@ -26,6 +26,7 @@ export const Projects = () => {
             const imgWrapper = section.querySelector(`.${styles.projectImgWrapper}`);
             const badge = section.querySelector(`.${styles.funkyBadge}`);
             const meta = section.querySelector(`.${styles.projectMeta}`);
+            const metaLabel = section.querySelector(`.${styles.metaLabel}`); // null on non-first projects
             const stickyContainer = section.querySelector(`.${styles.projectSticky}`);
 
             const tl = gsap.timeline({
@@ -38,6 +39,23 @@ export const Projects = () => {
                     // No background color changes - InteractiveBackground shows through entirely
                 }
             });
+
+            // 0. META LABEL EXIT — slide up and fade as THE SNAP begins, so
+            //    the "Selected Works" caption doesn't fight the split-title
+            //    animation. Only the first project has a label; guard skips
+            //    the others. Short duration (0.2 vs the default 0.5) so the
+            //    label is gone by ~20% scroll — well before the dramatic
+            //    image-pop. Symmetric inOut ease for the smoothest perceived
+            //    motion.
+            if (metaLabel) {
+                tl.to(metaLabel, {
+                    y: -60,
+                    opacity: 0,
+                    duration: 0.2,
+                    force3D: true,
+                    ease: "power2.inOut",
+                }, "start");
+            }
 
             // 1. THE SNAP (Rotate and Separate)
             // PERF: Added force3D for consistent GPU compositing
@@ -93,10 +111,30 @@ export const Projects = () => {
 
   return (
     <div ref={containerRef} className={styles.section} id='projects'>
-       
-       {projects.items.map((project) => {
+       {projects.items.map((project, index) => {
+           const isFirst = index === 0;
            const cardInner = (
                <>
+                   {isFirst && (
+                     <div className={styles.metaLabel} aria-hidden="true">
+                       <svg
+                         className={styles.starIcon}
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg"
+                       >
+                         <path
+                           d="M12 0C12 0 14.5 9.5 24 12C14.5 14.5 12 24 12 24C12 24 9.5 14.5 0 12C9.5 9.5 12 0 12 0Z"
+                           stroke="currentColor"
+                           strokeWidth="1.5"
+                           strokeLinejoin="round"
+                           fill="none"
+                         />
+                       </svg>
+                       {projects.label}
+                     </div>
+                   )}
+
                    {/* Image */}
                    <div className={styles.imageCard}>
                         <div className={styles.projectImgWrapper}>
