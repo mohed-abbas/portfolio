@@ -65,3 +65,18 @@ export const formatZoneIndex = (i: number): string =>
    stripped of trailing punctuation when `rail` is empty. */
 export const zoneRail = (z: ServiceFace): string =>
   z.rail || z.word.replace(/\.$/, '');
+
+/* Meter-bar tuning constants. Each non-pad dial cell renders a thin vertical
+   accent bar that scales toward the centre needle, drawing a signal peak. */
+
+/* Tallest bar height as a fraction of the dialwrap/cell band height. Mirrors
+   the CSS `.dialBar { height: 42% }` resting box; applyDial scales it via
+   scaleY so the label can ride the scaled visual top. */
+export const BAR_MAX_FRACTION = 0.42;
+
+/* Minimum scaleY so far-from-needle bars still register as a faint tick
+   rather than vanishing entirely. */
+export const BAR_MIN_SCALE = 0.05;
+
+/* Px gap between a bar's scaled visual top and its riding label. */
+export const LABEL_RIDE_GAP_PX = 14;

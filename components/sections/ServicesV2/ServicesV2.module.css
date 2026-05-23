@@ -189,7 +189,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  height: 1px;
+  height: 2px;
   background: var(--color-rule);
 }
 
@@ -222,7 +222,7 @@
   left: 0;
   top: 18%;
   bottom: 18%;
-  width: 1px;
+  width: 2px;
   background: var(--color-rule);
 }
 
@@ -238,27 +238,60 @@
   top: 0;
   height: 100%;
   display: flex;
-  align-items: center;
+  /* Stretch (not center) so each .dialCell fills the full strip height.
+     The meter bar (.dialBar) and the riding label (.dialTool) are anchored
+     to bottom: 18% to align with the lower dial-rule frame; cells must fill
+     the full strip height so those bottom-anchored children measure against
+     the band rather than collapsing to text height. */
+  align-items: stretch;
   will-change: transform;
 }
 
 .dialCell {
   flex: 0 0 var(--gap-px);
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 14px;
 }
 
 .dialTool {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  bottom: 18%;
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+  z-index: 1;
   font-size: clamp(18px, 1.8vw, 26px);
   letter-spacing: -0.005em;
   font-weight: 500;
   color: var(--color-text-muted-strong, rgba(27, 32, 40, 0.8));
-  transition:
-    color 0.3s var(--ease-out-expo),
-    transform 0.5s var(--ease-out-expo);
+  /* No transition: opacity + transform are written every scrub frame by
+     applyDial, so they track the scroll directly (the scrub itself is the
+     smoother). A transition here would low-pass the label behind its bar. */
+}
+
+/* Meter bar — a thin vertical accent rule that scales up (scaleY) toward the
+   centre needle, drawing a signal peak across the band. Uses the accent CSS
+   var (NOT hardcoded rgba) so both light and dark themes resolve correctly.
+   transform-origin: center bottom so scaleY grows the bar upward from the
+   lower rule; applyDial drives the scale + opacity per frame.
+   height is driven from BAR_MAX_FRACTION via the --bar-max-fraction custom
+   property (set once on mount in DialServicesV2) so the bar's resting height
+   and the JS label-ride math share a single source of truth — editing the
+   constant moves both together, with 0.42 as a safe fallback. */
+.dialBar {
+  position: absolute;
+  bottom: 18%;
+  left: calc(50% - 2px);
+  width: 2px;
+  height: calc(var(--bar-max-fraction, 0.42) * 100%);
+  border-radius: 3px;
+  background: var(--color-accent-purple);
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  will-change: transform, opacity;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Needle — fixed vertical line + star caps at both ends. Insets top/bottom

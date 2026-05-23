@@ -6,8 +6,11 @@ import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { content } from '@/data';
 import { Star } from '../Services/Star';
 import {
+  BAR_MAX_FRACTION,
+  BAR_MIN_SCALE,
   GAP_PX,
   HEADING_ID,
+  LABEL_RIDE_GAP_PX,
   PIN_RUNWAY_VH,
   PIN_SCRUB,
   ZONES,
@@ -106,6 +109,9 @@ export function DialServicesV2() {
          each need a stable ref for color/transform updates per scroll
          frame) keeps the per-frame work to direct style writes. */
       const toolEls: Array<HTMLSpanElement | null> = [];
+      /* Parallel to `toolEls`/`cells` — one meter bar per non-pad cell, null
+         for pads so the index stays aligned for the per-frame loop. */
+      const barEls: Array<HTMLSpanElement | null> = [];
       cells.forEach((cell, i) => {
         const cellEl = document.createElement('div');
         cellEl.className = styles.dialCell;
@@ -115,8 +121,14 @@ export function DialServicesV2() {
           tool.textContent = cell.name;
           cellEl.appendChild(tool);
           toolEls.push(tool);
+
+          const bar = document.createElement('span');
+          bar.className = styles.dialBar;
+          cellEl.appendChild(bar);
+          barEls.push(bar);
         } else {
           toolEls.push(null);
+          barEls.push(null);
         }
         dialStripEl.appendChild(cellEl);
 
@@ -133,12 +145,24 @@ export function DialServicesV2() {
          only when the wrap actually resizes — observed via ResizeObserver,
          not polled. */
       let centerOffset = dialwrapEl.getBoundingClientRect().width / 2;
+      /* Cache the band height alongside centerOffset so the per-frame meter
+         loop can scale bars + position riding labels without a layout read.
+         Updated only on resize/refresh — never inside applyDial. */
+      let bandHeight = dialwrapEl.getBoundingClientRect().height;
       const wrapObserver = new ResizeObserver((entries) => {
         const entry = entries[0];
         if (!entry) return;
         centerOffset = entry.contentRect.width / 2;
+        bandHeight = entry.contentRect.height;
       });
       wrapObserver.observe(dialwrapEl);
+
+      /* Single source of truth for the bar's resting height: the CSS rule
+         `.dialBar { height: calc(var(--bar-max-fraction) * 100%) }` reads this,
+         and the per-frame label-ride math below multiplies by the same
+         BAR_MAX_FRACTION. Set once here (custom props inherit to the bars) so
+         the two can't drift. */
+      dialStripEl.style.setProperty('--bar-max-fraction', String(BAR_MAX_FRACTION));
 
       /* All in-flight gsap.delayedCall and tween handles created inside
          transitionZone. Tracking them lets the unmount cleanup kill any
@@ -277,12 +301,28 @@ export function DialServicesV2() {
           if (!el) continue;
           const dist = Math.abs(i - idxFloat);
           const t = Math.max(0, 1 - dist / 2.4);
+          /* smoothstep — crisper peak than linear `t` so the bar locks onto
+             the needle like a tuner rather than fading off in a wide hump. */
+          const eased = t * t * (3 - 2 * t);
+          const s = BAR_MIN_SCALE + (1 - BAR_MIN_SCALE) * eased;
+
+          /* Bar: GPU-composited scaleY + opacity, no layout read. */
+          const bar = barEls[i];
+          if (bar) {
+            bar.style.transform = `scaleY(${s})`;
+            bar.style.opacity = String(0.22 + eased * 0.78);
+          }
+
           /* Opacity-only, not color: the dial-tool base color is set via
              CSS var (light + dark themes resolve independently). Writing
              `rgba(27,32,40,...)` here would lock the tool to the light
              palette and disappear under dark mode. */
           el.style.opacity = String(0.3 + t * 0.7);
-          el.style.transform = `translateY(${(1 - t) * -2}px) scale(${1 + t * 0.18})`;
+          /* Label rides the bar's scaled visual top: bandHeight (cached) ×
+             the resting fraction × the live scale, plus a fixed gap, so the
+             label tracks the crest as the bar grows toward the needle. */
+          const barTopPx = bandHeight * BAR_MAX_FRACTION * s;
+          el.style.transform = `translateY(${-(barTopPx + LABEL_RIDE_GAP_PX)}px) scale(${1 + t * 0.18})`;
         }
 
         const nearest = tunedAt(idxFloat, cells);
@@ -328,6 +368,7 @@ export function DialServicesV2() {
            callback. */
         onRefresh: (self) => {
           centerOffset = dialwrapEl.getBoundingClientRect().width / 2;
+          bandHeight = dialwrapEl.getBoundingClientRect().height;
           applyDial(self.progress);
         },
       });
