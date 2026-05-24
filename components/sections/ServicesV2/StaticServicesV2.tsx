@@ -12,7 +12,7 @@ import styles from './ServicesV2.module.css';
    in the V1 section so the V1/V2 a11y baseline matches. */
 export function StaticServicesV2() {
   return (
-    <section className={styles.wrapper} aria-labelledby={HEADING_ID}>
+    <section id="services" className={styles.wrapper} aria-labelledby={HEADING_ID}>
       <h2 id={HEADING_ID} className={styles.srOnly}>
         {content.services.headline.lead} {content.services.headline.accent}
       </h2>
