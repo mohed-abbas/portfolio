@@ -200,8 +200,9 @@
       "lastRevised": "2026 · 05"
     },
     "intro": {
+      "eyebrow": "Index of Work",
       "headline": "works.",
-      "lede": "An index of selected projects, each one set in motion. Hover a row to lock its accent and pause its ticker. Click to step inside."
+      "lede": "<b>An index of selected projects,</b> each one set in motion. Hover a row to lock its accent and pause its ticker. Click to step inside."
     },
     "legend": {
       "number": "№",

@@ -80,10 +80,35 @@
 .intro {
     padding: 0 0 clamp(56px, 9vh, 100px);
     display: grid;
-    /* Headline takes its natural single-line width; lede gets the rest. */
+    /* Headline takes its natural single-line width; lede gets the rest.
+       The meta-label eyebrow spans both columns as its own full-width row. */
     grid-template-columns: auto 1fr;
-    gap: 32px;
+    column-gap: 32px;
+    row-gap: 0;
     align-items: end;
+}
+
+/* Eyebrow / meta-label — full-width row above the headline+lede grid.
+   Mirrors Archive.module.css .metaLabel exactly. */
+.metaLabel {
+    grid-column: 1 / -1;
+    align-self: start;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--color-accent-purple);
+    font-weight: 700;
+    display: none; /* hidden for now — change back to `flex` to show the eyebrow */
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+    transition: color 0.6s var(--ease-out-expo);
+}
+
+.starIcon {
+    width: 1.2em;
+    height: 1.2em;
+    flex-shrink: 0;
 }
 
 .headline {
@@ -125,17 +150,38 @@
 @media (max-width: 1024px) {
     .intro {
         grid-template-columns: 1fr;
-        gap: clamp(20px, 4vh, 40px);
+        row-gap: 0;
     }
 
     .lede {
         justify-self: start;
+        margin-top: clamp(20px, 4vh, 40px);
     }
 }
 
-.lede b {
+/* Bold lead — applies to both the server-rendered fallback (.lede b) and the
+   split word inners (.ledeBold), so the reduced-motion and animated forms match.
+   Mirrors ServicesV2 .ledeBold. */
+.lede b,
+.ledeBold {
     color: var(--color-primary-text);
-    font-weight: 500;
+    font-weight: 600;
+}
+
+/* Word-mask load-up — same structure as ServicesV2's case-study lede.
+   .ledeWord is the per-word overflow:hidden mask; .ledeWordInner is the span
+   GSAP slides up from yPercent:110. line-height matches .lede (1.45) so wrapped
+   lines group correctly. */
+.ledeWord {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    line-height: 1.45;
+}
+
+.ledeWordInner {
+    display: inline-block;
+    will-change: transform;
 }
 
 /* END STRIP ----------------------------------------------------------- */

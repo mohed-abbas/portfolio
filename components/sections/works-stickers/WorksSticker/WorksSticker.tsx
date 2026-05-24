@@ -19,6 +19,10 @@ export interface WorksStickerProps {
    *  Bubbles the whole project so the page can look up the case-study
    *  hero image for the preview card. */
   onHoverChange: (hovered: boolean, project: WorksIndexProject) => void;
+  /** Persisted site accent — used as `payload.accent` in the TransitionLink so
+   *  the transition preserves the global accent rather than overriding it with
+   *  the project's palette color. Hover/cursor visuals still use project.accent. */
+  currentAccent: string;
 }
 
 /** Cyclic visual rhythm — first 10 entries match the v5 prototype, then wraps. */
@@ -35,6 +39,7 @@ export function WorksSticker({
   hasCaseStudy,
   decal,
   onHoverChange,
+  currentAccent,
 }: WorksStickerProps) {
   const [hovered, setHovered] = useState(false);
   const num = String(index + 1).padStart(2, '0');
@@ -94,7 +99,12 @@ export function WorksSticker({
         // the aria-hidden marquee, so this label is the sole AT-visible name.
         aria-label={`Open ${project.title} case study`}
         payload={{
-          accent: project.accent,
+          // Use the persisted site accent, not project.accent. project.accent
+          // is a palette member on /work2 (#62b6cb, #da3036) — feeding it to
+          // the TransitionProvider accent gate would override --color-accent-purple.
+          // The curtain's forward branch (has title) reads --color-accent-purple
+          // directly for panel color; it does not use payload.accent.
+          accent: currentAccent,
           title: project.title,
           slug: project.id,
           year: String(project.year),

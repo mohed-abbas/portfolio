@@ -143,7 +143,7 @@ export interface WorksIndexProject {
 
 export interface WorksIndexContent {
   topBar: { mark: string; breadcrumb: string; lastRevised: string };
-  intro: { headline: string; lede: string };
+  intro: { eyebrow: string; headline: string; lede: string };
   legend: { number: string; project: string; meta: string };
   end: { left: string; right: string };
   projects: WorksIndexProject[];
