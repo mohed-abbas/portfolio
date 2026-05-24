@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import Image from 'next/image';
 import { TransitionLink } from '@/components/transitions';
+import { StarIcon } from '@/components/sections/Hero/StarIcon';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import styles from './Projects.module.css';
 import { content, getCaseStudySlugs } from '@/data';
@@ -248,20 +249,7 @@ export const Projects = () => {
                <>
                    {isFirst && (
                      <div className={styles.metaLabel} aria-hidden="true">
-                       <svg
-                         className={styles.starIcon}
-                         viewBox="0 0 24 24"
-                         fill="none"
-                         xmlns="http://www.w3.org/2000/svg"
-                       >
-                         <path
-                           d="M12 0C12 0 14.5 9.5 24 12C14.5 14.5 12 24 12 24C12 24 9.5 14.5 0 12C9.5 9.5 12 0 12 0Z"
-                           stroke="currentColor"
-                           strokeWidth="1.5"
-                           strokeLinejoin="round"
-                           fill="none"
-                         />
-                       </svg>
+                       <StarIcon variant="outline" baseClassName={styles.starIcon} />
                        {projects.label}
                      </div>
                    )}
@@ -275,7 +263,6 @@ export const Projects = () => {
                                 fill
                                 style={{ objectFit: 'cover', objectPosition: 'top' }}
                                 sizes="(max-width: 768px) 100vw, 80vw"
-                                priority={false}
                              />
                         </div>
                    </div>

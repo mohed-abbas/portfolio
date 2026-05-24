@@ -28,7 +28,9 @@ export const WelcomeScreen = () => {
         containerRef.current.style.display = 'none';
       }
       const handoffTimer = setTimeout(() => {
+        window.__welcomeHandoff = true;
         window.dispatchEvent(new CustomEvent('welcome-handoff'));
+        window.__welcomeComplete = true;
         window.dispatchEvent(new CustomEvent('welcome-complete'));
       }, 0);
       return () => clearTimeout(handoffTimer);
@@ -61,7 +63,9 @@ export const WelcomeScreen = () => {
       }
       // Defer to next tick so sibling components have attached their listeners.
       const handoffTimer = setTimeout(() => {
+        window.__welcomeHandoff = true;
         window.dispatchEvent(new CustomEvent('welcome-handoff'));
+        window.__welcomeComplete = true;
         window.dispatchEvent(new CustomEvent('welcome-complete'));
       }, 0);
       return () => clearTimeout(handoffTimer);
@@ -83,7 +87,9 @@ export const WelcomeScreen = () => {
         containerRef.current.setAttribute('aria-hidden', 'true');
         containerRef.current.style.display = 'none';
       }
+      window.__welcomeHandoff = true;
       window.dispatchEvent(new CustomEvent('welcome-handoff'));
+      window.__welcomeComplete = true;
       window.dispatchEvent(new CustomEvent('welcome-complete'));
     };
 
@@ -95,6 +101,7 @@ export const WelcomeScreen = () => {
         if (containerRef.current) {
           containerRef.current.style.display = 'none';
         }
+        window.__welcomeComplete = true;
         window.dispatchEvent(new CustomEvent('welcome-complete'));
       }
     });
@@ -175,12 +182,14 @@ export const WelcomeScreen = () => {
             targetA: !!targetA
           });
           // Dispatch handoff anyway to prevent UI from being stuck
+          window.__welcomeHandoff = true;
           window.dispatchEvent(new CustomEvent('welcome-handoff'));
           return;
         }
 
         if (!mRef.current || !aRef.current) {
           console.warn('[WelcomeScreen] Letter refs not available');
+          window.__welcomeHandoff = true;
           window.dispatchEvent(new CustomEvent('welcome-handoff'));
           return;
         }
@@ -244,6 +253,7 @@ export const WelcomeScreen = () => {
         // Kept OUTSIDE flightCtx (revert() would kill it) but captured in
         // handoffCall so the cleanup path can kill it on unmount.
         handoffCall = gsap.delayedCall(flightDuration - handoffDuration, () => {
+          window.__welcomeHandoff = true;
           window.dispatchEvent(new CustomEvent('welcome-handoff'));
         });
       }, [], "flightStart");
