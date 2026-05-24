@@ -6,7 +6,7 @@
 export interface OpenGraphData {
   title: string;
   description: string;
-  type: string;
+  type: "website" | "article" | "profile";
   locale: string;
   siteName: string;
 }
@@ -302,16 +302,14 @@ export interface EasingConfig {
     inOutQuart: string;
     outBack: string;
     inOutBack: string;
+    outCubic: string;
+    outQuad: string;
+    inQuad: string;
   };
   css: {
     outExpo: string;
     outQuart: string;
     inOutQuart: string;
-  };
-  framerMotion: {
-    outExpo: number[];
-    outQuart: number[];
-    inOutQuart: number[];
   };
 }
 
