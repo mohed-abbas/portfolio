@@ -6,6 +6,7 @@ import { gsap } from '@/lib/gsap';
 import { navigation, content } from '@/data';
 import { useLenis } from '@/lib/LenisProvider';
 import { scrollToContactReveal } from '@/lib/scrollToContactReveal';
+import { scrollToProjectsReveal } from '@/lib/scrollToProjectsReveal';
 import { useAccentColor } from '@/lib/AccentColorContext';
 import { useTransition } from '@/components/transitions';
 import { useScrollLock } from '@/lib/useScrollLock';
@@ -414,6 +415,12 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
         // types in at the same speed as a manual scroll instead of racing past
         // (see scrollToContactReveal). Track the phase-2 timeout for cleanup.
         scrollTimeoutRef.current = scrollToContactReveal(scrollTo) ?? null;
+      } else if (href === '#projects') {
+        // Same problem as Contact: the first project's split is scrub-tied and
+        // closed at progress 0. Two-phase scroll plays it open at reading pace
+        // and parks on the open card (see scrollToProjectsReveal). Track the
+        // phase-2 timeout for cleanup.
+        scrollTimeoutRef.current = scrollToProjectsReveal(scrollTo) ?? null;
       } else {
         scrollTo(href, { duration: 1.8 }); // Lenis smooth scroll with custom duration
       }

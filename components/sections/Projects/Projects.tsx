@@ -30,6 +30,12 @@ const SPLIT_RUNWAY_VH = 1.4;
 // Match the other cards' scrub (2.5) so the last split has identical smoothing.
 const HANDOFF_SCRUB = 2.5;
 
+// A card is only clickable once its split has opened past this TIMELINE progress
+// (split done ~0.62, image-pop done ~0.69, meta ~0.75, badge ~1.0). 0.6 ≈ the
+// image is visibly revealed. Gating is armed via `data-split-gated` on the
+// container and read in CSS (a.projectSticky pointer-events); see Projects.module.css.
+const OPEN_THRESHOLD = 0.6;
+
 export const Projects = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
@@ -65,6 +71,12 @@ export const Projects = () => {
       container.dataset.overlapActive = 'true';
     }
 
+    // Arm the open-state click gate only when motion is allowed (CSS reads
+    // `data-split-gated`). Under reduced motion / no-JS the gate stays off so the
+    // cards remain clickable without depending on the scrubbed split playing.
+    const gateClicks = !reducedMotion;
+    if (gateClicks) container.dataset.splitGated = 'true';
+
     const ctx = gsap.context(() => {
         const sections = container.querySelectorAll<HTMLElement>(`.${styles.projectSection}`);
 
@@ -80,6 +92,16 @@ export const Projects = () => {
 
             const isLast = section.dataset.last === 'true';
             const handoff = isLast && overlapEnabled;
+
+            // Open-state click gate: flip `data-open` on the sticky card from the
+            // TIMELINE progress (visual truth — accounts for the scrub lag) so the
+            // affordance matches what's on screen. CSS keys clickability off it.
+            const setOpen = (open: boolean) => {
+                if (stickyContainer) (stickyContainer as HTMLElement).dataset.open = open ? 'true' : 'false';
+            };
+            const openFromTimeline = (self: ScrollTrigger) =>
+                setOpen((self.animation?.progress() ?? 0) >= OPEN_THRESHOLD);
+            setOpen(false); // closed at rest — no clickable flash before first update
 
             // Last card: a dedicated, animation-free pin holds the (already
             // open) card fixed from its own top until the Archive fully covers
@@ -118,6 +140,7 @@ export const Projects = () => {
                         end: () => "+=" + window.innerHeight * SPLIT_RUNWAY_VH,
                         scrub: HANDOFF_SCRUB,
                         invalidateOnRefresh: true,
+                        onUpdate: openFromTimeline,
                     }
                     : {
                         trigger: section,
@@ -125,6 +148,7 @@ export const Projects = () => {
                         end: "bottom bottom",
                         scrub: 2.5,
                         pin: stickyContainer,
+                        onUpdate: openFromTimeline,
                         // No background color changes - InteractiveBackground shows through entirely
                     }
             });
@@ -208,6 +232,11 @@ export const Projects = () => {
                         end: "top top",   // Archive fully covers the viewport
                         scrub: true,
                         invalidateOnRefresh: true,
+                        // Two-way: the card is inert while fading under the
+                        // Archive (its split sits at progress 1, but the split
+                        // trigger no longer updates in this range) and clickable
+                        // again once scrolled back up to full visibility.
+                        onUpdate: (self) => setOpen(self.progress <= 0.05),
                     },
                 });
             }
@@ -236,6 +265,7 @@ export const Projects = () => {
         ctx.revert();
         if (archiveWrapper) delete archiveWrapper.dataset.overlap;
         delete container.dataset.overlapActive;
+        delete container.dataset.splitGated;
         if (window.scrollY !== savedScrollY) window.scrollTo(0, savedScrollY);
     };
   }, { scope: containerRef, dependencies: [projects, reducedMotion, featuredProjects.length], revertOnUpdate: true });
@@ -311,6 +341,7 @@ export const Projects = () => {
                  key={project.id}
                  className={styles.projectSection}
                  data-last={isLast ? 'true' : undefined}
+                 data-first={isFirst ? 'true' : undefined}
                >
                    {caseStudySlugs.has(project.id) ? (
                        <TransitionLink

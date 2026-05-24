@@ -15,6 +15,7 @@ import { transitionsConfig, features, getAccentColors } from '@/data';
 import { useScrollLock } from '@/lib/useScrollLock';
 import { useLenis } from '@/lib/LenisProvider';
 import { scrollToContactReveal } from '@/lib/scrollToContactReveal';
+import { scrollToProjectsReveal } from '@/lib/scrollToProjectsReveal';
 import {
   isKnownEffect,
   TRANSITION_EFFECT_NAMES,
@@ -292,6 +293,15 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
               // top as usual.
               if (u.hash === '#contact') {
                 scrollToContactReveal(scrollTo);
+                return;
+              }
+              if (u.hash === '#projects') {
+                // Mirrors #contact: the first project's split is scrub-tied and
+                // closed at progress 0, so play it open at reading pace. The
+                // returned phase-2 timeout is dropped here (as with #contact) —
+                // the provider's single-flight idle guard bounds re-entrancy
+                // across the brief approach window.
+                scrollToProjectsReveal(scrollTo);
                 return;
               }
               const el = document.querySelector(u.hash);
