@@ -19,6 +19,11 @@ const doppioOne = Doppio_One({
   subsets: ["latin"],
   variable: "--font-navbar",
   display: "swap",
+  // The navbar brand (the only above-the-fold consumer) is hidden/animated in
+  // during the welcome→hero handoff, so the font isn't painted at first load.
+  // Preloading it buys nothing and triggers Firefox's "preloaded but not used"
+  // warning. display:swap still handles the fallback when it does paint.
+  preload: false,
 });
 
 export const metadata: Metadata = {

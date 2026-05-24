@@ -265,9 +265,14 @@ export function InteractiveBackground() {
         uHoverBoost: gl.getUniformLocation(program, 'uHoverBoost'),
       };
       glRef.current = gl;
-      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
-      const renderer = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : 'unknown';
-      console.info(`[InteractiveBackground] mode=webgl renderer="${renderer}"`);
+      // Use the standard RENDERER param. WEBGL_debug_renderer_info is
+      // deprecated in Firefox (its UNMASKED_* values are a fingerprinting
+      // surface); RENDERER may be masked in some browsers, which is fine for
+      // this dev-only diagnostic.
+      if (process.env.NODE_ENV !== 'production') {
+        const renderer = gl.getParameter(gl.RENDERER) || 'unknown';
+        console.info(`[InteractiveBackground] mode=webgl renderer="${renderer}"`);
+      }
       return true;
     };
 
