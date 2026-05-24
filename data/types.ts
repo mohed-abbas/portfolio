@@ -480,6 +480,13 @@ export interface VisionContent {
   titleLine2: string;
   titleAccent: string;
   body: string[];
+  /**
+   * Optional: the exact word in titleLine1 to wrap in the underline span.
+   * When omitted, the component falls back to underlining the last word of
+   * titleLine1 (legacy position-based behaviour). Populate this field when
+   * the emphasised word is not the last word in the string.
+   */
+  titleUnderlineWord?: string;
 }
 
 export interface PullLine {
