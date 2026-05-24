@@ -55,6 +55,8 @@ function Star({ variant }: { variant: 'outline' | 'filled' }) {
  * cleanup — no shared GSAP context state to confuse.
  */
 
+// Dark curtain fill — fixed ink, intentionally theme-independent so the
+// curtains stay dark in both light and dark mode.
 const INK = '#1b2028';
 
 // Label-fade timing literals, shared by the exit (fade-in) and enter
