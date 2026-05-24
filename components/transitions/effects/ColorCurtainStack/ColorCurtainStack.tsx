@@ -55,7 +55,7 @@ function Star({ variant }: { variant: 'outline' | 'filled' }) {
  * cleanup — no shared GSAP context state to confuse.
  */
 
-const INK = '#1b2028';
+const INK = '#111416';
 
 // Label-fade timing literals, shared by the exit (fade-in) and enter
 // (fade-out) branches of the timeline. Hoisted so the six `tl.to` label
