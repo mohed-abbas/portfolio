@@ -91,8 +91,10 @@
         "copy": "<b>Systems & APIs.</b> REST and GraphQL endpoints, auth, background jobs, and the boring contracts that hold a product together. Node and Python services backed by Postgres, Redis, and a clear data model.",
         "tools": [
           "Node.js",
-          "NestJS",
           "Python",
+          "PHP",
+          "Laravel",
+          "Moodle",
           "PostgreSQL",
           "Prisma",
           "Redis",
