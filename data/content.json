@@ -185,8 +185,9 @@
     },
     "row3": {
       "lead": "We can talk in more detail at",
-      "emailLabel": "name@website.com",
-      "options": ["WhatsApp / LinkedIn", "Email"],
+      "emailLabel": "your email",
+      "phoneLabel": "your number",
+      "options": ["WhatsApp", "Email"],
       "defaultSelected": "Email"
     },
     "row4": {

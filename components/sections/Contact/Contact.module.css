@@ -257,6 +257,12 @@
     overflow: hidden;
     line-height: 1;
     vertical-align: baseline;
+    /* Extend the clip box ~0.15em below the line-height:1 box so the RESTING
+       layer's descender ink (g, p, y…) isn't chopped at the bottom edge. The
+       equal negative margin keeps the margin-box — and the flex centering —
+       unchanged, so only the clipped region grows, not the layout. */
+    padding-bottom: 0.15em;
+    margin-bottom: -0.15em;
 }
 
 .chipTextBase {
@@ -269,7 +275,10 @@
     top: 0;
     left: 0;
     display: flex;
-    color: var(--color-accent-purple);
+    /* Chips keep their own text color through the flip (no accent swap) —
+       inherit so it stays dark when unselected and white when selected, rather
+       than flipping dark-on-dark. The submit button keeps the accent clone. */
+    color: inherit;
 }
 
 .chipChar {
@@ -277,13 +286,17 @@
     transition: transform 0.4s var(--ease-out-expo);
 }
 
+/* Overshoot past 100% so descender ink (g, p, y, j, q) — which protrudes
+   ~18% of font-size below the line-height:1 clip box — fully clears the wrap
+   instead of poking back in at the top of the off-canvas layer. Symmetric on
+   both layers so base-out and clone-in keep matched velocity. */
 .chipTextClone .chipChar {
-    transform: translateY(100%);
+    transform: translateY(135%);
 }
 
 .chip:hover .chipTextBase .chipChar,
 .chip:focus-visible .chipTextBase .chipChar {
-    transform: translateY(-100%);
+    transform: translateY(-135%);
 }
 
 .chip:hover .chipTextClone .chipChar,
@@ -349,6 +362,10 @@
     overflow: hidden;
     line-height: 1;
     vertical-align: baseline;
+    /* Extend the clip box below the line-height:1 box so the resting layer's
+       descender ink isn't chopped at the bottom (see chip note above). */
+    padding-bottom: 0.15em;
+    margin-bottom: -0.15em;
 }
 
 .submitTextBase {
@@ -369,13 +386,15 @@
     transition: transform 0.4s var(--ease-out-expo);
 }
 
+/* Overshoot past 100% so descender ink clears the line-height:1 clip box
+   (see chip note above) — otherwise the g/p/y tail stays stuck at the top. */
 .submitTextClone .submitChar {
-    transform: translateY(100%);
+    transform: translateY(135%);
 }
 
 .submit:hover .submitTextBase .submitChar,
 .submit:focus-visible .submitTextBase .submitChar {
-    transform: translateY(-100%);
+    transform: translateY(-135%);
 }
 
 .submit:hover .submitTextClone .submitChar,
@@ -488,22 +507,14 @@
         transform: none;
     }
 
-    /* Same fallback for chips: drop the split-flap, fade to accent. */
+    /* Same fallback for chips: drop the split-flap. Chips keep their normal
+       text color on hover (no accent) — only the border darkens. */
     .chipTextWrap {
         overflow: visible;
     }
 
-    .chipTextBase {
-        transition: color 0.32s var(--ease-out-expo);
-    }
-
     .chipTextClone {
         display: none;
-    }
-
-    .chip:hover .chipTextBase,
-    .chip:focus-visible .chipTextBase {
-        color: var(--color-accent-purple);
     }
 
     .chip:hover .chipTextBase .chipChar,

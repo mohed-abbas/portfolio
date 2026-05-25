@@ -162,6 +162,7 @@ export interface ContactContent {
   row3: {
     lead: string;
     emailLabel: string;
+    phoneLabel: string;
     options: string[];
     defaultSelected: string;
   };

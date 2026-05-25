@@ -284,10 +284,11 @@ export function Contact() {
             <RevealInput
               value={email}
               onChange={(v) => { setEmail(v); if (emailError) setEmailError(false); }}
-              placeholder={c.row3.emailLabel}
+              placeholder={channel === 'WhatsApp' ? c.row3.phoneLabel : c.row3.emailLabel}
               name="email"
-              type="email"
+              type={channel === 'WhatsApp' ? 'tel' : 'email'}
               error={emailError}
+              grow
             />
             <div className={styles.chipGroup} role="group" aria-label="Channel">
               {c.row3.options.map((opt) => (
