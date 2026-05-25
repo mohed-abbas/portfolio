@@ -181,7 +181,7 @@
     },
     "row2": {
       "lead": "Let's connect about",
-      "options": ["Collaboration", "Potential Project", "Networking"]
+      "options": ["Full-Time Role", "Freelance / Contract", "Building a Product"]
     },
     "row3": {
       "lead": "We can talk in more detail at",
@@ -193,7 +193,7 @@
       "lead": "In short,",
       "label": "Type your message"
     },
-    "submit": "Send a form",
+    "submit": "Send message",
     "fallback": {
       "label": "Or just write me at",
       "email": "hello@mohedabbas.com"
