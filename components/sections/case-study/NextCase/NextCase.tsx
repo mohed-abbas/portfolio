@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { TransitionLink } from "@/components/transitions";
+import { StarIcon } from "@/components/sections/Hero/StarIcon";
 import { getProjectThemeColor } from "@/data";
 import type { CaseStudyHeroContent, NextCaseContent } from "@/data";
 import styles from "./NextCase.module.css";
@@ -24,7 +25,10 @@ export const NextCase = ({ slug, counter, target }: NextCaseProps) => {
   const inner: ReactNode = (
     <>
       <div className={styles.left}>
-        <span className={styles.eyebrow}>{counter}</span>
+        <span className={styles.eyebrow}>
+          <StarIcon variant="outline" baseClassName={styles.starIcon} />
+          {counter}
+        </span>
         <h2 className={styles.title}>
           {target?.title ?? ""}
           <span className={styles.titleAccent}>.</span>

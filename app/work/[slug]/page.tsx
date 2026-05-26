@@ -9,6 +9,7 @@ import { Pull } from '@/components/sections/case-study/Pull';
 import { Product } from '@/components/sections/case-study/Product';
 import { Dashboard } from '@/components/sections/case-study/Dashboard';
 import { Toggle } from '@/components/sections/case-study/Toggle';
+import { Architecture } from '@/components/sections/case-study/Architecture';
 import { Outcomes } from '@/components/sections/case-study/Outcomes';
 import { Colophon } from '@/components/sections/case-study/Colophon';
 import { NextCase } from '@/components/sections/case-study/NextCase';
@@ -66,6 +67,7 @@ export default async function CaseStudyPage({
       {entry.product && <Product {...entry.product} />}
       {entry.dashboard && <Dashboard {...entry.dashboard} />}
       {entry.toggle && <Toggle {...entry.toggle} />}
+      {entry.architecture && <Architecture {...entry.architecture} />}
       {entry.outcomes && <Outcomes {...entry.outcomes} />}
       {entry.colophon && <Colophon {...entry.colophon} />}
       {entry.nextCase && (

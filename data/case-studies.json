@@ -2,10 +2,10 @@
   "tasktrox": {
     "hero": {
       "title": "TASKTROX",
-      "lede": "A complete identity and product redesign for a project-management platform built for architecture studios, moving from spreadsheet sprawl to a single, sensorial workspace.",
+      "lede": "A full-stack project-management tool that replaces spreadsheet, Notion, and Trello sprawl with one workspace teams actually open every day. I engineered it end to end: a Next.js front end and a Node and Postgres back end, on a Figma design by Hamail Hassan.",
       "image": "/images/work/tasktrox/Hero.jpg",
       "alt": "Tasktrox marketing landing",
-      "pills": ["Architecture · SaaS", "Brand · Product · Web"],
+      "pills": ["Full-Stack · SaaS Product", "Next.js · Node · Postgres"],
       "badge": "View\nCase",
       "backHref": "/"
     },
@@ -14,80 +14,79 @@
         {
           "label": "Client",
           "primary": "Tasktrox",
-          "secondary": "Internal venture"
+          "secondary": "Self-initiated SaaS"
         },
-        { "label": "Year", "primary": "2024", "secondary": "April → November" },
+        { "label": "Year", "primary": "2024", "secondary": "Shipped & in use" },
         {
           "label": "Role",
-          "primary": "Lead",
-          "secondary": "Brand · Product · Web"
+          "primary": "Engineer",
+          "secondary": "Full-stack development"
         },
         {
           "label": "Stack",
-          "primary": "Next · GSAP",
-          "secondary": "Lenis · Tailwind"
+          "primary": "Next · Node",
+          "secondary": "Postgres · Redis · Docker"
         },
         {
-          "label": "Reach",
-          "primary": "+38",
-          "secondary": "Studios in private beta"
+          "label": "Status",
+          "primary": "Live",
+          "secondary": "Public, paid plans next"
         }
       ]
     },
     "context": {
       "label": "Context",
       "facts": [
-        "**Discipline**Brand · Product · Web",
-        "**Duration**32 weeks",
-        "**Team**1 designer · 2 engineers · 1 PM"
+        "**Role**Full-stack engineer",
+        "**Stack**Next · Node · Postgres · Redis · Docker",
+        "**Team**1 engineer (me) · 1 designer"
       ],
       "body": [
-        "**Tasktrox arrived** with a stack of Notion docs, a battle-scarred Trello board, and one question. Why does software for architects feel like software for accountants?",
-        "The brief was deceptively simple: build a project-management tool that actually feels like the studios it serves. Tactile. Editorial. Quietly precise. Not another rectangle of tabs and toasts.",
-        "We threw out the SaaS playbook on day one. **No purple gradients, no dashboard spaghetti, no AI-as-mascot.** Instead we anchored the system in the language architects already speak: gridlines, plates, sectional cuts, marginalia."
+        "**Tasktrox started** as a tool for a friend's company, a small team drowning in spreadsheets, Notion docs, and a Trello board nobody trusted. They needed one place to see who was doing what, by when.",
+        "The brief was narrow and honest: a project-management tool simple enough that a team would actually open it every day. **No feature bloat, no dashboard spaghetti, no AI-as-mascot.** Just the handful of things a team needs to coordinate work, built well.",
+        "Hamail Hassan handled the design in Figma. **I built everything else.** Front end, API, database, caching, and the containers it all runs in. One engineer owning the full stack end to end.",
+        "When the original company moved on, we shipped Tasktrox live as a public product instead of shelving it. It quietly found real users beyond the team it was built for, and paid plans come next."
       ]
     },
     "vision": {
       "label": "The Vision",
-      "titleLine1": "A workspace that respects",
-      "titleLine2": "the",
-      "titleAccent": "craft.",
+      "titleLine1": "A tool we'd",
+      "titleLine2": "actually",
+      "titleAccent": "open.",
       "body": [
-        "Three principles shaped every screen. **One: replace dashboards with documents.** A studio thinks in artifacts, not metrics, so the product treats every project as a living folio you can mark up, not a feed you scroll past.",
-        "**Two: make the chrome quiet.** Toolbars and toasts that earn their pixels. State changes that read as movement, not noise. **Three: keep the tool truthful.** If a number is provisional, say so. If a milestone slipped, show the slippage rather than recolour the badge."
+        "Three rules shaped the build. **One: fewer screens, done well.** A small team doesn't need fifty features. It needs the five it touches daily to be fast and obvious. Scope was a feature, not a limitation.",
+        "**Two: keep the data honest.** If a task is blocked, the board says blocked, with no silently recoloured badges. State lives in Postgres and changes through real transitions, never optimistic guesses. **Three: it has to feel instant.** Redis caches the hot paths, the API stays lean, and motion is 240ms, quick enough to stay out of the way."
       ]
     },
     "pull": {
       "attribution": {
-        "name": "Léa Marchand",
-        "role": "Principal",
-        "location": "Atelier Marchand, Lyon"
+        "name": "Martina",
+        "role": "Full-stack engineer"
       },
       "act2": [
-        { "text": "“For the first time" },
-        { "text": "the software" },
-        { "text": "respects", "accent": true }
+        { "text": "“Tasktrox is" },
+        { "text": "very cute and clean." }
       ],
       "act3": [
-        { "text": "the way our studio" },
-        { "text": "actually thinks.”" }
+        { "text": "I actually use it" },
+        { "text": "at work.”", "accent": true }
       ]
     },
     "product": {
       "label": "The Product",
       "titleLine1": "The dashboard,",
-      "titleLine2": "read like a",
-      "titleAccent": "plate.",
+      "titleLine2": "built to",
+      "titleAccent": "scan.",
       "body": [
-        "The dashboard treats every project as an architectural plate. **Sectional header, living grid, margin notes** the right rail is for context, never controls, lifted directly from the way studios annotate drawings.",
-        "Cards align to the 8-pt grid but breathe within it. No two states look identical without reason. Motion is 240ms expo.out, fast enough to feel earned, slow enough to read."
+        "The dashboard is where the team lives: every project at a glance, **status and owner up front, detail one click away.** The right rail is for context, never controls.",
+        "Under it sit the boring contracts that hold it together: a Prisma schema modelling projects, tasks and members; REST endpoints with real auth; Redis caching the views that get hit most. Cards align to an 8-pt grid, and motion is 240ms expo.out, fast enough to feel earned, quick enough to stay out of the way."
       ]
     },
     "dashboard": {
-      "badge": "Live\nDemo",
-      "figcaption": "Fig. 04 · Studio dashboard · 06 / 24",
+      "badge": "In\nUse",
+      "figcaption": "Fig. 04 · Project dashboard · 2024",
       "image": "/images/work/tasktrox/Dashboard.jpg",
-      "alt": "Tasktrox studio dashboard"
+      "alt": "Tasktrox project dashboard"
     },
     "toggle": {
       "label": "The Build",
@@ -99,15 +98,15 @@
           "name": "Marketing landing",
           "image": "/images/work/tasktrox/Hero.jpg",
           "color": "#E6F4F8",
-          "description": "Hero composition, scroll-led greeting",
+          "description": "Landing page, scroll-led hero",
           "meta": "2400 × 1500"
         },
         {
           "num": "02",
-          "name": "Studio dashboard",
+          "name": "Project dashboard",
           "image": "/images/work/tasktrox/Dashboard.jpg",
           "color": "#FBE4E5",
-          "description": "Sectional header + living grid",
+          "description": "Status grid, owner + due date",
           "meta": "2400 × 1500"
         },
         {
@@ -121,10 +120,10 @@
         },
         {
           "num": "04",
-          "name": "Studio profile",
+          "name": "About page",
           "image": "/images/work/tasktrox/About.jpg",
           "color": "#E8EFEA",
-          "description": "Folio-style team page",
+          "description": "Team page, folio layout",
           "meta": "2400 × 1500",
           "hasGalleryCaption": true
         },
@@ -142,7 +141,7 @@
           "name": "Testimonials",
           "image": "/images/work/tasktrox/testimonials.jpg",
           "color": "#EFE8D3",
-          "description": "Studio quotes, marginalia",
+          "description": "Quotes section, marginalia",
           "meta": "2400 × 1500",
           "hasGalleryCaption": true
         },
@@ -157,34 +156,66 @@
         }
       ]
     },
+    "architecture": {
+      "label": "Architecture",
+      "titleLine1": "Under the",
+      "titleAccent": "hood.",
+      "intro": "Behind the screens, Tasktrox is a Kanban project tool I built and run end to end: a typed React client, a versioned REST API, and a Postgres core with Redis in front, **all containerised and shipped with zero-downtime deploys.**",
+      "layers": [
+        {
+          "name": "Client",
+          "tech": ["Next.js", "Tailwind", "TypeScript"],
+          "detail": "Server-rendered React, typed end to end, talking to the API over a versioned REST contract."
+        },
+        {
+          "name": "API",
+          "tech": ["Node", "Express", "TypeScript"],
+          "detail": "Auth on every route: Google and Apple OAuth plus email login, JWT access tokens with refresh-token rotation, and four access roles from owner to viewer."
+        },
+        {
+          "name": "Data",
+          "tech": ["PostgreSQL 16", "Prisma", "Redis 7"],
+          "detail": "A 12-model Prisma schema: projects, columns, tasks, assignees, labels, comments and attachments, with soft deletes and a full activity log. Redis caches the read-heavy board views."
+        },
+        {
+          "name": "Runtime",
+          "tech": ["Docker", "Nginx", "GHCR", "GitHub Actions"],
+          "detail": "Every service in its own container, built in CI and pushed to GHCR. Self-hosted behind Nginx on isolated networks, released blue/green for zero downtime."
+        }
+      ],
+      "facts": [
+        { "value": "12", "title": "Models", "caption": "in the Prisma schema" },
+        { "value": "4", "title": "Access roles", "caption": "owner to viewer, per project" },
+        { "value": "0", "title": "Downtime", "caption": "blue/green releases" },
+        { "value": "2", "title": "Networks", "caption": "proxy and data, isolated" }
+      ]
+    },
     "outcomes": {
       "label": "Outcome",
-      "titleLine1": "What changed,",
+      "titleLine1": "What it is,",
       "titleLine2": "in",
       "titleAccent": "numbers.",
       "metrics": [
         {
-          "value": "38",
-          "unit": "+",
-          "title": "Studios",
-          "caption": "onboarded in private beta"
+          "value": "7",
+          "title": "Surfaces",
+          "caption": "shipped to production"
         },
         {
-          "value": "2.4",
-          "unit": "×",
-          "title": "Time saved",
-          "caption": "weekly admin hours"
-        },
-        {
-          "value": "94",
-          "unit": "%",
-          "title": "Retention",
-          "caption": "3-month active studios"
-        },
-        {
-          "value": "01",
-          "title": "Tool replaced",
+          "value": "3",
+          "title": "Tools replaced",
           "caption": "Notion · Trello · sheets"
+        },
+        {
+          "value": "1",
+          "title": "Engineer",
+          "caption": "front end to infra"
+        },
+        {
+          "value": "100",
+          "unit": "%",
+          "title": "Self-hosted",
+          "caption": "Dockerised, our own box"
         }
       ]
     },
@@ -194,35 +225,25 @@
       "titleAccent": "circle.",
       "credits": [
         {
-          "role": "Design Lead",
-          "primary": "Mohed Abbas",
-          "secondary": "Brand · Product · Motion"
-        },
-        {
           "role": "Engineering",
-          "primary": "Aria Cole",
-          "secondary": "Sven Ortega"
+          "primary": "Mohed Abbas",
+          "secondary": "Full stack · FE, API, DB, infra"
         },
         {
-          "role": "Product",
-          "primary": "Mira Tarek",
-          "secondary": "Strategy & PM"
-        },
-        {
-          "role": "Special thanks",
-          "primary": "Atelier Marchand",
-          "secondary": "Studio Petralla, Cadence Works"
+          "role": "Design",
+          "primary": "Hamail Hassan",
+          "secondary": "Figma · UI"
         }
       ],
       "rightLabel": "About M.A",
       "bio": [
-        "Mohed Abbas is an independent designer working at the seam of brand, product and the small motion details that make software feel made. Selected work from 2018 → present.",
-        "Currently taking on one new engagement per quarter, typically a 6 to 14-week sprint covering identity, a flagship surface, and the design system that holds them together."
+        "Mohed Abbas is a full-stack web engineer. He builds web products end to end: interfaces in React and Next, APIs and services in Node, and the Postgres, Redis and Docker plumbing that keeps them running.",
+        "Tasktrox started as a tool for a friend's company and outlived the company itself. It's now live as a public product, picking up real users beyond the team it was built for. Currently open to full-time roles and freelance builds."
       ],
       "actions": [
-        { "label": "Start a project →" },
-        { "label": "Read approach" },
-        { "label": "All works" }
+        { "label": "Visit Tasktrox ↗", "href": "https://tasktrox.thecodeman.cloud/" },
+        { "label": "All work", "href": "/work2" },
+        { "label": "Back home", "href": "/" }
       ]
     },
     "nextCase": {

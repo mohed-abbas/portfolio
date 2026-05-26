@@ -102,7 +102,14 @@ export const Colophon = ({ leftLabel, titleLine1, titleAccent, credits, rightLab
           <div ref={actionsRef} className={styles.actions}>
             {actions.map((action, i) =>
               action.href ? (
-                <a key={action.label} href={action.href} className={actionClassFor(i)}>
+                <a
+                  key={action.label}
+                  href={action.href}
+                  className={actionClassFor(i)}
+                  {...(/^https?:\/\//.test(action.href)
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                >
                   {action.label}
                 </a>
               ) : (

@@ -554,6 +554,32 @@ export interface OutcomesContent {
   metrics: OutcomeMetric[];
 }
 
+export interface ArchitectureLayer {
+  /** Layer name, e.g. "Client", "API", "Data", "Runtime". */
+  name: string;
+  /** Tech chips for the layer, e.g. ["Next.js", "Tailwind"]. */
+  tech: string[];
+  /** One-line description (supports inline <b> via renderInline). */
+  detail: string;
+}
+
+export interface ArchitectureFact {
+  value: string;
+  unit?: string;
+  title: string;
+  caption: string;
+}
+
+export interface ArchitectureContent {
+  label: string;
+  titleLine1: string;
+  titleAccent: string;
+  /** Lead paragraph (supports inline <b>). */
+  intro: string;
+  layers: ArchitectureLayer[];
+  facts: ArchitectureFact[];
+}
+
 export interface ColophonCredit {
   role: string;
   primary: string;
@@ -589,6 +615,7 @@ export interface CaseStudy {
   product?: ProductContent;
   dashboard?: DashboardContent;
   toggle?: ToggleContent;
+  architecture?: ArchitectureContent;
   outcomes?: OutcomesContent;
   colophon?: ColophonContent;
   nextCase?: NextCaseContent;

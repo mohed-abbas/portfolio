@@ -46,12 +46,10 @@
     color: inherit;
 }
 
-.eyebrow::before {
-    content: '';
-    width: 28px;
-    height: 2px;
-    background: currentColor;
-    border-radius: 2px;
+.eyebrow .starIcon {
+    width: 1.2em;
+    height: 1.2em;
+    flex-shrink: 0;
 }
 
 .title {

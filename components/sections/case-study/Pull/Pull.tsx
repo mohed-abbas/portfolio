@@ -36,7 +36,7 @@ export const Pull = ({ attribution, act2, act3 }: PullContent) => {
     <section
       ref={sectionRef}
       className={styles.pull}
-      aria-label="Client testimonial"
+      aria-label="User testimonial"
     >
       <figure className={styles.figure}>
         <div ref={stickyRef} className={styles.sticky}>
