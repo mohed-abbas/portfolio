@@ -115,3 +115,17 @@ export const TOOL_OPACITY_RANGE = 0.7;
 /* Extra scale applied to the on-needle tool label: scale = 1 + t * LABEL_SCALE_GAIN,
    so the centred label grows by up to 18% as it locks onto the needle. */
 export const LABEL_SCALE_GAIN = 0.18;
+
+/* Tool-label simulated-weight ramp (CSS-only — no variable font required).
+   The dial labels stay on the static 400 cut of PP Neue Montreal; their
+   apparent weight is faked via `-webkit-text-stroke-width` driven from a
+   `--weight-fx` custom property that applyDial writes per frame as a 0..1
+   value (= the same smoothstepped `eased` used for the bar's scaleY). CSS
+   maps that 0..1 onto a stroke width by multiplying by TOOL_STROKE_MAX_PX,
+   which is set on the dialStrip as `--tool-stroke-max-px` at mount so the
+   visual cap lives next to the other dial tunables here rather than buried
+   in CSS.
+   0.6px is the sweet spot for PP Neue Montreal Book: enough thickening to
+   read as a weight change, low enough to avoid visible outlining/halo on
+   the geometric glyphs. Increase for chunkier peaks, decrease for subtler. */
+export const TOOL_STROKE_MAX_PX = 0.6;

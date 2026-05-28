@@ -19,6 +19,7 @@ import {
   PIN_SCRUB,
   TOOL_OPACITY_MIN,
   TOOL_OPACITY_RANGE,
+  TOOL_STROKE_MAX_PX,
   ZONES,
   formatZoneIndex,
   zoneRail,
@@ -158,6 +159,7 @@ export function DialServicesV2() {
       const lastToolOpacityQ = new Array<number>(cells.length).fill(NaN);
       const lastToolTranslateQ = new Array<number>(cells.length).fill(NaN);
       const lastToolScaleQ = new Array<number>(cells.length).fill(NaN);
+      const lastToolWeightQ = new Array<number>(cells.length).fill(NaN);
       /* Quantisation scales. Opacity/scale to 1/1000 (3 decimals), the label
          translate to whole-px — finer than a pixel/0.001 is below perceptible
          and below sub-pixel raster precision, so rounding here is safe. */
@@ -187,6 +189,11 @@ export function DialServicesV2() {
          BAR_MAX_FRACTION. Set once here (custom props inherit to the bars) so
          the two can't drift. */
       dialStripEl.style.setProperty('--bar-max-fraction', String(BAR_MAX_FRACTION));
+      /* Single source of truth for the tool-label simulated-weight stroke cap:
+         applyDial writes `--weight-fx` (0..1) per label per frame, CSS scales
+         it by this px value to get the stroke width. Inherits to every
+         .dialTool descendant so per-cell writes don't need to repeat the cap. */
+      dialStripEl.style.setProperty('--tool-stroke-max-px', `${TOOL_STROKE_MAX_PX}px`);
 
       /* All in-flight gsap.delayedCall and tween handles created inside
          transitionZone. Tracking them lets the unmount cleanup kill any
@@ -398,6 +405,19 @@ export function DialServicesV2() {
             lastToolTranslateQ[i] = toolTranslateQ;
             lastToolScaleQ[i] = toolScaleQ;
             el.style.transform = `translateY(${toolTranslateQ}px) scale(${toolScaleQ / SCALE_Q})`;
+          }
+          /* Simulated weight: write the smoothstepped `eased` proximity as the
+             `--weight-fx` custom property; CSS multiplies it by --tool-stroke-
+             max-px to derive the actual stroke width, so the label visually
+             "thickens" in lock-step with its bar's scaleY (both ramps share
+             `eased`). No variable font required — works with the existing
+             static PP Neue Montreal Book. Quantised to 1/1000 to match the
+             other Q caches; we only rewrite the property when the rounded
+             value actually moves. */
+          const toolWeightQ = Math.round(eased * SCALE_Q);
+          if (toolWeightQ !== lastToolWeightQ[i]) {
+            lastToolWeightQ[i] = toolWeightQ;
+            el.style.setProperty('--weight-fx', String(toolWeightQ / SCALE_Q));
           }
         }
 
