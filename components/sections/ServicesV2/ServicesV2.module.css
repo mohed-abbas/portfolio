@@ -274,7 +274,7 @@
      max-px (set on .dialStrip at mount from TOOL_STROKE_MAX_PX) so the
      glyph visually thickens in lock-step with its bar's scaleY. Stroke
      color tracks currentColor so light/dark themes resolve correctly. */
-  -webkit-text-stroke-width: calc(var(--weight-fx, 0) * var(--tool-stroke-max-px, 0.6px));
+  -webkit-text-stroke-width: calc(var(--weight-fx, 0) * var(--tool-stroke-max-px, 0.4px));
   -webkit-text-stroke-color: currentColor;
   /* No transition: opacity + transform + --weight-fx are written every
      scrub frame by applyDial, so they track the scroll directly (the scrub

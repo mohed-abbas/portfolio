@@ -125,7 +125,9 @@ export const LABEL_SCALE_GAIN = 0.18;
    which is set on the dialStrip as `--tool-stroke-max-px` at mount so the
    visual cap lives next to the other dial tunables here rather than buried
    in CSS.
-   0.6px is the sweet spot for PP Neue Montreal Book: enough thickening to
-   read as a weight change, low enough to avoid visible outlining/halo on
-   the geometric glyphs. Increase for chunkier peaks, decrease for subtler. */
-export const TOOL_STROKE_MAX_PX = 0.6;
+   0.4px is calibrated to mimic font-weight 600 (semi-bold) on PP Neue
+   Montreal Book at the dial's font-size: enough thickening to read as a
+   deliberate emphasis on the on-needle label, low enough to avoid visible
+   outlining/halo on the geometric glyphs. Empirical mapping for tuning:
+   ~0.2 ≈ weight 500, ~0.4 ≈ weight 600, ~0.6 ≈ weight 700, ~0.8 ≈ weight 800. */
+export const TOOL_STROKE_MAX_PX = 0.4;
