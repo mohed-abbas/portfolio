@@ -181,7 +181,11 @@
     },
     "row2": {
       "lead": "Let's connect about",
-      "options": ["Full-Time Role", "Freelance / Contract", "Building a Product"]
+      "options": [
+        "Full-Time Role",
+        "Freelance / Contract",
+        "Building a Product"
+      ]
     },
     "row3": {
       "lead": "We can talk in more detail at",
@@ -209,7 +213,7 @@
     "intro": {
       "eyebrow": "Index of Work",
       "headline": "works.",
-      "lede": "<b>An index of selected projects — built and shipped, not just mocked up.</b> Hover any one to lock its accent and pause its ticker. Click to step inside."
+      "lede": "<b>An index of selected projects, built and shipped, not just mocked up.</b> Hover any one to lock its accent and pause its ticker. Click to step inside."
     },
     "legend": {
       "number": "№",
