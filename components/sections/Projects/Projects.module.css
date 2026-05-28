@@ -131,7 +131,12 @@ a.projectSticky {
 .textBottom .textBacking { top: 0; }
 
 .textTop {
-    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+    /* Bottom edge extended 1px past 50% so the upper layer always covers any
+       clip-path rasterization gap at the join with .textBottom. Asymmetric on
+       purpose: z-index 12 > .textBottom's 11 means the 1px overlap is invisible
+       (same glyphs, same color, same position). Closes the resolution-dependent
+       seam visible on 2K/4K and some 1080p displays in the idle state. */
+    clip-path: polygon(0 0, 100% 0, 100% calc(50% + 1px), 0 calc(50% + 1px));
     z-index: 12;
     transform-origin: center 50%; /* Pivot from the cut line */
 }
