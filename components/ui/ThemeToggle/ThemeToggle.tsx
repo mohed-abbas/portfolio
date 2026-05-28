@@ -30,6 +30,9 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      // Opt out of the menu's `inert` sweep so this control stays clickable
+      // on top of the menu overlay. See Menu.tsx body-children sweep.
+      data-menu-passthrough=""
     >
       {isDark ? (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

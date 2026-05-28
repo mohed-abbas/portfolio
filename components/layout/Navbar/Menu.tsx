@@ -101,6 +101,12 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
         // Keep the menu trigger's host (e.g. the navbar) interactive — its
         // toggle button doubles as the close affordance while the menu is open.
         if (child.querySelector('[aria-controls="main-menu"]')) return;
+        // Floating controls (ThemeToggle, BackToTop) opt out via this attribute
+        // so they remain clickable on top of the menu overlay. `matches` covers
+        // the case where the body child IS the control (current shape);
+        // `querySelector` survives a future wrapper around the control.
+        if (child.matches('[data-menu-passthrough]')) return;
+        if (child.querySelector('[data-menu-passthrough]')) return;
         child.setAttribute('inert', '');
         inertedSiblings.push(child);
       });
@@ -164,6 +170,18 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  // External close requests: passthrough floating controls (e.g. BackToTop)
+  // dispatch `menu:close` to request the menu fold up before their own action
+  // runs. Same in-flight guard as Escape so a request mid-animation is dropped
+  // rather than re-entering the open/close pipeline.
+  useEffect(() => {
+    const handleExternalClose = () => {
+      if (isOpen && !isAnimating.current) onClose();
+    };
+    document.addEventListener('menu:close', handleExternalClose);
+    return () => document.removeEventListener('menu:close', handleExternalClose);
   }, [isOpen, onClose]);
 
   // Animation effect
