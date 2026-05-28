@@ -8,7 +8,7 @@ import { TransitionLink } from '@/components/transitions';
 import { StarIcon } from '@/components/sections/Hero/StarIcon';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import styles from './Projects.module.css';
-import { content, getCaseStudySlugs } from '@/data';
+import { content, getCaseStudySlugs, caseStudies } from '@/data';
 
 const caseStudySlugs = new Set(getCaseStudySlugs());
 
@@ -330,7 +330,7 @@ export const Projects = () => {
 
                    {/* Meta */}
                    <div className={styles.projectMeta}>
-                       <div className={styles.pill}>{project.year}</div>
+                       <div className={styles.pill}>{caseStudies[project.id]?.hero?.pills?.[1] ?? project.year}</div>
                        <div className={styles.pill}>{project.category}</div>
                    </div>
                </>
