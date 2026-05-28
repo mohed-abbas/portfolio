@@ -450,6 +450,21 @@ export function DialServicesV2() {
            pin-spacer measurement on refresh. */
         pinType: 'fixed',
         scrub: PIN_SCRUB,
+        /* Lenis-aware engagement (mirrors Archive.tsx). anticipatePin defaults
+           to 1, which engages the pin early based on scroll velocity. Lenis's
+           velocity is smoothed (LenisProvider drives Lenis off gsap.ticker,
+           no normalizeScroll) so the prediction overshoots at the
+           Philosophy → ServicesV2 seam, snapping the pin in a few frames
+           before the scroll actually arrives. 0 = lock exactly at top top. */
+        anticipatePin: 0,
+        /* Required for a scrubbed pin under Lenis to fully reconcile its
+           bounds on a live window.resize (DevTools open/close, mobile URL
+           bar). Without this flag, the scrubbed dial's progress mapping
+           keeps stale scroll-pixel coordinates after resize, so the pin's
+           release point drifts and downstream sections (Projects) scroll
+           into the same viewport area, painting over the pinned .pin.
+           Matches Archive.tsx:257. */
+        invalidateOnRefresh: true,
         onUpdate: (self) => applyDial(self.progress),
         /* Preserve user scroll position across refresh. Forcing progress
            back to 0 here would yank the dial to zone 0 on every resize,

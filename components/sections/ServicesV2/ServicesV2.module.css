@@ -21,6 +21,10 @@
 
 .shell {
   position: relative;
+  /* Stable viewport-relative size on the trigger element so its bounding rect
+     on a live window.resize is independent of the GSAP-inserted pin-spacer.
+     Mirrors Philosophy/Archive's .section { min-height: 100vh }. */
+  min-height: 100vh;
 }
 
 .pin {
