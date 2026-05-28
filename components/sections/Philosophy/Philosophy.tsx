@@ -49,29 +49,10 @@ export function Philosophy() {
       pinType: 'fixed',
     });
 
-    // Parallax exit animation - section scrolls slower after pin ends.
-    // Use a functional start so the value re-evaluates on every refresh
-    // (resize, font-load), keeping the parallax aligned with the live
-    // pinTrigger.end. invalidateOnRefresh forces the tween to discard cached
-    // values and re-pull start/end on refresh.
-    const parallaxTween = gsap.to(sectionRef.current, {
-      scrollTrigger: {
-        trigger: wrapperRef.current,
-        start: () => `top+=${pinTrigger.end}px top`,
-        end: 'bottom bottom',
-        scrub: 2.5,
-        invalidateOnRefresh: true,
-      },
-      yPercent: -35,
-      force3D: true,
-      ease: 'none',
-    });
-
     // PERF: Explicit cleanup to prevent memory leaks
     return () => {
       pinTrigger.kill();
       if (labelTween.scrollTrigger) labelTween.scrollTrigger.kill();
-      if (parallaxTween.scrollTrigger) parallaxTween.scrollTrigger.kill();
     };
   }, { scope: wrapperRef, dependencies: [reducedMotion] });
 

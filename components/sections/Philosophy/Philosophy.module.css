@@ -4,11 +4,15 @@
 }
 
 .section {
-  min-height: 150vh;
+  /* Sized to one viewport so the pinned read fills the screen exactly, with
+     no empty bottom runway left over. Mirrors Archive's section sizing. */
+  min-height: 100vh;
   padding: 150px 8%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  /* Center the statement in the pinned viewport so it reads as the focal
+     block instead of clinging to the top edge. */
+  justify-content: center;
   position: relative;
   contain: content;
 }
@@ -55,7 +59,6 @@
 @media (max-width: 768px) {
   .section {
     padding: 100px 5%;
-    min-height: 120vh;
   }
 
   .metaLabel {
@@ -67,7 +70,6 @@
 @media (max-width: 480px) {
   .section {
     padding: 80px 4%;
-    min-height: 100vh;
   }
 
   .plusIcon {
