@@ -62,6 +62,7 @@ export type {
   SkillsContent,
   WelcomeScreenContent,
   PhilosophyContent,
+  AboutContent,
   ServicesContent,
   ServiceFace,
   ArchiveContent,

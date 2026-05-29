@@ -74,6 +74,19 @@ export interface PhilosophyContent {
   highlights: string[];
 }
 
+export interface AboutContent {
+  /** Eyebrow / rotated meta-label, e.g. "About". */
+  label: string;
+  /** Verb-stack lines, rendered uppercase. The LAST entry carries the
+   *  accent + spotlight-reveal treatment. */
+  verbs: string[];
+  /** Supporting lede paragraph. */
+  lede: string;
+  /** Meta row items, joined with middot separators. A item matching
+   *  "Currently building TASKTROX" is rendered in the accent color. */
+  meta: string[];
+}
+
 export interface ServiceFace {
   word: string;
   rail: string;
@@ -177,6 +190,7 @@ export interface Content {
   welcomeScreen: WelcomeScreenContent;
   ui: UIContent;
   philosophy: PhilosophyContent;
+  about: AboutContent;
   services: ServicesContent;
   projects: ProjectsContent;
   archive: ArchiveContent;

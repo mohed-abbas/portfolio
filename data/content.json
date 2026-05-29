@@ -1,4 +1,10 @@
 {
+  "about": {
+    "label": "About",
+    "verbs": ["Design it.", "Build it.", "Ship it.", "Run it."],
+    "lede": "Mohed Abbas builds web products end to end, from the interface to the containers it runs in.",
+    "meta": ["Independent", "Full-Stack Web Engineer", "Currently building TASKTROX"]
+  },
   "hero": {
     "firstName": "MOHED",
     "lastName": "ABBAS",

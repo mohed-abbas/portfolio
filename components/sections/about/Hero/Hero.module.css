@@ -1,0 +1,176 @@
+/* About page — Hero ("Verb Stack")
+   Load-time entrance (not scroll-pinned). Sits above the global plus-grid
+   (z-base 0) and below the navbar (z-nav 100). All colors via tokens so
+   light/dark + accent cycling resolve automatically. */
+
+.hero {
+  position: relative;
+  z-index: var(--z-above);
+  min-height: var(--canvas-min-height);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(72px, 9vh, 120px) var(--spacing-nav-side);
+  overflow: hidden;
+}
+
+.inner {
+  width: 100%;
+  max-width: var(--canvas-max-width);
+  margin: 0 auto;
+}
+
+/* ── Meta-label (matches Philosophy / Projects / Archive) ── */
+.metaLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: clamp(20px, 2.6vh, 34px);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--color-accent-purple);
+}
+
+.starIcon {
+  width: 1.2em;
+  height: 1.2em;
+  flex-shrink: 0;
+}
+
+/* ── Verb stack ── */
+.stack {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(40px, 9.5vw, 140px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-primary-text);
+}
+
+/* Each line is its own window; the inner rises from below on entrance.
+   Padding + matching negative margin keeps glyph tops/bottoms (and the
+   spotlight circle) from being clipped while the mask still hides the
+   off-screen inner. */
+.lineMask {
+  display: block;
+  overflow: hidden;
+  padding: 0.12em 0.08em;
+  margin: -0.12em -0.08em;
+}
+
+.lineInner {
+  display: block;
+  will-change: transform;
+}
+
+/* ── Final line: accent + cursor spotlight reveal (echoes home tagline) ── */
+.spotlightLine {
+  position: relative;
+  display: grid;
+  width: fit-content;
+  cursor: none;
+  isolation: isolate;
+}
+
+.spotlightBg {
+  position: absolute;
+  top: -500px;
+  left: -500px;
+  width: 2000px;
+  height: 2000px;
+  background-color: var(--color-accent-purple);
+  z-index: 2;
+  pointer-events: none;
+  --offset: 500px;
+  clip-path: circle(
+    var(--spotlight-size, 0px) at
+      calc(var(--spotlight-x, 50%) + var(--offset)) calc(var(--spotlight-y, 50%) + var(--offset))
+  );
+}
+
+.lineLayer {
+  grid-area: 1 / 1;
+}
+
+/* Default: the word reads in the live accent color. */
+.lineBase {
+  position: relative;
+  z-index: 1;
+  color: var(--color-accent-purple);
+}
+
+/* Revealed inside the spotlight circle: background-colored glyphs over the
+   accent fill, so the cursor looks like it lights the word. */
+.lineReveal {
+  z-index: 3;
+  color: var(--color-background);
+  pointer-events: none;
+  user-select: none;
+  clip-path: circle(var(--spotlight-size, 0px) at var(--spotlight-x, 50%) var(--spotlight-y, 50%));
+}
+
+/* Promote the animated layers only while hovering. */
+.spotlightLine.spotlightActive .spotlightBg,
+.spotlightLine.spotlightActive .lineReveal {
+  will-change: clip-path;
+}
+
+/* ── Lede ── */
+.lede {
+  margin: clamp(22px, 3vh, 40px) 0 0;
+  max-width: 48ch;
+  font-family: var(--font-primary);
+  font-weight: 400;
+  font-size: clamp(16px, 1.7vw, 22px);
+  line-height: 1.5;
+  color: var(--color-text-muted-strong);
+}
+
+/* ── Meta row ── */
+.meta {
+  margin-top: clamp(18px, 2.5vh, 32px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7em;
+  font-size: var(--font-size-works);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-text-muted);
+}
+
+.metaDot {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.metaAccent {
+  color: var(--color-accent-purple);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero {
+    padding: clamp(80px, 16vh, 140px) var(--spacing-nav-side);
+  }
+
+  .metaLabel {
+    font-size: 0.7rem;
+    gap: 8px;
+  }
+
+  /* No hover on touch — drop the spotlight cursor and keep the accent base. */
+  .spotlightLine {
+    cursor: auto;
+  }
+
+  .spotlightBg,
+  .lineReveal {
+    display: none;
+  }
+}
