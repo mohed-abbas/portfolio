@@ -3,7 +3,7 @@
     "hero": {
       "title": "TASKTROX",
       "lede": "A full-stack project-management tool that replaces spreadsheet, Notion, and Trello sprawl with one workspace teams actually open every day. I engineered it end to end: a Next.js front end and a Node and Postgres back end, on a Figma design by Hamail Hassan.",
-      "image": "/images/work/tasktrox/Hero.jpg",
+      "image": "/images/work/tasktrox/Hero.webp",
       "alt": "Tasktrox marketing landing",
       "pills": ["Full-Stack · SaaS Product", "Next.js · Node · Postgres"],
       "badge": "View\nCase",
@@ -85,7 +85,7 @@
     "dashboard": {
       "badge": "In\nUse",
       "figcaption": "Fig. 04 · Project dashboard · 2024",
-      "image": "/images/work/tasktrox/Dashboard.jpg",
+      "image": "/images/work/tasktrox/Dashboard.webp",
       "alt": "Tasktrox project dashboard"
     },
     "toggle": {
@@ -96,7 +96,7 @@
         {
           "num": "01",
           "name": "Marketing landing",
-          "image": "/images/work/tasktrox/Hero.jpg",
+          "image": "/images/work/tasktrox/Hero.webp",
           "color": "#E6F4F8",
           "description": "Landing page, scroll-led hero",
           "meta": "2400 × 1500"
@@ -104,7 +104,7 @@
         {
           "num": "02",
           "name": "Project dashboard",
-          "image": "/images/work/tasktrox/Dashboard.jpg",
+          "image": "/images/work/tasktrox/Dashboard.webp",
           "color": "#FBE4E5",
           "description": "Status grid, owner + due date",
           "meta": "2400 × 1500"
@@ -112,7 +112,7 @@
         {
           "num": "03",
           "name": "Product surface",
-          "image": "/images/work/tasktrox/Product.jpg",
+          "image": "/images/work/tasktrox/Product.webp",
           "color": "#FFF0DB",
           "description": "Card system, 8-pt grid",
           "meta": "2400 × 1500",
@@ -121,7 +121,7 @@
         {
           "num": "04",
           "name": "About page",
-          "image": "/images/work/tasktrox/About.jpg",
+          "image": "/images/work/tasktrox/About.webp",
           "color": "#E8EFEA",
           "description": "Team page, folio layout",
           "meta": "2400 × 1500",
@@ -130,7 +130,7 @@
         {
           "num": "05",
           "name": "Pricing",
-          "image": "/images/work/tasktrox/Price.jpg",
+          "image": "/images/work/tasktrox/Price.webp",
           "color": "#ECEFFF",
           "description": "Three tiers, no asterisks",
           "meta": "2400 × 1500",
@@ -139,7 +139,7 @@
         {
           "num": "06",
           "name": "Testimonials",
-          "image": "/images/work/tasktrox/testimonials.jpg",
+          "image": "/images/work/tasktrox/testimonials.webp",
           "color": "#EFE8D3",
           "description": "Quotes section, marginalia",
           "meta": "2400 × 1500",
@@ -148,7 +148,7 @@
         {
           "num": "07",
           "name": "Footer marquee",
-          "image": "/images/work/tasktrox/footer.jpg",
+          "image": "/images/work/tasktrox/footer.webp",
           "color": "#F4E8F0",
           "description": "Closing flourish",
           "meta": "2400 × 1500",
@@ -255,7 +255,7 @@
     "hero": {
       "title": "TRAVARA",
       "lede": "A travel-management platform for a tour operator that books flights, stays, and full itineraries in one place. I built it full-stack: a Laravel, Postgres, and Redis back end behind a Next.js and Tailwind front end, all containerised with Docker. Figma design with Hamail Hassan.",
-      "image": "/images/work/travara/01-hero.png",
+      "image": "/images/work/travara/01-hero.webp",
       "alt": "Travara travel-management landing page",
       "pills": ["Full-Stack · Travel Platform", "Laravel · Next.js · Postgres"],
       "badge": "View\nCase",
@@ -323,7 +323,7 @@
     "dashboard": {
       "badge": "Full\nStack",
       "figcaption": "Fig. 02 · Destination explorer · 2025",
-      "image": "/images/work/travara/03-destinations.png",
+      "image": "/images/work/travara/03-destinations.webp",
       "alt": "Travara destination explorer"
     },
     "toggle": {
@@ -334,7 +334,7 @@
         {
           "num": "01",
           "name": "Why Travara",
-          "image": "/images/work/travara/02-features.png",
+          "image": "/images/work/travara/02-features.webp",
           "color": "#F2EBDF",
           "description": "Curated stays, deals, support",
           "meta": "1240 × 923",
@@ -343,7 +343,7 @@
         {
           "num": "02",
           "name": "Destination explorer",
-          "image": "/images/work/travara/03-destinations.png",
+          "image": "/images/work/travara/03-destinations.webp",
           "color": "#E6EFF2",
           "description": "Five-card browse row",
           "meta": "1240 × 951",
@@ -352,7 +352,7 @@
         {
           "num": "03",
           "name": "Trust & traction",
-          "image": "/images/work/travara/04-about-stats.png",
+          "image": "/images/work/travara/04-about-stats.webp",
           "color": "#FCE9D8",
           "description": "Partner story, live counters",
           "meta": "1238 × 813",
@@ -361,7 +361,7 @@
         {
           "num": "04",
           "name": "Traveler wall",
-          "image": "/images/work/travara/05-testimonials.png",
+          "image": "/images/work/travara/05-testimonials.webp",
           "color": "#EAECEF",
           "description": "Social-proof grid",
           "meta": "1240 × 508",
@@ -370,7 +370,7 @@
         {
           "num": "05",
           "name": "Closing & footer",
-          "image": "/images/work/travara/06-footer.png",
+          "image": "/images/work/travara/06-footer.webp",
           "color": "#E5EEEC",
           "description": "Final CTA, sitemap",
           "meta": "1340 × 914",
@@ -453,7 +453,7 @@
     "hero": {
       "title": "EMERALD",
       "lede": "A patient-facing site for a mental-health clinic: warm, calm, and easy to act on. I designed and built the front end in Next.js and Tailwind, then containerised it so the clinic can host it anywhere without giving up a single Next.js feature. Figma design with Hamail Hassan.",
-      "image": "/images/work/emerald-psychiatry/01-hero.png",
+      "image": "/images/work/emerald-psychiatry/01-hero.webp",
       "alt": "Emerald Psychiatry patient landing page",
       "pills": ["Front-End · Healthcare Web", "Next.js · Tailwind · Docker"],
       "badge": "View\nCase",
@@ -521,7 +521,7 @@
     "dashboard": {
       "badge": "Front\nEnd",
       "figcaption": "Fig. 01 · Patient-facing landing · 2025",
-      "image": "/images/work/emerald-psychiatry/05-why.png",
+      "image": "/images/work/emerald-psychiatry/05-why.webp",
       "alt": "Emerald Psychiatry why-us section"
     },
     "toggle": {
@@ -532,7 +532,7 @@
         {
           "num": "01",
           "name": "Patient landing",
-          "image": "/images/work/emerald-psychiatry/01-hero.png",
+          "image": "/images/work/emerald-psychiatry/01-hero.webp",
           "color": "#E6F1EC",
           "description": "Brand-led hero, clear CTAs",
           "meta": "1440 × 1117",
@@ -541,7 +541,7 @@
         {
           "num": "02",
           "name": "Brand statement",
-          "image": "/images/work/emerald-psychiatry/06-gallery.png",
+          "image": "/images/work/emerald-psychiatry/06-gallery.webp",
           "color": "#FCE7DC",
           "description": "Expertise and empathy block",
           "meta": "1302 × 1205",
@@ -550,7 +550,7 @@
         {
           "num": "03",
           "name": "Why Emerald",
-          "image": "/images/work/emerald-psychiatry/05-why.png",
+          "image": "/images/work/emerald-psychiatry/05-why.webp",
           "color": "#EAF2F0",
           "description": "Science-backed, accessible care",
           "meta": "1312 × 798",
@@ -559,7 +559,7 @@
         {
           "num": "04",
           "name": "The clinicians",
-          "image": "/images/work/emerald-psychiatry/07-team.png",
+          "image": "/images/work/emerald-psychiatry/07-team.webp",
           "color": "#F2ECE2",
           "description": "Team grid, credentials",
           "meta": "1383 × 757",
@@ -568,7 +568,7 @@
         {
           "num": "05",
           "name": "Experience band",
-          "image": "/images/work/emerald-psychiatry/03-experience.png",
+          "image": "/images/work/emerald-psychiatry/03-experience.webp",
           "color": "#E9F0F4",
           "description": "Care across every age group",
           "meta": "1312 × 545",
@@ -577,7 +577,7 @@
         {
           "num": "06",
           "name": "Services",
-          "image": "/images/work/emerald-psychiatry/02-services.png",
+          "image": "/images/work/emerald-psychiatry/02-services.webp",
           "color": "#F0ECE6",
           "description": "Four care pathways",
           "meta": "1334 × 603"
@@ -585,7 +585,7 @@
         {
           "num": "07",
           "name": "Patient voices",
-          "image": "/images/work/emerald-psychiatry/04-testimonials.png",
+          "image": "/images/work/emerald-psychiatry/04-testimonials.webp",
           "color": "#FBE9DD",
           "description": "Testimonial, organic shapes",
           "meta": "1440 × 788"
@@ -593,7 +593,7 @@
         {
           "num": "08",
           "name": "Closing CTA",
-          "image": "/images/work/emerald-psychiatry/08-cta.png",
+          "image": "/images/work/emerald-psychiatry/08-cta.webp",
           "color": "#ECF0EA",
           "description": "Book or contact, one tap",
           "meta": "1312 × 190"
@@ -601,7 +601,7 @@
         {
           "num": "09",
           "name": "FAQ + footer",
-          "image": "/images/work/emerald-psychiatry/09-faq-footer.png",
+          "image": "/images/work/emerald-psychiatry/09-faq-footer.webp",
           "color": "#EFEAF0",
           "description": "Questions, links, sitemap",
           "meta": "1440 × 1103"
@@ -644,7 +644,7 @@
     "hero": {
       "title": "PERMITTO",
       "lede": "Digitising the permit-to-work system for heavy industry moving high-risk job coordination off paper, radio chatter, and signature walks into a single audit-ready surface shared by crews, supervisors, and the control room.",
-      "image": "/images/work/tasktrox/Hero.jpg",
+      "image": "/images/work/tasktrox/Hero.webp",
       "alt": "Placeholder · Tasktrox marketing landing (Permitto art forthcoming)",
       "pills": ["EHS · Heavy industry", "Brand · Product · Field UX"],
       "badge": "View\nCase",
@@ -724,7 +724,7 @@
     "dashboard": {
       "badge": "Live\nDemo",
       "figcaption": "Fig. 04 · Control-room overview · 06 / 24",
-      "image": "/images/work/tasktrox/Dashboard.jpg",
+      "image": "/images/work/tasktrox/Dashboard.webp",
       "alt": "Placeholder · Tasktrox studio dashboard (Permitto art forthcoming)"
     },
     "toggle": {
@@ -735,7 +735,7 @@
         {
           "num": "01",
           "name": "Field tablet permit",
-          "image": "/images/work/tasktrox/Hero.jpg",
+          "image": "/images/work/tasktrox/Hero.webp",
           "color": "#E6F4F8",
           "description": "Hot-work permit, step-gated approvals",
           "meta": "2400 × 1500"
@@ -743,7 +743,7 @@
         {
           "num": "02",
           "name": "Control-room overview",
-          "image": "/images/work/tasktrox/Dashboard.jpg",
+          "image": "/images/work/tasktrox/Dashboard.webp",
           "color": "#FBE4E5",
           "description": "Active permits, isolation map",
           "meta": "2400 × 1500"
@@ -751,7 +751,7 @@
         {
           "num": "03",
           "name": "Isolation registry",
-          "image": "/images/work/tasktrox/Product.jpg",
+          "image": "/images/work/tasktrox/Product.webp",
           "color": "#FFF0DB",
           "description": "LOTO chain, tag history, energy state",
           "meta": "2400 × 1500",
@@ -760,7 +760,7 @@
         {
           "num": "04",
           "name": "Crew profile",
-          "image": "/images/work/tasktrox/About.jpg",
+          "image": "/images/work/tasktrox/About.webp",
           "color": "#E8EFEA",
           "description": "Competencies, certifications, expiry",
           "meta": "2400 × 1500",
@@ -769,7 +769,7 @@
         {
           "num": "05",
           "name": "Audit trail",
-          "image": "/images/work/tasktrox/Price.jpg",
+          "image": "/images/work/tasktrox/Price.webp",
           "color": "#ECEFFF",
           "description": "Signature chain, time-stamped, exportable",
           "meta": "2400 × 1500",
@@ -778,7 +778,7 @@
         {
           "num": "06",
           "name": "Incident replay",
-          "image": "/images/work/tasktrox/testimonials.jpg",
+          "image": "/images/work/tasktrox/testimonials.webp",
           "color": "#EFE8D3",
           "description": "Timeline reconstruction, post-job review",
           "meta": "2400 × 1500",
@@ -787,7 +787,7 @@
         {
           "num": "07",
           "name": "Site footer",
-          "image": "/images/work/tasktrox/footer.jpg",
+          "image": "/images/work/tasktrox/footer.webp",
           "color": "#F4E8F0",
           "description": "Closing marquee, site index",
           "meta": "2400 × 1500",
