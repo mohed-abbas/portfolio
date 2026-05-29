@@ -115,3 +115,13 @@ export const TOOL_OPACITY_RANGE = 0.7;
 /* Extra scale applied to the on-needle tool label: scale = 1 + t * LABEL_SCALE_GAIN,
    so the centred label grows by up to 18% as it locks onto the needle. */
 export const LABEL_SCALE_GAIN = 0.18;
+
+/* Dial-label weight morph (Switzer Variable wght axis). The tool label's
+   font weight tracks the meter bar's growth toward the needle: at rest
+   (bar minimal) it sits at MIN, on the needle (bar at full height) it
+   reaches MAX. Driven by the same smoothstepped `eased` proximity that
+   shapes the bar's scaleY, so weight and bar height move in lockstep.
+   Weight is already an integer axis, so applyDial rounds to a whole wght
+   and caches it — no separate quantisation scale needed. */
+export const DIAL_WEIGHT_MIN = 400;
+export const DIAL_WEIGHT_MAX = 700;

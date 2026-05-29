@@ -10,6 +10,8 @@ import {
   BAR_MIN_SCALE,
   BAR_OPACITY_MIN,
   BAR_OPACITY_RANGE,
+  DIAL_WEIGHT_MAX,
+  DIAL_WEIGHT_MIN,
   GAP_PX,
   HEADING_ID,
   LABEL_RIDE_GAP_PX,
@@ -158,6 +160,10 @@ export function DialServicesV2() {
       const lastToolOpacityQ = new Array<number>(cells.length).fill(NaN);
       const lastToolTranslateQ = new Array<number>(cells.length).fill(NaN);
       const lastToolScaleQ = new Array<number>(cells.length).fill(NaN);
+      /* Last-written wght axis per label. Integer weight, so no *_Q scale —
+         we cache the rounded wght and skip the variation-settings write (and
+         its string alloc) when it hasn't moved since last frame. */
+      const lastToolWeight = new Array<number>(cells.length).fill(NaN);
       /* Quantisation scales. Opacity/scale to 1/1000 (3 decimals), the label
          translate to whole-px — finer than a pixel/0.001 is below perceptible
          and below sub-pixel raster precision, so rounding here is safe. */
@@ -398,6 +404,20 @@ export function DialServicesV2() {
             lastToolTranslateQ[i] = toolTranslateQ;
             lastToolScaleQ[i] = toolScaleQ;
             el.style.transform = `translateY(${toolTranslateQ}px) scale(${toolScaleQ / SCALE_Q})`;
+          }
+          /* Weight morph (Switzer Variable wght axis): track the bar's growth
+             toward the needle. Uses the same smoothstepped `eased` that drives
+             the bar scaleY, so the label thickens in lockstep with bar height —
+             DIAL_WEIGHT_MIN at rest, DIAL_WEIGHT_MAX on the needle. Unlike the
+             GPU-composited transform/opacity above, this reshapes glyphs (a
+             paint), so the cache matters: only the 2-3 cells near the moving
+             needle re-write per frame, the rest short-circuit. */
+          const toolWeight = Math.round(
+            DIAL_WEIGHT_MIN + eased * (DIAL_WEIGHT_MAX - DIAL_WEIGHT_MIN),
+          );
+          if (toolWeight !== lastToolWeight[i]) {
+            lastToolWeight[i] = toolWeight;
+            el.style.fontVariationSettings = `'wght' ${toolWeight}`;
           }
         }
 

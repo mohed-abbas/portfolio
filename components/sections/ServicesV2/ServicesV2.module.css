@@ -266,11 +266,17 @@
   z-index: 1;
   font-size: clamp(18px, 1.8vw, 26px);
   letter-spacing: -0.005em;
-  font-weight: 500;
+  /* Switzer Variable (dial-only) so applyDial can morph the wght axis as the
+     meter bar grows. Falls back to the site grotesque if the variable face
+     hasn't loaded. The resting weight is set via the axis, not font-weight,
+     so the JS-written font-variation-settings is the single source of truth. */
+  font-family: 'Switzer Variable', var(--font-primary);
+  font-variation-settings: 'wght' 400;
   color: var(--color-text-muted-strong, rgba(27, 32, 40, 0.8));
   /* No transition: opacity + transform are written every scrub frame by
      applyDial, so they track the scroll directly (the scrub itself is the
-     smoother). A transition here would low-pass the label behind its bar. */
+     smoother). A transition here would low-pass the label behind its bar.
+     Same applies to font-variation-settings — it's scrubbed per frame. */
 }
 
 /* Meter bar — a thin vertical accent rule that scales up (scaleY) toward the
