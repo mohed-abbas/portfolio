@@ -147,16 +147,16 @@
         "featured": true
       },
       {
-        "id": "permitto",
-        "title": "PERMITTO",
-        "image": "/images/projects/tasktrox/Product.jpg",
+        "id": "travara",
+        "title": "TRAVARA",
+        "image": "/images/work/travara/01-hero.png",
         "year": "2025",
-        "category": "INDUSTRIAL SAFETY",
+        "category": "TRAVEL PLATFORM",
         "badge": "VIEW<br>CASE",
-        "themeColor": "#fff0f5",
-        "badgeColor": "#62B6CB",
-        "badgeTextColor": "#ffffff",
-        "badgeShadowColor": "#000000",
+        "themeColor": "#fff4e6",
+        "badgeColor": "#ff990a",
+        "badgeTextColor": "#1b2028",
+        "badgeShadowColor": "#1b2028",
         "featured": true
       }
     ]
