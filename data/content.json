@@ -234,6 +234,14 @@
         "marqueeDurationSec": 24
       },
       {
+        "id": "emerald-psychiatry",
+        "title": "emerald psychiatry",
+        "discipline": "Front-End · Healthcare Web",
+        "year": 2025,
+        "accent": "#93b99e",
+        "marqueeDurationSec": 27
+      },
+      {
         "id": "permitto",
         "title": "permitto",
         "discipline": "Full-Stack · Industrial Safety",
