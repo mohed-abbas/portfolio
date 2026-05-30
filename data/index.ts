@@ -62,6 +62,8 @@ export type {
   SkillsContent,
   WelcomeScreenContent,
   PhilosophyContent,
+  WorkflowContent,
+  WorkflowStop,
   AboutContent,
   ServicesContent,
   ServiceFace,

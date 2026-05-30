@@ -9,7 +9,7 @@
     {
       "id": "about",
       "label": "About",
-      "href": "#philosophy",
+      "href": "#about",
       "description": "The story behind the craft"
     },
     {
@@ -17,6 +17,12 @@
       "label": "Services",
       "href": "#services",
       "description": "Expert solutions for your needs"
+    },
+    {
+      "id": "workflow",
+      "label": "Workflow",
+      "href": "#workflow",
+      "description": "How a project moves from brief to ship"
     },
     {
       "id": "contact",

@@ -74,6 +74,30 @@ export interface PhilosophyContent {
   highlights: string[];
 }
 
+export interface WorkflowStop {
+  /** Short station name, e.g. "Discover". */
+  name: string;
+  /** Big placard headline for the active stop. */
+  title: string;
+  /** Supporting copy for the active stop. */
+  copy: string;
+  /** Optional word inside `copy` to underline with the stop accent (first match). */
+  emphasis?: string;
+  /** Brand palette key driving this stop's accent. One of: 'teal' | 'red' |
+   *  'orange' | 'green' (maps to the --wf-* vars on the Workflow section).
+   *  Typed as string because content is sourced from JSON. */
+  accent: string;
+}
+
+export interface WorkflowContent {
+  /** Eyebrow, e.g. "How I work". */
+  label: string;
+  /** Line badge pill, e.g. "THE PROCESS LINE". */
+  lineBadge: string;
+  /** Ordered process stops rendered as transit-line stations. */
+  stops: WorkflowStop[];
+}
+
 export interface AboutContent {
   /** Eyebrow / rotated meta-label, e.g. "About". */
   label: string;
@@ -190,6 +214,7 @@ export interface Content {
   welcomeScreen: WelcomeScreenContent;
   ui: UIContent;
   philosophy: PhilosophyContent;
+  workflow: WorkflowContent;
   about: AboutContent;
   services: ServicesContent;
   projects: ProjectsContent;

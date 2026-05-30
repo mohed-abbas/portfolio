@@ -70,6 +70,43 @@
     "statement": "Real problems deserve real solutions, engineered to serve people and move them closer to their goals.",
     "highlights": ["problems", "solutions", "people", "goals"]
   },
+  "workflow": {
+    "label": "How I work",
+    "lineBadge": "THE PROCESS LINE",
+    "stops": [
+      {
+        "name": "Discover",
+        "title": "Listen first.",
+        "copy": "Audit the problem before touching a pixel. The audience, the constraints, the metrics that move, and a sharp written definition of done.",
+        "emphasis": "done",
+        "accent": "teal"
+      },
+      {
+        "name": "Define",
+        "title": "Find the angle.",
+        "copy": "Strategy and positioning, the single idea the whole product hangs on. The through-line a visitor remembers once the tab is closed.",
+        "accent": "red"
+      },
+      {
+        "name": "Design",
+        "title": "Make it inevitable.",
+        "copy": "Interface and motion in Figma. Design systems and prototypes that prove the claim before a line of production code is written.",
+        "accent": "orange"
+      },
+      {
+        "name": "Build",
+        "title": "Ship at sixty.",
+        "copy": "Production UI typed end to end across React, Vue, Next and Nuxt. Accessible by default, with scroll-tied motion that holds 60 fps.",
+        "accent": "green"
+      },
+      {
+        "name": "Refine",
+        "title": "Sweat the last ten.",
+        "copy": "Observability, polish, and the micro-interactions everybody feels. Catch the bugs before users do, then iterate on the real thing.",
+        "accent": "teal"
+      }
+    ]
+  },
   "services": {
     "label": "Services & Toolkit",
     "headline": { "lead": "One drum,", "accent": "four faces." },
