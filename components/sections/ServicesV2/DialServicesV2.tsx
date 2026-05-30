@@ -15,7 +15,8 @@ import {
   GAP_PX,
   HEADING_ID,
   LABEL_RIDE_GAP_PX,
-  LABEL_SCALE_GAIN,
+  LABEL_SCALE_MAX,
+  LABEL_SCALE_MIN,
   NEEDLE_FALLOFF,
   PIN_RUNWAY_REF_PX,
   PIN_RUNWAY_TALL_REF_PX,
@@ -401,7 +402,9 @@ export function DialServicesV2() {
              only rebuild the transform string when either component moves. */
           const barTopPx = bandHeight * BAR_MAX_FRACTION * s;
           const toolTranslateQ = Math.round(-(barTopPx + LABEL_RIDE_GAP_PX));
-          const toolScaleQ = Math.round((1 + t * LABEL_SCALE_GAIN) * SCALE_Q);
+          const toolScaleQ = Math.round(
+            (LABEL_SCALE_MIN + eased * (LABEL_SCALE_MAX - LABEL_SCALE_MIN)) * SCALE_Q,
+          );
           if (toolTranslateQ !== lastToolTranslateQ[i] || toolScaleQ !== lastToolScaleQ[i]) {
             lastToolTranslateQ[i] = toolTranslateQ;
             lastToolScaleQ[i] = toolScaleQ;

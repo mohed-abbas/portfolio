@@ -123,9 +123,13 @@ export const BAR_OPACITY_RANGE = 0.78;
 export const TOOL_OPACITY_MIN = 0.3;
 export const TOOL_OPACITY_RANGE = 0.7;
 
-/* Extra scale applied to the on-needle tool label: scale = 1 + t * LABEL_SCALE_GAIN,
-   so the centred label grows by up to 18% as it locks onto the needle. */
-export const LABEL_SCALE_GAIN = 0.18;
+/* Dial-label zoom. The tool label scales from LABEL_SCALE_MIN at rest (far from the
+   needle) up to LABEL_SCALE_MAX as it locks onto the centred needle, driven by the same
+   smoothstepped `eased` proximity as the weight morph (DIAL_WEIGHT_MIN/MAX) so the zoom
+   and bold lock on as a single crisp motion. transform-origin is `center bottom`, so the
+   scale anchors at the baseline and doesn't shift neighbours. */
+export const LABEL_SCALE_MIN = 0.9;
+export const LABEL_SCALE_MAX = 1.28;
 
 /* Dial-label weight morph (Switzer Variable wght axis). The tool label's
    font weight tracks the meter bar's growth toward the needle: at rest
