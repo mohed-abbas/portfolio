@@ -271,9 +271,28 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: min(40ch, 72vw);
+  width: min(34ch, 62vw);
   height: 13em;
   text-align: center;
+}
+/* Themed scrim: a soft field of the current surface behind the centred
+   placard so the route (loop / star arms) reads as passing *behind* the
+   text. Built from --color-background, so it tracks light + dark with no
+   per-theme overrides. Sits above the schematic (within the z-4 detailWrap
+   stacking context) but below the text. */
+.placardCenter .detailWrap::before {
+  content: '';
+  position: absolute;
+  inset: -16vh -11vw;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    56% 60% at 50% 50%,
+    var(--color-background) 0%,
+    var(--color-background) 42%,
+    color-mix(in srgb, var(--color-background) 72%, transparent) 64%,
+    transparent 82%
+  );
 }
 .placardCenter .detail {
   align-items: center;
@@ -281,6 +300,13 @@
 .placardCenter .detailKicker {
   margin-left: auto;
   margin-right: auto;
+}
+.placardCenter .detailTitle {
+  font-size: clamp(32px, 4.2vw, 58px);
+}
+.placardCenter .detailCopy {
+  max-width: 34ch;
+  margin: 0 auto;
 }
 
 /* ---- reduced-motion / static fallback ---- */
