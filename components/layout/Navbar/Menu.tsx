@@ -399,6 +399,23 @@ export function Menu({ isOpen, onClose, onCloseComplete, onRevealStart }: MenuPr
       return;
     }
 
+    // Route paths (e.g. /about) are not in-page anchors — navigate via the
+    // page-transition curtain instead of Lenis smooth-scroll (which would try
+    // to resolve "/about" as a selector and no-op). Same-route clicks just
+    // close the menu.
+    if (!href.startsWith('#')) {
+      e.preventDefault();
+      onClose();
+      if (pathname !== href) {
+        triggerTransition({
+          href,
+          origin: { x: e.clientX, y: e.clientY },
+          payload: { accent: currentAccent },
+        });
+      }
+      return;
+    }
+
     // CR-01: nav targets (#projects, #philosophy, #services, #contact)
     // only exist on the home page. When the menu is opened from a
     // case-study route (e.g. /work/tasktrox), Lenis can't resolve the

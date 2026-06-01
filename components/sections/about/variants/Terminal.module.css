@@ -1,0 +1,152 @@
+/* ABOUT · Terminal / Dev-native — themed editor pane.
+   Surface and syntax colors come from design tokens + the brand accent so the
+   pane reads correctly in light and dark. */
+
+.section {
+  position: relative;
+  z-index: var(--z-above);
+  min-height: var(--canvas-min-height);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(72px, 9vh, 120px) var(--spacing-nav-side);
+  overflow: hidden;
+}
+.inner {
+  width: 100%;
+  max-width: var(--canvas-max-width);
+  margin: 0 auto;
+}
+
+.metaLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: clamp(20px, 2.6vh, 34px);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--color-accent-purple);
+}
+.starIcon {
+  width: 1.2em;
+  height: 1.2em;
+  flex-shrink: 0;
+}
+
+/* ── editor pane ── */
+.editor {
+  width: min(720px, 100%);
+  border: 1px solid var(--color-grid-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-primary-text) 4%, var(--color-background));
+  box-shadow: 0 30px 80px -40px color-mix(in srgb, var(--color-primary-text) 40%, transparent);
+}
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--color-grid-line);
+  background: color-mix(in srgb, var(--color-primary-text) 6%, var(--color-background));
+}
+.dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-grid-line);
+}
+.dots i:nth-child(1) { background: var(--wf-red, #da3036); opacity: 0.8; }
+.dots i:nth-child(2) { background: var(--color-accent-gold); opacity: 0.85; }
+.dots i:nth-child(3) { background: #93b99e; opacity: 0.85; }
+.filename {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted-strong);
+}
+.branch {
+  margin-left: auto;
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.code {
+  margin: 0;
+  padding: clamp(16px, 2.4vw, 28px) clamp(14px, 2vw, 24px);
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(13px, 1.15vw, 16px);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+}
+
+.line {
+  display: flex;
+  gap: 14px;
+}
+.gutter {
+  flex-shrink: 0;
+  width: 2ch;
+  text-align: right;
+  color: var(--color-text-muted);
+  opacity: 0.55;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+.lineText {
+  flex: 1;
+  white-space: pre-wrap;
+}
+
+/* ── syntax tokens ── */
+.comment { color: var(--color-text-muted); font-style: italic; }
+.kw { color: var(--color-accent-purple); }
+.var { color: var(--color-primary-text); font-weight: 600; }
+.key { color: var(--color-text-muted-strong); }
+.str { color: #93b99e; }
+.bool { color: var(--color-accent-gold); }
+.op { color: var(--color-text-muted); }
+
+/* blinking caret after the closing brace */
+.caret {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1.05em;
+  margin-left: 2px;
+  transform: translateY(0.18em);
+  background: var(--color-accent-purple);
+  animation: caretBlink 1.05s steps(1) infinite;
+}
+@keyframes caretBlink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+/* ── line reveal: top-to-bottom stagger ── */
+@media (prefers-reduced-motion: no-preference) {
+  .line {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: lineIn 0.42s var(--ease-out-expo) forwards;
+    animation-delay: calc(var(--i) * 0.06s + 0.1s);
+  }
+}
+@keyframes lineIn {
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 768px) {
+  .code { font-size: 12px; }
+  .editor { width: 100%; }
+}

@@ -1,0 +1,361 @@
+/* ABOUT · Dossier / Personnel file — archival case-file, tabbed panes. */
+
+.section {
+  position: relative;
+  z-index: var(--z-above);
+  min-height: var(--canvas-min-height);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(96px, 12vh, 140px) var(--spacing-nav-side) clamp(56px, 8vh, 96px);
+  overflow: hidden;
+}
+.inner {
+  width: 100%;
+  max-width: var(--canvas-max-width);
+  margin: 0 auto;
+}
+
+/* ── header band ── */
+.band {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: clamp(20px, 3vh, 32px);
+  border-bottom: 2px solid var(--color-primary-text);
+}
+.fileTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-navbar);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--color-accent-purple);
+}
+.starIcon {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+.name {
+  margin: 14px 0 4px;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(40px, 7vw, 104px);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--color-primary-text);
+}
+.role {
+  font-family: var(--font-navbar);
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+
+.stamp {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 16px;
+  border: 2px solid var(--color-accent-purple);
+  border-radius: 4px;
+  transform: rotate(7deg);
+  color: var(--color-accent-purple);
+  font-family: var(--font-navbar);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  opacity: 0.92;
+}
+.stampLine { font-size: 0.6rem; }
+.stampId {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── tabs ── */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: clamp(20px, 3vh, 32px) 0 0;
+  border-bottom: 1px solid var(--color-grid-line);
+}
+.tab {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 12px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.tab:hover { color: var(--color-text-muted-strong); }
+.tabActive {
+  color: var(--color-primary-text);
+  border-bottom-color: var(--color-accent-purple);
+}
+.tabIndex {
+  font-family: var(--font-navbar);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+}
+.tabLabel {
+  font-family: var(--font-navbar);
+  font-size: clamp(13px, 1.2vw, 16px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── pane ── */
+.pane {
+  padding-top: clamp(28px, 4vh, 44px);
+  min-height: clamp(280px, 38vh, 420px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pane {
+    animation: paneIn 0.4s var(--ease-out-expo) both;
+  }
+}
+@keyframes paneIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* profile */
+.profile {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+.lede {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: clamp(22px, 2.6vw, 38px);
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  color: var(--color-primary-text);
+}
+.facts { margin: 0; display: grid; gap: 0; }
+.fact {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-grid-line);
+}
+.fact dt {
+  font-family: var(--font-navbar);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.fact dd {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(15px, 1.4vw, 19px);
+  color: var(--color-primary-text);
+}
+.accent { color: var(--color-accent-purple); }
+
+/* experience */
+.expList { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; }
+.expRow {
+  display: grid;
+  grid-template-columns: minmax(7rem, 12ch) 1fr;
+  gap: clamp(16px, 3vw, 48px);
+  padding: clamp(18px, 2.4vh, 26px) 0;
+  border-top: 1px solid var(--color-grid-line);
+}
+.expRow:last-child { border-bottom: 1px solid var(--color-grid-line); }
+.expPeriod {
+  font-family: var(--font-navbar);
+  font-size: clamp(12px, 1vw, 14px);
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  padding-top: 4px;
+}
+.expRole {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(20px, 2.2vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-primary-text);
+}
+.expOrg {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-navbar);
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent-purple);
+}
+.expKind { color: var(--color-text-muted); }
+.expSummary {
+  margin: 12px 0 0;
+  max-width: 60ch;
+  font-family: var(--font-primary);
+  font-size: clamp(14px, 1.2vw, 17px);
+  line-height: 1.5;
+  color: var(--color-text-muted-strong);
+}
+
+.tags { margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 7px; }
+.tag {
+  font-family: var(--font-navbar);
+  font-size: clamp(10px, 0.9vw, 12px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+  border: 1px solid var(--color-grid-line);
+  border-radius: 999px;
+  padding: 5px 11px;
+}
+
+/* credentials */
+.certGrid {
+  margin: 0; padding: 0; list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.certCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 20px 22px;
+  border: 1px solid var(--color-grid-line);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-primary-text) 3%, transparent);
+}
+.certYear {
+  font-family: var(--font-navbar);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--color-accent-purple);
+  font-variant-numeric: tabular-nums;
+}
+.certName {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(16px, 1.5vw, 21px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-primary-text);
+}
+.certIssuer {
+  font-family: var(--font-navbar);
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* education */
+.eduList { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; }
+.eduRow {
+  display: grid;
+  grid-template-columns: minmax(7rem, 12ch) 1fr;
+  gap: clamp(16px, 3vw, 48px);
+  padding: clamp(18px, 2.4vh, 26px) 0;
+  border-top: 1px solid var(--color-grid-line);
+}
+.eduRow:last-child { border-bottom: 1px solid var(--color-grid-line); }
+.eduPeriod {
+  font-family: var(--font-navbar);
+  font-size: clamp(12px, 1vw, 14px);
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  padding-top: 4px;
+}
+.eduCred {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(19px, 2vw, 28px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--color-primary-text);
+}
+.eduInst {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-navbar);
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+.eduDetail {
+  margin: 10px 0 0;
+  max-width: 58ch;
+  font-family: var(--font-primary);
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.dagger {
+  font-style: normal;
+  margin-left: 6px;
+  font-size: 0.6em;
+  vertical-align: super;
+  color: var(--color-accent-purple);
+}
+.footnote {
+  margin: clamp(20px, 3vh, 32px) 0 0;
+  font-family: var(--font-navbar);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* entrance stagger for rows/cards */
+@media (prefers-reduced-motion: no-preference) {
+  .fact, .expRow, .certCard, .eduRow {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rowIn 0.5s var(--ease-out-expo) forwards;
+    animation-delay: calc(var(--i) * 0.06s + 0.12s);
+  }
+}
+@keyframes rowIn { to { opacity: 1; transform: none; } }
+
+/* responsive */
+@media (max-width: 880px) {
+  .profile { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .band { flex-direction: column; }
+  .stamp { align-self: flex-start; transform: rotate(-4deg); }
+  .expRow, .eduRow { grid-template-columns: 1fr; gap: 6px; }
+  .tabs { gap: 0; }
+  .tab { padding: 10px 12px; flex: 1 1 auto; justify-content: center; }
+}

@@ -1,0 +1,219 @@
+/* ABOUT · Bento profile grid — themed modular tiles. */
+
+.section {
+  position: relative;
+  z-index: var(--z-above);
+  min-height: var(--canvas-min-height);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(72px, 9vh, 120px) var(--spacing-nav-side);
+  overflow: hidden;
+}
+.inner {
+  width: 100%;
+  max-width: var(--canvas-max-width);
+  margin: 0 auto;
+}
+
+.metaLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: clamp(20px, 2.6vh, 34px);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--color-accent-purple);
+}
+.starIcon {
+  width: 1.2em;
+  height: 1.2em;
+  flex-shrink: 0;
+}
+
+/* ── grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 1.1vw, 18px);
+  grid-template-areas:
+    'name name task task'
+    'name name lede lede'
+    'focus focus loc star';
+}
+.name { grid-area: name; }
+.task { grid-area: task; }
+.lede { grid-area: lede; }
+.focus { grid-area: focus; }
+.loc { grid-area: loc; }
+.star { grid-area: star; }
+
+.tile {
+  border: 1px solid var(--color-grid-line);
+  border-radius: 16px;
+  padding: clamp(20px, 2vw, 32px);
+  background: color-mix(in srgb, var(--color-primary-text) 3%, var(--color-background));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 120px;
+  transition: transform 0.4s var(--ease-out-expo), border-color 0.4s var(--ease-out-expo);
+}
+.tile:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--color-accent-purple) 60%, var(--color-grid-line));
+}
+
+.tileLabel {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* name tile */
+.name { justify-content: space-between; }
+.nameType {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(40px, 6vw, 88px);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--color-primary-text);
+}
+.role {
+  font-family: var(--font-navbar);
+  font-size: clamp(13px, 1.1vw, 16px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+
+/* accent "currently building" tile */
+.task {
+  background: var(--color-accent-purple);
+  border-color: transparent;
+  justify-content: space-between;
+}
+.taskLabel {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-background) 80%, transparent);
+}
+.taskName {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(28px, 3.4vw, 52px);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-background);
+}
+
+/* lede tile */
+.lede { justify-content: center; }
+.lede p {
+  margin: 0;
+  font-size: clamp(16px, 1.4vw, 21px);
+  line-height: 1.5;
+  color: var(--color-text-muted-strong);
+}
+
+/* focus chips */
+.focus { justify-content: space-between; }
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+  border: 1px solid var(--color-grid-line);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
+/* location */
+.loc { justify-content: space-between; }
+.locValue {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(18px, 1.7vw, 26px);
+  line-height: 1.1;
+  color: var(--color-primary-text);
+}
+
+/* star / independent */
+.star {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+}
+.starBig {
+  width: clamp(34px, 3vw, 48px);
+  height: clamp(34px, 3vw, 48px);
+  color: var(--color-accent-purple);
+}
+.starWord {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+
+/* ── entrance stagger ── */
+@media (prefers-reduced-motion: no-preference) {
+  .tile {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: tileIn 0.6s var(--ease-out-expo) forwards;
+    animation-delay: calc(var(--i) * 0.08s + 0.1s);
+  }
+  /* keep hover transform from fighting the entrance once settled */
+  .tile:hover { transform: translateY(-4px); }
+}
+@keyframes tileIn {
+  to { opacity: 1; transform: none; }
+}
+
+/* ── responsive ── */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      'name name'
+      'task lede'
+      'focus focus'
+      'loc star';
+  }
+}
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'name'
+      'task'
+      'lede'
+      'focus'
+      'loc'
+      'star';
+  }
+}

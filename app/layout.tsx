@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Doppio_One } from "next/font/google";
+import { Doppio_One, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -23,6 +23,16 @@ const doppioOne = Doppio_One({
   // during the welcome→hero handoff, so the font isn't painted at first load.
   // Preloading it buys nothing and triggers Firefox's "preloaded but not used"
   // warning. display:swap still handles the fallback when it does paint.
+  preload: false,
+});
+
+// Monospace for the About "Terminal / Dev-native" variant. Below the fold, so
+// no preload (avoids the "preloaded but not used" warning); display:swap covers
+// the fallback when it paints.
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
   preload: false,
 });
 
@@ -79,7 +89,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={doppioOne.variable}>
+      <body className={`${doppioOne.variable} ${jetBrainsMono.variable}`}>
         {/* See BOOTSTRAP_SCRIPT above — pre-paint theme + scroll-restoration bootstrap. */}
         <script
           dangerouslySetInnerHTML={{

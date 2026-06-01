@@ -1,0 +1,166 @@
+/* ABOUT · IDE workspace — multi-file editor, tab-switched panes. */
+
+.section {
+  position: relative;
+  z-index: var(--z-above);
+  min-height: var(--canvas-min-height);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(88px, 11vh, 132px) var(--spacing-nav-side) clamp(56px, 8vh, 96px);
+  overflow: hidden;
+}
+.inner {
+  width: 100%;
+  max-width: var(--canvas-max-width);
+  margin: 0 auto;
+}
+
+.metaLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: clamp(20px, 2.6vh, 34px);
+  font-family: var(--font-navbar);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--color-accent-purple);
+}
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-accent-purple);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent-purple) 22%, transparent);
+}
+
+/* ── editor shell ── */
+.editor {
+  width: min(840px, 100%);
+  border: 1px solid var(--color-grid-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-primary-text) 4%, var(--color-background));
+  box-shadow: 0 30px 80px -40px color-mix(in srgb, var(--color-primary-text) 40%, transparent);
+}
+
+/* tab strip */
+.tabBar {
+  display: flex;
+  flex-wrap: wrap;
+  background: color-mix(in srgb, var(--color-primary-text) 7%, var(--color-background));
+  border-bottom: 1px solid var(--color-grid-line);
+}
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--color-grid-line);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.tab:hover { color: var(--color-text-muted-strong); }
+.tabActive {
+  color: var(--color-primary-text);
+  background: color-mix(in srgb, var(--color-primary-text) 4%, var(--color-background));
+  border-bottom-color: var(--color-accent-purple);
+}
+.tabDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+}
+.tabActive .tabDot { background: var(--color-accent-gold); }
+
+/* code pane */
+.code {
+  margin: 0;
+  padding: clamp(18px, 2.4vw, 30px) clamp(14px, 2vw, 24px);
+  min-height: clamp(260px, 36vh, 380px);
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(13px, 1.1vw, 16px);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 2;
+}
+.line { display: flex; gap: 14px; }
+.gutter {
+  flex-shrink: 0;
+  width: 2ch;
+  text-align: right;
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+.lineText { flex: 1; white-space: pre-wrap; }
+
+/* status bar */
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--color-grid-line);
+  background: color-mix(in srgb, var(--color-accent-purple) 12%, var(--color-background));
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted-strong);
+}
+.statusRight { color: var(--color-text-muted); }
+
+/* ── syntax tokens ── */
+.comment { color: var(--color-text-muted); font-style: italic; }
+.kw { color: var(--color-accent-purple); font-weight: 600; }
+.var { color: var(--color-primary-text); font-weight: 700; }
+.key { color: var(--color-text-muted-strong); }
+.str { color: #93b99e; }
+.num { color: var(--color-accent-gold); }
+.op { color: var(--color-text-muted); }
+.mdBold { color: var(--color-primary-text); font-weight: 700; }
+
+/* caret */
+.caret {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1.05em;
+  margin-left: 2px;
+  transform: translateY(0.18em);
+  background: var(--color-accent-purple);
+  animation: caretBlink 1.05s steps(1) infinite;
+}
+@keyframes caretBlink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+/* line reveal stagger (re-runs on tab switch via key remount) */
+@media (prefers-reduced-motion: no-preference) {
+  .line {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: lineIn 0.4s var(--ease-out-expo) forwards;
+    animation-delay: calc(var(--i) * 0.04s + 0.06s);
+  }
+}
+@keyframes lineIn { to { opacity: 1; transform: none; } }
+
+@media (max-width: 768px) {
+  .editor { width: 100%; }
+  .code { font-size: 12px; }
+  .tab { flex: 1 1 auto; justify-content: center; }
+}

@@ -1,0 +1,133 @@
+/* ABOUT · Spec ledger / colophon — precise label/value rows. */
+
+.section {
+  position: relative;
+  z-index: var(--z-above);
+  min-height: var(--canvas-min-height);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: clamp(72px, 9vh, 120px) var(--spacing-nav-side);
+  overflow: hidden;
+}
+.inner {
+  width: 100%;
+  max-width: var(--canvas-max-width);
+  margin: 0 auto;
+}
+
+.metaLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: clamp(22px, 3vh, 40px);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--color-accent-purple);
+}
+.metaSub {
+  color: var(--color-text-muted);
+  letter-spacing: 0.24em;
+}
+.starIcon {
+  width: 1.2em;
+  height: 1.2em;
+  flex-shrink: 0;
+}
+
+/* opening statement */
+.statement {
+  margin: 0 0 clamp(32px, 5vh, 64px);
+  max-width: 22ch;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(30px, 4.4vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--color-primary-text);
+}
+
+/* ── ledger ── */
+.ledger {
+  margin: 0;
+  border-top: 1px solid var(--color-grid-line);
+}
+.row {
+  display: grid;
+  grid-template-columns: 3rem minmax(7rem, 16ch) 1fr;
+  align-items: baseline;
+  gap: clamp(12px, 2vw, 32px);
+  padding: clamp(16px, 2vh, 24px) 0;
+  border-bottom: 1px solid var(--color-grid-line);
+}
+.index {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.rowLabel {
+  margin: 0;
+  font-family: var(--font-navbar);
+  font-size: clamp(11px, 1vw, 13px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  align-self: center;
+}
+.rowValue {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(18px, 2vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-primary-text);
+}
+.accentValue {
+  color: var(--color-accent-purple);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag {
+  font-family: var(--font-navbar);
+  font-weight: 400;
+  font-size: clamp(11px, 1vw, 13px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+  border: 1px solid var(--color-grid-line);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
+/* ── row reveal stagger ── */
+@media (prefers-reduced-motion: no-preference) {
+  .row {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: rowIn 0.55s var(--ease-out-expo) forwards;
+    animation-delay: calc(var(--i) * 0.07s + 0.1s);
+  }
+}
+@keyframes rowIn {
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 2.2rem 1fr;
+    row-gap: 4px;
+  }
+  .rowLabel { grid-column: 2; }
+  .rowValue { grid-column: 2; }
+  .index { grid-row: 1 / span 2; align-self: start; }
+}

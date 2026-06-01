@@ -43,3 +43,7 @@ next-env.d.ts
 *.md
 !README.md
 !docs/**/*.md
+
+# AI / planning scaffolding (not pushed)
+.planning/
+claudedocs/
