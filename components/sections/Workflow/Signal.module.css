@@ -1,0 +1,233 @@
+/* ============================================================
+   WORKFLOW · SIGNAL renderer
+   One continuous oscilloscope trace; each step is a segment with its
+   own waveform character. A playhead rides the drawing head; the active
+   step's name rises off its segment. Instrument mood that leans into
+   the engineering side of the work. Driven by useSignalDriver.
+   ============================================================ */
+
+.signal {
+  position: relative;
+  --wf-teal: #62b6cb;
+  --wf-red: #da3036;
+  --wf-orange: #ff990a;
+  --wf-green: #93b99e;
+  --wf-live-accent: var(--wf-teal);
+  --wf-faint: color-mix(in srgb, var(--color-primary-text) 10%, transparent);
+
+  background: var(--color-background);
+  color: var(--color-primary-text);
+}
+
+.viewport {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    120% 120% at 50% 48%,
+    color-mix(in srgb, var(--color-primary-text) 5%, var(--color-background)) 0%,
+    var(--color-background) 66%
+  );
+}
+
+/* ---- header ---- */
+.head {
+  position: absolute;
+  inset: clamp(84px, 11vh, 116px) clamp(28px, 5vw, 80px) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  z-index: 6;
+}
+.eyebrow {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+.readout {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout em {
+  font-style: normal;
+  color: var(--wf-live-accent);
+}
+
+/* ---- scope scene ---- */
+.schematic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.baseline {
+  stroke: var(--wf-faint);
+  stroke-width: 1.5;
+}
+.gridV {
+  stroke: color-mix(in srgb, var(--color-primary-text) 6%, transparent);
+  stroke-width: 1;
+}
+.tick {
+  font-family: var(--font-navbar);
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  fill: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.traceGuide {
+  fill: none;
+  stroke: var(--wf-faint);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trace {
+  fill: none;
+  stroke: var(--wf-live-accent);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.5s var(--ease-out-expo);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--wf-live-accent) 60%, transparent));
+}
+
+/* ---- playhead ---- */
+.scan {
+  stroke: var(--wf-live-accent);
+  stroke-width: 1;
+  opacity: 0;
+  stroke-dasharray: 3 6;
+}
+.playhead {
+  opacity: 0;
+}
+.headDot {
+  fill: #fff;
+  stroke: var(--wf-live-accent);
+  stroke-width: 2.5;
+}
+.headGlow {
+  fill: var(--wf-live-accent);
+  opacity: 0.28;
+}
+
+/* ---- per-segment names (SVG text, viewBox units) ---- */
+.name {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 35px;
+  letter-spacing: -1.5px;
+  text-transform: uppercase;
+  fill: var(--color-text-muted);
+  opacity: 0.4;
+  transition: fill 0.45s var(--ease-out-expo), opacity 0.45s var(--ease-out-expo),
+    transform 0.45s var(--ease-out-expo);
+  transform: translateY(8px);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.nameActive {
+  fill: var(--accent);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- bottom-left detail placard ---- */
+.detailWrap {
+  position: absolute;
+  left: clamp(28px, 5vw, 80px);
+  bottom: clamp(48px, 9vh, 104px);
+  width: min(42ch, 56vw);
+  height: 11em;
+  z-index: 4;
+}
+.detail {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+  pointer-events: none;
+}
+.detail.isActive {
+  opacity: 1;
+  transform: none;
+}
+.detailKicker {
+  display: block;
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(10px, 1.2vw, 14px);
+}
+.detailTitle {
+  margin: 0 0 clamp(10px, 1.2vw, 16px);
+  font-family: var(--font-primary);
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--color-primary-text);
+}
+.detailCopy {
+  margin: 0;
+  max-width: 42ch;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  color: var(--color-text-muted-strong);
+  text-wrap: pretty;
+}
+.em {
+  font-style: italic;
+  color: var(--color-primary-text);
+  background: linear-gradient(
+    transparent 76%,
+    var(--accent) 76%,
+    var(--accent) 94%,
+    transparent 94%
+  );
+}
+
+@media (max-width: 640px) {
+  .detailWrap {
+    width: min(42ch, 86vw);
+  }
+}
+
+/* ---- reduced-motion / static fallback ---- */
+.isStatic .viewport {
+  height: auto;
+  padding: 12vh 0 8vh;
+}
+.isStatic .schematic {
+  position: relative;
+  height: 48vh;
+}
+.isStatic .detailWrap {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  width: auto;
+  height: auto;
+  margin: 2.5rem clamp(28px, 5vw, 80px) 0;
+  display: grid;
+  gap: 2.4rem;
+}
+.isStatic .detail {
+  position: relative;
+  inset: auto;
+  opacity: 1;
+  transform: none;
+}

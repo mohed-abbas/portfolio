@@ -6,7 +6,7 @@
    the top (vitals) and the bottom (colophon). */
 
 import { Ledger } from "@/components/sections/case-study/Ledger";
-import { AboutPageHero } from "./Hero";
+import { AboutPageHeroSwitcher } from "./HeroSwitcher";
 import { AboutPageIntro } from "./Intro";
 import { AboutPageExperience } from "./Experience";
 import { AboutPageCredentials } from "./Credentials";
@@ -23,7 +23,7 @@ const VITALS = [
 export function AboutPageView() {
   return (
     <main>
-      <AboutPageHero />
+      <AboutPageHeroSwitcher />
       <Ledger entries={VITALS} />
       <AboutPageIntro />
       <AboutPageExperience />

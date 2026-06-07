@@ -1,11 +1,13 @@
 "use client";
 
-/* ABOUT PAGE · Credentials — the "Transcript Ledger".
-   One de-duplicated, newest-first ledger of every credential, threaded on a
-   hairline spine. Degrees are filled nodes, courses/foundation are hollow.
-   The RNCP state titles a degree confers live on the degree as "certified as"
-   lines (↳), so they are never duplicated as their own rows. This merges what
-   used to be two columns (Education + Certifications). From content.about.credentials. */
+/* ABOUT PAGE · Credentials — "Under the hood" bordered-row layout.
+   One de-duplicated, newest-first list of every credential, rendered in the
+   case-study Architecture language: a bordered, rounded container of stacked
+   rows. Each row has a header column (period + kind chip, credential name,
+   institution) and a readable detail column. The RNCP state titles a degree
+   confers live on the degree as "certified as" lines (↳), so they are never
+   duplicated as their own rows. This merges what used to be two columns
+   (Education + Certifications). From content.about.credentials. */
 
 import { useRef } from "react";
 import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
@@ -51,7 +53,7 @@ export function AboutPageCredentials() {
           <span className={styles.count}>{String(credentials.length).padStart(2, "0")}</span>
         </div>
 
-        <ol className={styles.ledger}>
+        <ol className={styles.stack}>
           {credentials.map((c) => (
             <li
               ref={setRow}
@@ -59,21 +61,19 @@ export function AboutPageCredentials() {
               className={styles.entry}
               data-kind={c.kind.toLowerCase()}
             >
-              <div className={styles.rail}>
-                <span className={styles.year}>{c.period}</span>
-              </div>
-
-              <div className={styles.body}>
-                <div className={styles.headline}>
-                  <h3 className={styles.credential}>{c.credential}</h3>
+              <div className={styles.rowHead}>
+                <div className={styles.rowTop}>
+                  <span className={styles.year}>{c.period}</span>
                   <span className={styles.chip}>{c.kind}</span>
                 </div>
-
+                <h3 className={styles.credential}>{c.credential}</h3>
                 <p className={styles.inst}>
                   <span>{c.institution}</span>
                   {c.status && <span className={styles.status}>{c.status}</span>}
                 </p>
+              </div>
 
+              <div className={styles.rowBody}>
                 {c.titles && (
                   <ul className={styles.titles}>
                     {c.titles.map((t) => (

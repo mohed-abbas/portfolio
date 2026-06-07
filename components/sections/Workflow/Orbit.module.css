@@ -1,0 +1,330 @@
+/* ============================================================
+   WORKFLOW · ORBIT renderer
+   Theme-aligned reimaginings of the loop / star: the metro chrome
+   (arrivals board, line badge, registration frame) is gone. What's
+   left speaks the portfolio's own language — the ✦ sparkle mark, the
+   plus-sign hero grid, accent-cycling glow, big PP Neue Montreal
+   display type. Three variants share this sheet (sparkle / plusgrid /
+   cosmic); geometry + decoration differ in layouts.ts only.
+   ============================================================ */
+
+.orbit {
+  position: relative;
+  /* Brand accent palette — single source for this section.
+     #62b6cb teal · #da3036 red · #ff990a orange · #93b99e sage */
+  --wf-teal: #62b6cb;
+  --wf-red: #da3036;
+  --wf-orange: #ff990a;
+  --wf-green: #93b99e;
+  --wf-live-accent: var(--wf-teal);
+  --wf-faint: color-mix(in srgb, var(--color-primary-text) 13%, transparent);
+
+  background: var(--color-background);
+  color: var(--color-primary-text);
+}
+
+.viewport {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    120% 110% at 50% 46%,
+    color-mix(in srgb, var(--color-primary-text) 3%, var(--color-background)) 0%,
+    var(--color-background) 62%
+  );
+}
+
+/* ---- full-bleed plus-sign field (plusgrid variant) ----
+   On the viewport (not the section) so it paints above the viewport's own
+   radial background but below the schematic (z-index 1). */
+.fieldPlusgrid .viewport::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='58'%3E%3Cpath d='M29 22.5v13M22.5 29h13' stroke='%23808080' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-size: 58px 58px;
+  background-position: center;
+  -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 38%, transparent 78%);
+  mask-image: radial-gradient(120% 120% at 50% 50%, #000 38%, transparent 78%);
+}
+
+/* deep field tint for the cosmic variant: a darker vignette that lets the
+   accent glow read, independent of light/dark theme */
+.fieldStars .viewport {
+  background: radial-gradient(
+    120% 120% at 50% 44%,
+    color-mix(in srgb, var(--color-primary-text) 8%, var(--color-background)) 0%,
+    var(--color-background) 70%
+  );
+}
+
+/* ---- header: ✦ eyebrow + step readout (no metro line badge) ---- */
+.head {
+  position: absolute;
+  inset: clamp(84px, 11vh, 116px) clamp(28px, 5vw, 80px) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  z-index: 4;
+}
+.eyebrow {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+.readout {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout em {
+  font-style: normal;
+  color: var(--wf-live-accent);
+}
+
+/* ---- route diagram ---- */
+.schematic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.routeCasing {
+  /* width comes from the per-variant stroke-width attribute (lineWidth + 10) */
+  fill: none;
+  stroke: var(--color-background);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.route {
+  fill: none;
+  stroke: var(--wf-faint);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* faint dotted orbit for cosmic (drawLine: false) */
+.routeDashed {
+  fill: none;
+  stroke: var(--wf-faint);
+  stroke-linecap: round;
+  stroke-dasharray: 1 16;
+}
+.routeLive {
+  fill: none;
+  stroke: var(--wf-live-accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.5s var(--ease-out-expo);
+}
+
+/* ---- stars field (cosmic) ---- */
+.fieldStar {
+  fill: var(--color-primary-text);
+}
+
+/* ---- markers ---- */
+.marker {
+  --m-accent: var(--wf-teal);
+}
+.markerGlyph {
+  transition: fill 0.45s var(--ease-out-expo), stroke 0.45s var(--ease-out-expo),
+    opacity 0.45s var(--ease-out-expo);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* sparkle marker: outline at rest, fills with accent on arrival */
+.markerSparkle {
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+.mActive .markerSparkle {
+  fill: var(--m-accent);
+  stroke: var(--m-accent);
+}
+/* plus marker: hairline ink cross that ignites to accent + thickens */
+.markerPlus {
+  stroke: var(--color-text-muted);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  transition: stroke 0.45s var(--ease-out-expo), stroke-width 0.45s var(--ease-out-expo);
+}
+.mActive .markerPlus {
+  stroke: var(--m-accent);
+  stroke-width: 4.5;
+}
+/* cosmic star marker: dim dot with a halo that lights on arrival */
+.markerHalo {
+  fill: none;
+  stroke: var(--m-accent);
+  stroke-width: 1.5;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+}
+.mActive .markerHalo {
+  opacity: 0.55;
+}
+
+/* ---- bullet that rides the route ---- */
+.bulletGroup {
+  pointer-events: none;
+}
+.bulletGlow {
+  fill: var(--wf-live-accent);
+  opacity: 0.22;
+}
+/* sparkle bullet: a bright filled ✦ */
+.bulletGlyph {
+  fill: var(--wf-live-accent);
+  stroke: var(--color-background);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+/* plus bullet: an accent token carrying a white plus */
+.bulletToken {
+  fill: var(--wf-live-accent);
+  stroke: var(--color-background);
+  stroke-width: 3;
+}
+.bulletPlusMark {
+  stroke: var(--color-background);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+/* comet bullet head + accent trail */
+.bulletHead {
+  fill: #fff;
+  stroke: var(--wf-live-accent);
+  stroke-width: 2.5;
+}
+.trail {
+  fill: none;
+  stroke: var(--wf-live-accent);
+  stroke-width: 6;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+/* ---- centred placard (active stop detail) ---- */
+.detailWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(34ch, 64vw);
+  height: 13em;
+  z-index: 4;
+  text-align: center;
+}
+/* soft field of the surface behind the centred text, so the orbit / arms
+   read as passing behind it. Tracks light + dark via --color-background. */
+.detailWrap::before {
+  content: '';
+  position: absolute;
+  inset: -16vh -12vw;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    54% 58% at 50% 50%,
+    var(--color-background) 0%,
+    var(--color-background) 40%,
+    color-mix(in srgb, var(--color-background) 70%, transparent) 64%,
+    transparent 82%
+  );
+}
+.detail {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.detail.isActive {
+  opacity: 1;
+  transform: none;
+}
+.detailKicker {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-background);
+  background: var(--accent);
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: clamp(12px, 1.6vw, 20px);
+}
+.detailTitle {
+  margin: 0 0 clamp(12px, 1.4vw, 18px);
+  font-family: var(--font-primary);
+  font-size: clamp(32px, 4.2vw, 58px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--color-primary-text);
+}
+.detailCopy {
+  margin: 0 auto;
+  max-width: 34ch;
+  font-size: clamp(14px, 1.05vw, 17px);
+  line-height: 1.55;
+  color: var(--color-text-muted-strong);
+  text-wrap: pretty;
+}
+.em {
+  font-style: italic;
+  color: var(--color-primary-text);
+  background: linear-gradient(
+    transparent 76%,
+    var(--accent) 76%,
+    var(--accent) 94%,
+    transparent 94%
+  );
+}
+
+/* ---- reduced-motion / static fallback ---- */
+.isStatic .viewport {
+  height: auto;
+  padding: 12vh 0 8vh;
+}
+.isStatic .schematic {
+  position: relative;
+  height: 52vh;
+}
+.isStatic .detailWrap {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  width: auto;
+  height: auto;
+  margin: 2.5rem clamp(28px, 5vw, 80px) 0;
+  display: grid;
+  gap: 2.4rem;
+  text-align: left;
+}
+.isStatic .detail {
+  position: relative;
+  inset: auto;
+  opacity: 1;
+  transform: none;
+  align-items: flex-start;
+}

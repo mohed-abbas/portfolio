@@ -1,22 +1,34 @@
 'use client';
 
 /* ============================================================
-   WORKFLOW · TRANSIT LINE
-   The process as a Vignelli-style metro diagram: a route the
-   bullet rides on scroll, halting at each of five stations.
-   Five toggleable layouts (trunk / rail / loop / diagonal / star)
-   share one driver — see useTransitDriver + layouts.ts.
-   Mounted in the home scroll just before Contact.
+   WORKFLOW — section orchestrator
+   Reads the active variant (dev ?wf= deep link) and hands off to
+   the matching renderer:
+     • transit  → TransitWorkflow  (original metro layouts, refs)
+     • orbit    → OrbitWorkflow     (sparkle / plusgrid / cosmic)
+     • typering → TypeRingWorkflow  (big-type ring)
+   The dev variant picker is rendered once here, above whichever
+   renderer is active. Mounted in the home scroll just before Contact.
+     • orrery / constellation / eclipse / signal → one variant each,
+       self-contained concept renderers.
    ============================================================ */
 
-import { Fragment, useMemo, useRef, useSyncExternalStore } from 'react';
-import { content } from '@/data';
-import type { WorkflowStop } from '@/data';
-import { useReducedMotion } from '@/lib/useReducedMotion';
-import { LAYOUTS, DEFAULT_VARIANT, isVariant, type WorkflowVariant } from './layouts';
-import { useTransitDriver } from './useTransitDriver';
+import { useEffect, useSyncExternalStore } from 'react';
+import { ScrollTrigger } from '@/lib/gsap';
+import {
+  LAYOUTS,
+  DEFAULT_VARIANT,
+  isVariant,
+  type WorkflowVariant,
+} from './layouts';
+import { TransitWorkflow } from './variants/TransitWorkflow';
+import { OrbitWorkflow } from './variants/OrbitWorkflow';
+import { TypeRingWorkflow } from './variants/TypeRingWorkflow';
+import { OrreryWorkflow } from './variants/OrreryWorkflow';
+import { ConstellationWorkflow } from './variants/ConstellationWorkflow';
+import { EclipseWorkflow } from './variants/EclipseWorkflow';
+import { SignalWorkflow } from './variants/SignalWorkflow';
 import { VariantPicker } from './VariantPicker';
-import styles from './Workflow.module.css';
 
 const SHOW_PICKER = process.env.NODE_ENV !== 'production';
 
@@ -47,93 +59,42 @@ function setVariantParam(next: WorkflowVariant) {
   variantListeners.forEach((l) => l());
 }
 
-// Render a stop's copy, underlining the optional emphasis word (first match)
-// with the stop accent. Avoids dangerouslySetInnerHTML.
-function renderCopy(stop: WorkflowStop) {
-  const { copy, emphasis } = stop;
-  if (!emphasis) return copy;
-  const at = copy.indexOf(emphasis);
-  if (at < 0) return copy;
-  return (
-    <Fragment>
-      {copy.slice(0, at)}
-      <em className={styles.em}>{emphasis}</em>
-      {copy.slice(at + emphasis.length)}
-    </Fragment>
-  );
-}
-
 export function Workflow() {
-  const { label, lineBadge, stops } = content.workflow;
-  const reducedMotion = useReducedMotion();
-  const sectionRef = useRef<HTMLElement>(null);
-
   const variant = useSyncExternalStore(
     subscribeVariant,
     getVariantSnapshot,
     getVariantServerSnapshot,
   );
 
-  const layout = LAYOUTS[variant];
+  const renderer = LAYOUTS[variant].renderer ?? 'transit';
 
-  // Accent CSS values per stop (locally-defined brand palette vars on .wf).
-  const accents = useMemo(
-    () => stops.map((s) => `var(--wf-${s.accent})`),
-    [stops],
-  );
-
-  useTransitDriver(sectionRef, { layout, accents, variantKey: variant, reducedMotion });
-
-  const className = [styles.wf, styles[layout.placard], reducedMotion ? styles.isStatic : '']
-    .filter(Boolean)
-    .join(' ');
+  // A variant change can swap renderers (e.g. the server-default `trunk` →
+  // a client `?wf=` orbit/typering), which unmounts one workflow component and
+  // mounts another — so the workflow pin is recreated AFTER the later Contact
+  // pin already exists. GSAP refreshes equal-priority pins in *creation* order,
+  // so the out-of-order workflow pin's spacing isn't counted in Contact's
+  // start — Contact then pins ~3000px early and bleeds over the workflow.
+  // ScrollTrigger.sort() re-orders pins by document position; refresh() then
+  // recomputes every start/end correctly. (refresh() alone does NOT re-sort.)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      ScrollTrigger.sort();
+      ScrollTrigger.refresh();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [variant]);
 
   return (
-    <section ref={sectionRef} className={className} id="workflow" data-wf>
-      <div className={styles.viewport} data-viewport>
-        <header className={styles.head}>
-          <span className={styles.eyebrow}>✦&nbsp;&nbsp;{label}</span>
-          <span className={styles.lineBadge}>{lineBadge}</span>
-        </header>
+    <>
+      {renderer === 'orbit' && <OrbitWorkflow variant={variant} />}
+      {renderer === 'typering' && <TypeRingWorkflow variant={variant} />}
+      {renderer === 'orrery' && <OrreryWorkflow variant={variant} />}
+      {renderer === 'constellation' && <ConstellationWorkflow variant={variant} />}
+      {renderer === 'eclipse' && <EclipseWorkflow variant={variant} />}
+      {renderer === 'signal' && <SignalWorkflow variant={variant} />}
+      {renderer === 'transit' && <TransitWorkflow variant={variant} />}
 
-        <div className={styles.board} aria-hidden="true">
-          <span className={styles.boardTag}>Next stop</span>
-          <span className={styles.boardStop} data-board>
-            {stops[0]?.name}
-          </span>
-          <span className={styles.boardCount} data-readout>
-            01 / {String(stops.length).padStart(2, '0')}
-          </span>
-        </div>
-
-        <svg
-          className={styles.schematic}
-          data-schematic
-          viewBox={layout.viewBox}
-          preserveAspectRatio="xMidYMid meet"
-          aria-hidden="true"
-        />
-
-        <div className={styles.detailWrap} data-detail>
-          {stops.map((stop, i) => (
-            <article
-              key={stop.name}
-              className={styles.detail}
-              data-step
-              data-name={stop.name}
-              style={{ '--accent': `var(--wf-${stop.accent})` } as React.CSSProperties}
-            >
-              <span className={styles.detailKicker}>
-                Stop {String(i + 1).padStart(2, '0')}&nbsp;·&nbsp;{stop.name}
-              </span>
-              <h3 className={styles.detailTitle}>{stop.title}</h3>
-              <p className={styles.detailCopy}>{renderCopy(stop)}</p>
-            </article>
-          ))}
-        </div>
-
-        {SHOW_PICKER && <VariantPicker value={variant} onChange={setVariantParam} />}
-      </div>
-    </section>
+      {SHOW_PICKER && <VariantPicker value={variant} onChange={setVariantParam} />}
+    </>
   );
 }

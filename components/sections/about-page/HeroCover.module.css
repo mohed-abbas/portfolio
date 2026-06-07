@@ -1,0 +1,175 @@
+/* ABOUT PAGE · Hero — "Cover".
+   Photo-led editorial masthead. Portrait centred, name set huge and overlapping
+   the lower edge of the photo (mix-blend keeps it legible over photo + paper).
+   Reveal driven by useBlockFadeIn (GSAP); grain + arrow are the only CSS motion. */
+
+.hero {
+  position: relative;
+  z-index: var(--z-above);
+  box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(96px, 13vh, 150px) var(--spacing-nav-side) clamp(32px, 5vh, 60px);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+/* film grain over the paper */
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.45;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ── top row ── */
+.top {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-navbar);
+  font-size: clamp(12px, 1.1vw, 15px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.back:hover { color: var(--color-accent-purple); }
+.back span { font-size: 1.2em; line-height: 1; }
+.eyebrow { margin: 0; }
+
+/* ── stage ──
+   No z-index here: the stage must NOT form its own stacking context, or the
+   name's mix-blend would only see the photo as backdrop (and stay plain white
+   over the paper). Children carry their own z-index within the hero context. */
+.stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.portrait {
+  position: relative;
+  z-index: 2;
+  width: clamp(300px, 44vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-primary-text) 12%, transparent);
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.45);
+}
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 12%;
+  filter: contrast(1.03) saturate(0.96);
+}
+
+.name {
+  position: relative;
+  z-index: 3;
+  margin: clamp(-88px, -6.4vw, -50px) 0 0;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(46px, 13vw, 200px);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  text-align: center;
+  color: #fff;
+  mix-blend-mode: difference;
+}
+
+/* ── meta chips ── */
+.chip {
+  position: absolute;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-navbar);
+  font-size: clamp(10px, 1vw, 12px);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+  border: 1px solid color-mix(in srgb, var(--color-primary-text) 22%, transparent);
+  border-radius: 999px;
+  padding: 7px 13px;
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  backdrop-filter: blur(4px);
+}
+.chipLoc { top: clamp(8px, 4vh, 40px); left: 0; }
+.chipRole { top: clamp(8px, 4vh, 40px); right: 0; }
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent-purple);
+  flex: none;
+}
+
+/* ── foot ── */
+.foot {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.line {
+  margin: 0;
+  max-width: 40ch;
+  font-family: var(--font-primary);
+  font-size: clamp(15px, 1.4vw, 20px);
+  line-height: 1.45;
+  color: var(--color-gray-dark);
+}
+.scroll {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.scrollArrow {
+  display: inline-block;
+  animation: coverBob 1.8s ease-in-out infinite;
+}
+@keyframes coverBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+@media (max-width: 600px) {
+  .chip { position: static; background: transparent; backdrop-filter: none; padding: 0; border: 0; }
+  .stage { gap: 14px; }
+  .name { margin-top: clamp(-60px, -10vw, -34px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollArrow { animation: none; }
+}

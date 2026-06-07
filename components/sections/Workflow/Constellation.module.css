@@ -1,0 +1,245 @@
+/* ============================================================
+   WORKFLOW · CONSTELLATION renderer
+   The cosmic starfield with the comet removed: a hairline draws
+   star-to-star through five named stars, lighting each as it connects
+   until the "M" figure completes. Names are SVG text in PP Neue
+   Montreal; detail crossfades in a bottom-left placard.
+   ============================================================ */
+
+.constellation {
+  position: relative;
+  --wf-teal: #62b6cb;
+  --wf-red: #da3036;
+  --wf-orange: #ff990a;
+  --wf-green: #93b99e;
+  --wf-live-accent: var(--wf-teal);
+  --wf-faint: color-mix(in srgb, var(--color-primary-text) 13%, transparent);
+
+  background: var(--color-background);
+  color: var(--color-primary-text);
+}
+
+.viewport {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    120% 120% at 50% 42%,
+    color-mix(in srgb, var(--color-primary-text) 8%, var(--color-background)) 0%,
+    var(--color-background) 72%
+  );
+}
+
+/* ---- header ---- */
+.head {
+  position: absolute;
+  inset: clamp(84px, 11vh, 116px) clamp(28px, 5vw, 80px) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  z-index: 6;
+}
+.eyebrow {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+.readout {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout em {
+  font-style: normal;
+  color: var(--wf-live-accent);
+}
+
+/* ---- schematic ---- */
+.schematic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.fieldStar {
+  fill: var(--color-primary-text);
+}
+
+/* faint guide + accent draw */
+.guide {
+  fill: none;
+  stroke: var(--wf-faint);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 2 14;
+}
+.live {
+  fill: none;
+  stroke: var(--wf-live-accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.5s var(--ease-out-expo);
+}
+
+/* ---- named star nodes ---- */
+.node {
+  --n-accent: var(--wf-teal);
+}
+.nodeStar {
+  fill: var(--color-text-muted);
+  transition: fill 0.45s var(--ease-out-expo), r 0.45s var(--ease-out-expo);
+}
+.nodeHalo {
+  fill: var(--n-accent);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+}
+.nActive .nodeStar {
+  fill: var(--n-accent);
+}
+.nActive .nodeHalo {
+  opacity: 0.28;
+}
+
+/* ---- SVG-text star names ---- */
+.label {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  fill: var(--color-text-muted);
+  opacity: 0.55;
+  transition: fill 0.45s var(--ease-out-expo), opacity 0.45s var(--ease-out-expo),
+    font-size 0.45s var(--ease-out-expo);
+}
+.labelLit {
+  opacity: 1;
+  fill: var(--color-primary-text);
+}
+.labelActive {
+  fill: var(--wf-live-accent);
+  font-size: 36px;
+}
+
+/* ---- drawing head ---- */
+.head2 {
+  pointer-events: none;
+  opacity: 0;
+}
+.headGlow {
+  fill: var(--wf-live-accent);
+  opacity: 0.3;
+}
+.headDot {
+  fill: #fff;
+  stroke: var(--wf-live-accent);
+  stroke-width: 2;
+}
+
+/* ---- bottom-centre detail placard (sits in the gap between the M's feet) ---- */
+.detailWrap {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(40px, 7vh, 84px);
+  transform: translateX(-50%);
+  width: min(48ch, 72vw);
+  height: 8.5em;
+  z-index: 4;
+  text-align: center;
+}
+.detail {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.detail.isActive {
+  opacity: 1;
+  transform: none;
+}
+.detailKicker {
+  display: block;
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(8px, 1vw, 12px);
+}
+.detailTitle {
+  margin: 0 0 clamp(8px, 1vw, 12px);
+  font-family: var(--font-primary);
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--color-primary-text);
+}
+.detailCopy {
+  margin: 0 auto;
+  max-width: 46ch;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  color: var(--color-text-muted-strong);
+  text-wrap: pretty;
+}
+.em {
+  font-style: italic;
+  color: var(--color-primary-text);
+  background: linear-gradient(
+    transparent 76%,
+    var(--accent) 76%,
+    var(--accent) 94%,
+    transparent 94%
+  );
+}
+
+@media (max-width: 640px) {
+  .detailWrap {
+    width: min(40ch, 86vw);
+  }
+}
+
+/* ---- reduced-motion / static fallback ---- */
+.isStatic .viewport {
+  height: auto;
+  padding: 12vh 0 8vh;
+}
+.isStatic .schematic {
+  position: relative;
+  height: 50vh;
+}
+.isStatic .detailWrap {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: auto;
+  height: auto;
+  margin: 2.5rem clamp(28px, 5vw, 80px) 0;
+  display: grid;
+  gap: 2.4rem;
+  text-align: left;
+}
+.isStatic .detail {
+  position: relative;
+  inset: auto;
+  opacity: 1;
+  transform: none;
+  align-items: flex-start;
+}

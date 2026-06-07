@@ -391,7 +391,9 @@
 }
 .pickerBtnActive,
 .pickerBtnActive:hover {
-  background: var(--wf-teal);
-  border-color: var(--wf-teal);
+  /* Fallback literal: the picker now renders outside the .wf scope where
+     --wf-teal is defined, so the active highlight needs a self-contained value. */
+  background: var(--wf-teal, #62b6cb);
+  border-color: var(--wf-teal, #62b6cb);
   color: #fff;
 }
