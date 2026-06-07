@@ -16,6 +16,13 @@
     --color-text-muted: rgba(27, 32, 40, 0.5);
     --color-text-muted-strong: rgba(27, 32, 40, 0.8);
 
+    /* Workflow section — brand accent palette (mirrors the accentPalette in
+       data/design-tokens.json). Brand accents, so identical in light + dark. */
+    --wf-teal: var(--color-accent-teal);
+    --wf-red: #da3036;
+    --wf-orange: #ff990a;
+    --wf-green: #93b99e;
+
     /* Highlight bar painted behind body-strong text — 78%–96% slice of the
        line-box. Vision title uses a narrower 78%–90% variant kept inline. */
     --highlight-strong: linear-gradient(

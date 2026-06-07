@@ -1,0 +1,211 @@
+/* ============================================================
+   WORKFLOW · ECLIPSE renderer
+   A dark body slides off a light disc; the growing crescent of accent
+   light sweeps across the active step's name. High contrast, deep
+   vignette, near-no chrome. Ends on a corona bloom. Geometry is driven
+   imperatively by useEclipseDriver. Accent palette (--wf-*) comes from
+   styles/variables.css.
+   ============================================================ */
+
+.eclipse {
+  position: relative;
+  --wf-live-accent: var(--wf-teal);
+
+  background: var(--color-background);
+  color: var(--color-primary-text);
+}
+
+.viewport {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  /* deep vignette so the accent light reads, independent of light/dark */
+  background: radial-gradient(
+    90% 100% at 50% 50%,
+    color-mix(in srgb, var(--color-primary-text) 10%, var(--color-background)) 0%,
+    var(--color-background) 66%
+  );
+}
+
+/* ---- header ---- */
+.head {
+  position: absolute;
+  inset: clamp(84px, 11vh, 116px) clamp(28px, 5vw, 80px) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  z-index: 6;
+}
+.eyebrow {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+.readout {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout em {
+  font-style: normal;
+  color: var(--wf-live-accent);
+}
+
+/* ---- scene ---- */
+.schematic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.glow {
+  fill: var(--wf-live-accent);
+  opacity: 0.5;
+  transition: fill 0.5s var(--ease-out-expo);
+}
+.discEdge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-primary-text) 16%, transparent);
+  stroke-width: 1.5;
+}
+.corona {
+  fill: none;
+  stroke: var(--wf-live-accent);
+  stroke-width: 3;
+  opacity: 0;
+  filter: drop-shadow(0 0 14px var(--wf-live-accent));
+  transition: stroke 0.5s var(--ease-out-expo);
+}
+.moon {
+  fill: color-mix(in srgb, var(--color-primary-text) 7%, var(--color-background));
+  stroke: color-mix(in srgb, var(--color-primary-text) 20%, transparent);
+  stroke-width: 1;
+}
+
+/* ---- crescent-swept names (SVG text, viewBox units) ---- */
+.nameBase {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 108px;
+  letter-spacing: -4px;
+  text-transform: uppercase;
+  fill: var(--color-text-muted);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+}
+.nameLit {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 108px;
+  letter-spacing: -4px;
+  text-transform: uppercase;
+  fill: var(--wf-live-accent);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo), fill 0.5s var(--ease-out-expo);
+}
+.nameBase.nameOn,
+.nameLit.nameOn {
+  opacity: 1;
+}
+
+/* ---- bottom-centred detail placard ---- */
+.detailWrap {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(48px, 9vh, 104px);
+  transform: translateX(-50%);
+  width: min(46ch, 78vw);
+  height: 7.5em;
+  z-index: 4;
+  text-align: center;
+}
+.detail {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.detail.isActive {
+  opacity: 1;
+  transform: none;
+}
+.detailKicker {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(8px, 1vw, 12px);
+}
+.detailTitle {
+  margin: 0 0 clamp(8px, 1vw, 12px);
+  font-family: var(--font-primary);
+  font-size: clamp(20px, 2.2vw, 30px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-primary-text);
+}
+.detailCopy {
+  margin: 0 auto;
+  max-width: 46ch;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  color: var(--color-text-muted-strong);
+  text-wrap: pretty;
+}
+.em {
+  font-style: italic;
+  color: var(--color-primary-text);
+  background: linear-gradient(
+    transparent 76%,
+    var(--accent) 76%,
+    var(--accent) 94%,
+    transparent 94%
+  );
+}
+
+/* ---- reduced-motion / static fallback ---- */
+.isStatic .viewport {
+  height: auto;
+  padding: 12vh 0 8vh;
+}
+.isStatic .schematic {
+  position: relative;
+  height: 50vh;
+}
+.isStatic .nameBase,
+.isStatic .nameLit {
+  opacity: 1;
+}
+.isStatic .detailWrap {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: auto;
+  height: auto;
+  margin: 2.5rem clamp(28px, 5vw, 80px) 0;
+  display: grid;
+  gap: 2.4rem;
+  text-align: left;
+}
+.isStatic .detail {
+  position: relative;
+  inset: auto;
+  opacity: 1;
+  transform: none;
+  align-items: flex-start;
+}

@@ -74,6 +74,28 @@ export interface PhilosophyContent {
   highlights: string[];
 }
 
+export interface WorkflowStop {
+  /** Short step name, e.g. "Discover". */
+  name: string;
+  /** Headline for the active step. */
+  title: string;
+  /** Supporting copy for the active step. */
+  copy: string;
+  /** Optional word inside `copy` to underline with the step accent (first match). */
+  emphasis?: string;
+  /** Brand palette key driving this step's accent. One of: 'teal' | 'red' |
+   *  'orange' | 'green' (maps to the --wf-* vars in styles/variables.css).
+   *  Typed as string because content is sourced from JSON. */
+  accent: string;
+}
+
+export interface WorkflowContent {
+  /** Eyebrow, e.g. "How I work". */
+  label: string;
+  /** Ordered process steps rendered by the Workflow section. */
+  stops: WorkflowStop[];
+}
+
 export interface AboutContent {
   /** Eyebrow / rotated meta-label, e.g. "About". */
   label: string;
@@ -190,6 +212,7 @@ export interface Content {
   welcomeScreen: WelcomeScreenContent;
   ui: UIContent;
   philosophy: PhilosophyContent;
+  workflow: WorkflowContent;
   about: AboutContent;
   services: ServicesContent;
   projects: ProjectsContent;
