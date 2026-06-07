@@ -1,0 +1,208 @@
+/* ============================================================
+   WORKFLOW · APERTURE renderer
+   A six-blade camera iris over the plus-grid. Surface-coloured blades
+   cover everything except a central N-gon hole; the hole stops down
+   and opens per step, revealing each sharp name. Ends wide open on a
+   corona. Geometry is driven by useApertureDriver.
+   ============================================================ */
+
+.aperture {
+  position: relative;
+  --wf-teal: #62b6cb;
+  --wf-red: #da3036;
+  --wf-orange: #ff990a;
+  --wf-green: #93b99e;
+  --wf-live-accent: var(--wf-teal);
+
+  background: var(--color-background);
+  color: var(--color-primary-text);
+}
+
+.viewport {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    120% 110% at 50% 46%,
+    color-mix(in srgb, var(--color-primary-text) 4%, var(--color-background)) 0%,
+    var(--color-background) 64%
+  );
+}
+
+/* plus-grid field behind the iris, seen only through the open hole */
+.viewport::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='58'%3E%3Cpath d='M29 22.5v13M22.5 29h13' stroke='%23808080' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-size: 58px 58px;
+  background-position: center;
+}
+
+/* ---- header ---- */
+.head {
+  position: absolute;
+  inset: clamp(84px, 11vh, 116px) clamp(28px, 5vw, 80px) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  z-index: 6;
+}
+.eyebrow {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+.readout {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout em {
+  font-style: normal;
+  color: var(--wf-live-accent);
+}
+
+/* ---- iris scene ---- */
+.schematic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* step name sits behind the blades, revealed inside the hole */
+.name {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 150px;
+  letter-spacing: -6px;
+  text-transform: uppercase;
+  fill: var(--color-primary-text);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+}
+.name.nameOn {
+  opacity: 1;
+}
+
+/* blades hide the field outside the hole; their inner edges trace the iris */
+.blade {
+  fill: var(--color-background);
+}
+.bladeEdge {
+  stroke: color-mix(in srgb, var(--color-primary-text) 20%, transparent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  transition: stroke 0.45s var(--ease-out-expo);
+}
+
+.corona {
+  fill: none;
+  stroke: var(--wf-live-accent);
+  stroke-width: 3;
+  opacity: 0;
+  filter: drop-shadow(0 0 14px var(--wf-live-accent));
+  transition: stroke 0.5s var(--ease-out-expo);
+}
+
+/* ---- bottom-centred detail placard ---- */
+.detailWrap {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(48px, 9vh, 104px);
+  transform: translateX(-50%);
+  width: min(46ch, 80vw);
+  height: 7.5em;
+  z-index: 6;
+  text-align: center;
+}
+.detail {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.detail.isActive {
+  opacity: 1;
+  transform: none;
+}
+.detailKicker {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(8px, 1vw, 12px);
+}
+.detailTitle {
+  margin: 0 0 clamp(8px, 1vw, 12px);
+  font-family: var(--font-primary);
+  font-size: clamp(20px, 2.2vw, 30px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-primary-text);
+}
+.detailCopy {
+  margin: 0 auto;
+  max-width: 46ch;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  color: var(--color-text-muted-strong);
+  text-wrap: pretty;
+}
+.em {
+  font-style: italic;
+  color: var(--color-primary-text);
+  background: linear-gradient(
+    transparent 76%,
+    var(--accent) 76%,
+    var(--accent) 94%,
+    transparent 94%
+  );
+}
+
+/* ---- reduced-motion / static fallback ---- */
+.isStatic .viewport {
+  height: auto;
+  padding: 12vh 0 8vh;
+}
+.isStatic .schematic {
+  position: relative;
+  height: 52vh;
+}
+.isStatic .detailWrap {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: auto;
+  height: auto;
+  margin: 2.5rem clamp(28px, 5vw, 80px) 0;
+  display: grid;
+  gap: 2.4rem;
+  text-align: left;
+}
+.isStatic .detail {
+  position: relative;
+  inset: auto;
+  opacity: 1;
+  transform: none;
+  align-items: flex-start;
+}

@@ -27,7 +27,12 @@ export type WorkflowVariant =
   | 'eclipse'
   | 'annular'
   | 'horizon'
-  | 'signal';
+  | 'signal'
+  // ── clarity-arc concepts (blurred idea → resolved, one renderer each) ──
+  | 'resolve'
+  | 'aperture'
+  | 'register'
+  | 'settling';
 
 export const VARIANT_ORDER: WorkflowVariant[] = [
   'trunk',
@@ -43,6 +48,10 @@ export const VARIANT_ORDER: WorkflowVariant[] = [
   'annular',
   'horizon',
   'signal',
+  'resolve',
+  'aperture',
+  'register',
+  'settling',
 ];
 export const DEFAULT_VARIANT: WorkflowVariant = 'trunk';
 
@@ -59,7 +68,11 @@ export type RendererKind =
   | 'orrery'
   | 'constellation'
   | 'eclipse'
-  | 'signal';
+  | 'signal'
+  | 'resolve'
+  | 'aperture'
+  | 'register'
+  | 'settling';
 
 /** Decoration strategy for the orbit driver (currently the cosmic variant;
  *  the type keeps the full marker/bullet/field vocabulary so new orbit
@@ -379,6 +392,74 @@ export const LAYOUTS: Record<WorkflowVariant, TransitLayout> = {
     placard: 'placardBottomLeft',
     pinVH: 4,
     renderer: 'signal',
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  //  CLARITY-ARC CONCEPTS — the client's idea arrives unresolved
+  //  (blurred / stopped-down / out of register / wobbling) and scroll
+  //  resolves it to tack-sharp clarity, step by step. Each owns one
+  //  self-contained driver + stylesheet; geometry is bespoke in the
+  //  driver, so these layout entries only carry the shared shell hints.
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── Resolve: a rack-focus stack of giant step names; all sit in lens
+  //    blur, the active one racks tack-sharp as it reaches the reticle ──
+  resolve: {
+    label: '◎ Resolve',
+    viewBox: '0 0 1200 700',
+    d: CIRCLE_D,
+    closed: false,
+    stopFrac: [0, 0.25, 0.5, 0.75, 1],
+    labelMode: 'radial',
+    center: { x: 600, y: 350 },
+    placard: 'placardBottomLeft',
+    pinVH: 4,
+    renderer: 'resolve',
+  },
+
+  // ── Aperture: a six-blade camera iris stops down and opens to reveal
+  //    each sharp name behind the plus-grid; ends wide open on a corona ──
+  aperture: {
+    label: '⬡ Aperture',
+    viewBox: '0 0 1200 700',
+    d: CIRCLE_D,
+    closed: true,
+    stopFrac: [0, 0.25, 0.5, 0.75, 1],
+    labelMode: 'radial',
+    center: { x: 600, y: 350 },
+    placard: 'placardBottomLeft',
+    pinVH: 4,
+    renderer: 'aperture',
+  },
+
+  // ── Register: the active name renders as three colour separations
+  //    (teal / red / orange) that converge into one in-register word ──
+  register: {
+    label: '⊕ Register',
+    viewBox: '0 0 1200 700',
+    d: CIRCLE_D,
+    closed: false,
+    stopFrac: [0, 0.25, 0.5, 0.75, 1],
+    labelMode: 'radial',
+    center: { x: 600, y: 350 },
+    placard: 'placardBottomLeft',
+    pinVH: 4,
+    renderer: 'register',
+  },
+
+  // ── Settling Orbit: a comet on a wide, eccentric, wobbling orbit (the
+  //    unsettled idea) decays into a clean tight circle; stars sharpen ──
+  settling: {
+    label: '⟳ Settling Orbit',
+    viewBox: '0 0 1200 700',
+    d: CIRCLE_D,
+    closed: true,
+    stopFrac: [0, 0.25, 0.5, 0.75, 1],
+    labelMode: 'radial',
+    center: { x: 600, y: 350 },
+    placard: 'placardCenter',
+    pinVH: 4,
+    renderer: 'settling',
   },
 };
 

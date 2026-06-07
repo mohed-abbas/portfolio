@@ -1,0 +1,277 @@
+/* ============================================================
+   WORKFLOW · REGISTER renderer
+   Chromatic convergence. The active step name is three colour
+   separations (teal / red / orange) multiplying over the surface;
+   they arrive out of register and converge into one solid in-register
+   word, with registration crosshairs clicking into the corners.
+   Convergence is driven by useRegisterDriver.
+   ============================================================ */
+
+.register {
+  position: relative;
+  --wf-teal: #62b6cb;
+  --wf-red: #da3036;
+  --wf-orange: #ff990a;
+  --wf-green: #93b99e;
+  --wf-live-accent: var(--wf-teal);
+
+  background: var(--color-background);
+  color: var(--color-primary-text);
+}
+
+.viewport {
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    120% 110% at 50% 46%,
+    color-mix(in srgb, var(--color-primary-text) 3%, var(--color-background)) 0%,
+    var(--color-background) 64%
+  );
+}
+
+/* ---- header ---- */
+.head {
+  position: absolute;
+  inset: clamp(84px, 11vh, 116px) clamp(28px, 5vw, 80px) auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  z-index: 6;
+}
+.eyebrow {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-text-muted-strong);
+}
+.readout {
+  font-family: var(--font-navbar);
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.readout em {
+  font-style: normal;
+  color: var(--wf-live-accent);
+}
+
+/* ---- separation stage ---- */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.group {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out-expo);
+}
+.group.isActive {
+  opacity: 1;
+}
+.chan,
+.solid {
+  grid-area: 1 / 1;
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: clamp(48px, 11vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  will-change: transform, opacity;
+}
+/* the three separations multiply over the surface so overlaps darken */
+.chan {
+  mix-blend-mode: multiply;
+}
+.chanC {
+  color: var(--wf-teal);
+}
+.chanM {
+  color: var(--wf-red);
+}
+.chanY {
+  color: var(--wf-orange);
+}
+/* the resolved word, fading in solid in the step's accent on lock */
+.solid {
+  color: var(--accent);
+  opacity: 0;
+}
+
+/* ---- registration crosshairs ---- */
+.marks {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  transform: translate(-50%, -50%);
+  width: clamp(300px, 62vw, 820px);
+  height: clamp(96px, 18vh, 210px);
+  z-index: 4;
+  pointer-events: none;
+}
+.mark {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  opacity: 0;
+}
+.mark::before,
+.mark::after {
+  content: '';
+  position: absolute;
+  background: var(--wf-live-accent);
+}
+.mark::before {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+.mark::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+}
+.mark:nth-child(1) {
+  top: -11px;
+  left: -11px;
+}
+.mark:nth-child(2) {
+  top: -11px;
+  right: -11px;
+}
+.mark:nth-child(3) {
+  bottom: -11px;
+  left: -11px;
+}
+.mark:nth-child(4) {
+  bottom: -11px;
+  right: -11px;
+}
+
+/* ---- bottom-centred detail placard ---- */
+.detailWrap {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(48px, 9vh, 104px);
+  transform: translateX(-50%);
+  width: min(46ch, 80vw);
+  height: 7.5em;
+  z-index: 6;
+  text-align: center;
+}
+.detail {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s var(--ease-out-expo), transform 0.5s var(--ease-out-expo);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.detail.isActive {
+  opacity: 1;
+  transform: none;
+}
+.detailKicker {
+  font-family: var(--font-navbar);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: clamp(8px, 1vw, 12px);
+}
+.detailTitle {
+  margin: 0 0 clamp(8px, 1vw, 12px);
+  font-family: var(--font-primary);
+  font-size: clamp(20px, 2.2vw, 30px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-primary-text);
+}
+.detailCopy {
+  margin: 0 auto;
+  max-width: 46ch;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.55;
+  color: var(--color-text-muted-strong);
+  text-wrap: pretty;
+}
+.em {
+  font-style: italic;
+  color: var(--color-primary-text);
+  background: linear-gradient(
+    transparent 76%,
+    var(--accent) 76%,
+    var(--accent) 94%,
+    transparent 94%
+  );
+}
+
+/* ---- reduced-motion / static fallback ---- */
+.isStatic .viewport {
+  height: auto;
+  padding: 14vh clamp(28px, 5vw, 80px) 10vh;
+}
+.isStatic .stage {
+  position: relative;
+  inset: auto;
+  display: grid;
+  gap: 1rem;
+}
+.isStatic .marks {
+  display: none;
+}
+.isStatic .group {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  opacity: 1;
+  justify-items: start;
+}
+.isStatic .chan {
+  display: none;
+}
+.isStatic .solid {
+  position: relative;
+  opacity: 1;
+  color: var(--color-primary-text);
+  font-size: clamp(30px, 5vw, 60px);
+}
+.isStatic .detailWrap {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: auto;
+  height: auto;
+  margin-top: 2rem;
+  text-align: left;
+}
+.isStatic .detail {
+  position: relative;
+  inset: auto;
+  opacity: 1;
+  transform: none;
+  align-items: flex-start;
+}

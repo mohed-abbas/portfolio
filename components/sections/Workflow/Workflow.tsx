@@ -28,6 +28,10 @@ import { OrreryWorkflow } from './variants/OrreryWorkflow';
 import { ConstellationWorkflow } from './variants/ConstellationWorkflow';
 import { EclipseWorkflow } from './variants/EclipseWorkflow';
 import { SignalWorkflow } from './variants/SignalWorkflow';
+import { ResolveWorkflow } from './variants/ResolveWorkflow';
+import { ApertureWorkflow } from './variants/ApertureWorkflow';
+import { RegisterWorkflow } from './variants/RegisterWorkflow';
+import { SettlingWorkflow } from './variants/SettlingWorkflow';
 import { VariantPicker } from './VariantPicker';
 
 const SHOW_PICKER = process.env.NODE_ENV !== 'production';
@@ -92,6 +96,10 @@ export function Workflow() {
       {renderer === 'constellation' && <ConstellationWorkflow variant={variant} />}
       {renderer === 'eclipse' && <EclipseWorkflow variant={variant} />}
       {renderer === 'signal' && <SignalWorkflow variant={variant} />}
+      {renderer === 'resolve' && <ResolveWorkflow variant={variant} />}
+      {renderer === 'aperture' && <ApertureWorkflow variant={variant} />}
+      {renderer === 'register' && <RegisterWorkflow variant={variant} />}
+      {renderer === 'settling' && <SettlingWorkflow variant={variant} />}
       {renderer === 'transit' && <TransitWorkflow variant={variant} />}
 
       {SHOW_PICKER && <VariantPicker value={variant} onChange={setVariantParam} />}
