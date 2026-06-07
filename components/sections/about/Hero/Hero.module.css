@@ -21,22 +21,10 @@
 }
 
 /* ── Meta-label (matches Philosophy / Projects / Archive) ── */
+/* Base meta-label styling lives in the shared <MetaLabel> component; this
+   only adds the spacing below it within the hero stack. */
 .metaLabel {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-bottom: clamp(20px, 2.6vh, 34px);
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: var(--color-accent-purple);
-}
-
-.starIcon {
-  width: 1.2em;
-  height: 1.2em;
-  flex-shrink: 0;
 }
 
 /* ── Verb stack ── */
@@ -157,11 +145,6 @@
 @media (max-width: 768px) {
   .hero {
     padding: clamp(80px, 16vh, 140px) var(--spacing-nav-side);
-  }
-
-  .metaLabel {
-    font-size: 0.7rem;
-    gap: 8px;
   }
 
   /* No hover on touch — drop the spotlight cursor and keep the accent base. */

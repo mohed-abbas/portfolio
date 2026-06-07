@@ -36,27 +36,12 @@
   background: transparent;
 }
 
-.metaLabel {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: var(--color-accent-purple);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* Base meta-label styling now lives in the shared <MetaLabel> component. */
 
 /* Static fallback only — adds margin around the meta label since it sits
    outside the .pin grid that normally positions it. */
 .stackMetaLabel {
   margin: 64px 8% 24px;
-}
-
-.starIcon {
-  width: 1.2em;
-  height: 1.2em;
-  flex-shrink: 0;
 }
 
 /* TOP — metaLabel + (lede, bigword) stacked, left-aligned. metaLabel sits

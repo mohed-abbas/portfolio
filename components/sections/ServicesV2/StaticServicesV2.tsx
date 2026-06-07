@@ -1,7 +1,7 @@
 'use client';
 
 import { content } from '@/data';
-import { Star } from '../Services/Star';
+import { MetaLabel } from '@/components/ui/MetaLabel';
 import { classifyFaceWord } from '../Services/constants';
 import { HEADING_ID, ZONES, formatZoneIndex, zoneRail } from './constants';
 import styles from './ServicesV2.module.css';
@@ -17,10 +17,7 @@ export function StaticServicesV2() {
         {content.services.headline.lead} {content.services.headline.accent}
       </h2>
 
-      <div className={`${styles.metaLabel} ${styles.stackMetaLabel}`}>
-        <Star className={styles.starIcon} />
-        {content.services.label}
-      </div>
+      <MetaLabel className={styles.stackMetaLabel}>{content.services.label}</MetaLabel>
 
       <ol className={styles.stack}>
         {ZONES.map((zone, i) => (

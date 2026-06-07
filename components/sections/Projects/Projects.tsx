@@ -5,7 +5,7 @@ import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import Image from 'next/image';
 import { TransitionLink } from '@/components/transitions';
-import { StarIcon } from '@/components/sections/Hero/StarIcon';
+import { MetaLabel } from '@/components/ui/MetaLabel';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import styles from './Projects.module.css';
 import { content, getCaseStudySlugs, caseStudies } from '@/data';
@@ -278,10 +278,9 @@ export const Projects = () => {
            const cardInner = (
                <>
                    {isFirst && (
-                     <div className={styles.metaLabel} aria-hidden="true">
-                       <StarIcon variant="outline" baseClassName={styles.starIcon} />
+                     <MetaLabel className={styles.metaLabel} aria-hidden="true">
                        {projects.label}
-                     </div>
+                     </MetaLabel>
                    )}
 
                    {/* Image */}

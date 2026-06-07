@@ -11,7 +11,7 @@
   position: relative;
   --wf-live-accent: var(--wf-teal);
 
-  background: var(--color-background);
+  background: transparent;
   color: var(--color-primary-text);
 }
 
@@ -19,12 +19,7 @@
   height: 100vh;
   position: relative;
   overflow: hidden;
-  /* deep vignette so the accent light reads, independent of light/dark */
-  background: radial-gradient(
-    90% 100% at 50% 50%,
-    color-mix(in srgb, var(--color-primary-text) 10%, var(--color-background)) 0%,
-    var(--color-background) 66%
-  );
+  background: transparent;
 }
 
 /* ---- header ---- */
@@ -35,13 +30,6 @@
   justify-content: space-between;
   align-items: baseline;
   z-index: 6;
-}
-.eyebrow {
-  font-family: var(--font-navbar);
-  font-size: 11px;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--color-text-muted-strong);
 }
 .readout {
   font-family: var(--font-navbar);

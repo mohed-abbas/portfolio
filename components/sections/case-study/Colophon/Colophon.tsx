@@ -6,7 +6,7 @@ import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { animationConfig } from "@/data";
 import type { ColophonContent } from "@/data";
 import { renderInline } from "@/lib/renderInline";
-import { SectionLabel } from "../SectionLabel";
+import { MetaLabel } from "@/components/ui/MetaLabel";
 import styles from "./Colophon.module.css";
 
 const cs = animationConfig.caseStudy;
@@ -66,13 +66,13 @@ export const Colophon = ({ leftLabel, titleLine1, titleAccent, credits, rightLab
     >
       <div className={styles.inner}>
         <div>
-          <SectionLabel
+          <MetaLabel
             ref={leftEyebrowRef}
             id={eyebrowId}
             className={styles.eyebrow}
           >
             {leftLabel}
-          </SectionLabel>
+          </MetaLabel>
           <h2 ref={titleRef} className={styles.title}>
             {titleLine1}{" "}
             <span className={styles.titleAccent}>{titleAccent}</span>
@@ -89,9 +89,9 @@ export const Colophon = ({ leftLabel, titleLine1, titleAccent, credits, rightLab
         </div>
 
         <div className={styles.bio}>
-          <SectionLabel ref={rightEyebrowRef} className={styles.eyebrow}>
+          <MetaLabel ref={rightEyebrowRef} className={styles.eyebrow}>
             {rightLabel}
-          </SectionLabel>
+          </MetaLabel>
           <div ref={bioRef}>
             {/* Index keys are acceptable here: bio paragraphs are static
                 build-time content from case-studies.json and never reorder. */}

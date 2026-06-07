@@ -6,7 +6,7 @@ import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { animationConfig } from "@/data";
 import type { ProductContent } from "@/data";
 import { renderInline } from "@/lib/renderInline";
-import { SectionLabel } from "../SectionLabel";
+import { MetaLabel } from "@/components/ui/MetaLabel";
 import styles from "./Product.module.css";
 
 const cs = animationConfig.caseStudy;
@@ -46,13 +46,13 @@ export const Product = ({
     >
       <div className={styles.head}>
         <div className={styles.row}>
-          <SectionLabel
+          <MetaLabel
             ref={eyebrowRef}
             id={eyebrowId}
             className={styles.eyebrow}
           >
             {label}
-          </SectionLabel>
+          </MetaLabel>
           <h2 ref={titleRef} className={styles.title}>
             {titleLine1}
             <br />

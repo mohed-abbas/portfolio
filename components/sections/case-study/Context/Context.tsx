@@ -6,7 +6,7 @@ import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { animationConfig } from "@/data";
 import type { ContextContent } from "@/data";
 import { renderInline } from "@/lib/renderInline";
-import { SectionLabel } from "../SectionLabel";
+import { MetaLabel } from "@/components/ui/MetaLabel";
 import styles from "./Context.module.css";
 
 const cs = animationConfig.caseStudy;
@@ -38,9 +38,9 @@ export const Context = ({ label, facts, body }: ContextContent) => {
     >
       <aside className={styles.margin}>
         <div ref={innerRef} className={styles.marginInner}>
-          <SectionLabel id={eyebrowId} className={styles.eyebrow}>
+          <MetaLabel id={eyebrowId} className={styles.eyebrow}>
             {label}
-          </SectionLabel>
+          </MetaLabel>
           {facts.map((fact) => (
             <div key={fact} className={styles.fact}>
               {renderInline(fact)}

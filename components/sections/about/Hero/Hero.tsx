@@ -5,7 +5,7 @@ import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/gsap';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { cursorBus } from '@/lib/cursorBus';
-import { StarIcon } from '@/components/sections/Hero/StarIcon';
+import { MetaLabel } from '@/components/ui/MetaLabel';
 import { content } from '@/data';
 import styles from './Hero.module.css';
 
@@ -168,10 +168,9 @@ export function AboutHero() {
   return (
     <section ref={sectionRef} className={styles.hero} id="about">
       <div className={styles.inner}>
-        <div ref={labelRef} className={styles.metaLabel}>
-          <StarIcon variant="outline" baseClassName={styles.starIcon} />
+        <MetaLabel ref={labelRef} className={styles.metaLabel}>
           {label}
-        </div>
+        </MetaLabel>
 
         <h1 className={styles.stack} ref={stackRef} aria-label={statement}>
           {verbs.map((verb, i) =>

@@ -5,38 +5,23 @@
     z-index: var(--z-above);
 }
 
+/* Base meta-label styling lives in the shared <MetaLabel> component; this
+   only positions it. Lives inside the first project's projectSticky
+   (Tasktrox). That element is pinned by GSAP ScrollTrigger (position:fixed)
+   for the full 250vh scroll of the first project, so absolute positioning
+   inside it acts like a viewport-fixed overlay while Tasktrox is on screen,
+   and naturally disappears when the next project pins. */
 .metaLabel {
-    /* Lives inside the first project's projectSticky (Tasktrox). That
-       element is pinned by GSAP ScrollTrigger (position:fixed) for the
-       full 250vh scroll of the first project, so absolute positioning
-       inside it acts like a viewport-fixed overlay while Tasktrox is on
-       screen — and naturally disappears when the next project pins. */
     position: absolute;
     top: clamp(80px, 9vw, 110px); /* sits below navbar (top ≈ 16–33px + brand ~52px) */
     left: var(--spacing-nav-side); /* matches navbar MENU gutter */
     z-index: 20;
     font-family: var(--font-navbar);
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: var(--color-accent-purple);
-    display: flex;
-    align-items: center;
-    gap: 10px;
     pointer-events: none; /* keeps TransitionLink click target intact */
-}
-
-.starIcon {
-    width: 1.2em;
-    height: 1.2em;
-    flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
     .metaLabel {
-        font-size: 0.7rem;
-        gap: 8px;
         top: clamp(70px, 14vw, 90px);
         left: var(--spacing-nav-side);
     }

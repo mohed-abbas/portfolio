@@ -24,30 +24,7 @@
   font-weight: 300;
 }
 
-.metaLabel {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: var(--color-accent-purple);
-  /* margin-bottom: 3rem; */
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.starIcon {
-  width: 1.2em;
-  height: 1.2em;
-  flex-shrink: 0;
-}
-
-/* .metaLabel::before {
-  content: "";
-  width: 40px;
-  height: 1px;
-  background-color: var(--color-accent-purple);
-} */
+/* Meta-label styling now lives in the shared <MetaLabel> component. */
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
@@ -60,11 +37,6 @@
   .section {
     padding: 100px 5%;
   }
-
-  .metaLabel {
-    font-size: 0.7rem;
-    gap: 8px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -74,10 +46,5 @@
 
   .plusIcon {
     font-size: 1.5rem;
-  }
-
-  .starIcon {
-    width: 1em;
-    height: 1em;
   }
 }

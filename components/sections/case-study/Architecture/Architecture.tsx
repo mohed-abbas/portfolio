@@ -6,7 +6,7 @@ import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { animationConfig } from "@/data";
 import type { ArchitectureContent } from "@/data";
 import { renderInline } from "@/lib/renderInline";
-import { SectionLabel } from "../SectionLabel";
+import { MetaLabel } from "@/components/ui/MetaLabel";
 import styles from "./Architecture.module.css";
 
 const cs = animationConfig.caseStudy;
@@ -55,13 +55,13 @@ export const Architecture = ({
       aria-labelledby={eyebrowId}
     >
       <div className={styles.head}>
-        <SectionLabel
+        <MetaLabel
           ref={eyebrowRef}
           id={eyebrowId}
           className={styles.eyebrow}
         >
           {label}
-        </SectionLabel>
+        </MetaLabel>
         <h2 ref={titleRef} className={styles.title}>
           {titleLine1}
           <br />

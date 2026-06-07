@@ -13,7 +13,7 @@
   --wf-live-accent: var(--wf-teal);
   --wf-faint: color-mix(in srgb, var(--color-primary-text) 12%, transparent);
 
-  background: var(--color-background);
+  background: transparent;
   color: var(--color-primary-text);
 }
 
@@ -21,11 +21,7 @@
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: radial-gradient(
-    120% 120% at 50% 50%,
-    color-mix(in srgb, var(--color-primary-text) 4%, var(--color-background)) 0%,
-    var(--color-background) 64%
-  );
+  background: transparent;
 }
 
 /* ---- header ---- */
@@ -36,13 +32,6 @@
   justify-content: space-between;
   align-items: baseline;
   z-index: 6;
-}
-.eyebrow {
-  font-family: var(--font-navbar);
-  font-size: 11px;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--color-text-muted-strong);
 }
 .readout {
   font-family: var(--font-navbar);

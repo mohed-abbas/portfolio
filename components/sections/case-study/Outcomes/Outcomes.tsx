@@ -5,7 +5,7 @@ import { useBlockFadeIn } from "@/lib/useBlockFadeIn";
 import { useWordLineReveal } from "@/lib/useWordLineReveal";
 import { animationConfig } from "@/data";
 import type { OutcomesContent } from "@/data";
-import { SectionLabel } from "../SectionLabel";
+import { MetaLabel } from "@/components/ui/MetaLabel";
 import styles from "./Outcomes.module.css";
 
 const cs = animationConfig.caseStudy;
@@ -43,13 +43,13 @@ export const Outcomes = ({ label, titleLine1, titleLine2, titleAccent, metrics }
       aria-labelledby={eyebrowId}
     >
       <div className={styles.head}>
-        <SectionLabel
+        <MetaLabel
           ref={eyebrowRef}
           id={eyebrowId}
           className={styles.eyebrow}
         >
           {label}
-        </SectionLabel>
+        </MetaLabel>
         <h2 ref={titleRef} className={styles.title}>
           {titleLine1}
           <br />

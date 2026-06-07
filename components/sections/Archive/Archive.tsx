@@ -6,7 +6,7 @@ import { gsap, ScrollTrigger, ANIMATION_CONFIG } from '@/lib/gsap';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { useAccentColor } from '@/lib/AccentColorContext';
 import { TransitionLink } from '@/components/transitions';
-import { StarIcon } from '@/components/sections/Hero/StarIcon';
+import { MetaLabel } from '@/components/ui/MetaLabel';
 import { content } from '@/data';
 import styles from './Archive.module.css';
 
@@ -291,10 +291,9 @@ export function Archive() {
   return (
     <div ref={wrapperRef} id="archive-wrapper" className={styles.wrapper}>
       <section ref={sectionRef} className={styles.section} id="archive">
-        <div ref={labelRef} className={styles.metaLabel}>
-          <StarIcon variant="outline" baseClassName={styles.starIcon} />
+        <MetaLabel ref={labelRef} className={styles.metaLabel}>
           {archive.label}
-        </div>
+        </MetaLabel>
 
         <h2
           ref={statementRef}

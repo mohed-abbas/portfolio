@@ -8,7 +8,7 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { animationConfig } from "@/data";
 import type { ToggleContent, ToggleScreen } from "@/data";
-import { SectionLabel } from "../SectionLabel";
+import { MetaLabel } from "@/components/ui/MetaLabel";
 import styles from "./Toggle.module.css";
 
 const cs = animationConfig.caseStudy;
@@ -161,7 +161,7 @@ export const Toggle = ({ label, titleLine1, titleAccent, screens }: ToggleConten
     >
       <div className={styles.controls}>
         <div>
-          <SectionLabel id={eyebrowId}>{label}</SectionLabel>
+          <MetaLabel id={eyebrowId}>{label}</MetaLabel>
           <h2 ref={titleRef} className={styles.title}>
             {titleLine1}{" "}
             <span className={styles.titleAccent}>{screens.length}</span>{" "}

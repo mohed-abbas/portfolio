@@ -4,6 +4,7 @@ import { useRef, type CSSProperties } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { content } from '@/data';
+import { MetaLabel } from '@/components/ui/MetaLabel';
 import { Star } from '../Services/Star';
 import {
   BAR_MAX_FRACTION,
@@ -592,10 +593,7 @@ export function DialServicesV2() {
       <div ref={shellRef} className={styles.shell}>
         <div ref={pinRef} className={styles.pin}>
           <div className={styles.top}>
-            <div className={styles.metaLabel}>
-              <Star className={styles.starIcon} />
-              {content.services.label}
-            </div>
+            <MetaLabel>{content.services.label}</MetaLabel>
             <div className={styles.topRow}>
               {/* bigword + lede content is rendered imperatively on mount
                   (see splitBigWord / splitLede). The empty initial children

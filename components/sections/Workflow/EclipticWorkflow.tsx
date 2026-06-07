@@ -11,6 +11,7 @@
 import { useRef } from 'react';
 import { content } from '@/data';
 import { useReducedMotion } from '@/lib/useReducedMotion';
+import { MetaLabel } from '@/components/ui/MetaLabel';
 import { VIEWBOX } from './variants';
 import { useEclipticDriver } from './useEclipticDriver';
 import { renderCopy } from './renderCopy';
@@ -33,7 +34,7 @@ export function EclipticWorkflow() {
     <section ref={sectionRef} className={className} id="workflow" data-wf>
       <div className={styles.viewport} data-viewport>
         <header className={styles.head}>
-          <span className={styles.eyebrow}>✦&nbsp;&nbsp;{label}</span>
+          <MetaLabel>{label}</MetaLabel>
           <span className={styles.readout} data-readout aria-hidden="true">
             01 / {String(stops.length).padStart(2, '0')}
           </span>

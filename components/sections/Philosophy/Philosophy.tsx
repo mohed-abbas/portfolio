@@ -5,7 +5,7 @@ import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, ANIMATION_CONFIG } from '@/lib/gsap';
 import { useReducedMotion } from '@/lib/useReducedMotion';
 import { content } from '@/data';
-import { StarIcon } from '@/components/sections/Hero/StarIcon';
+import { MetaLabel } from '@/components/ui/MetaLabel';
 import { RevealText } from './RevealText';
 import styles from './Philosophy.module.css';
 
@@ -59,10 +59,7 @@ export function Philosophy() {
   return (
     <div ref={wrapperRef} className={styles.wrapper}>
       <section ref={sectionRef} className={styles.section} id="philosophy">
-        <div ref={labelRef} className={styles.metaLabel}>
-          <StarIcon variant="outline" baseClassName={styles.starIcon} />
-          {content.philosophy.label}
-        </div>
+        <MetaLabel ref={labelRef}>{content.philosophy.label}</MetaLabel>
         <RevealText
           text={content.philosophy.statement}
           highlights={content.philosophy.highlights}
