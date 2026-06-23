@@ -1,20 +1,21 @@
 /* ABOUT PAGE · Contributions — GitHub heatmap + accent snake. */
 
 .section {
-  padding: clamp(48px, 7vh, 88px) var(--spacing-nav-side);
+  padding: clamp(140px, 22vh, 280px) var(--spacing-nav-side);
 
-  /* The snake follows the site's live accent. We reference the CSS variable the
-     accent provider keeps in sync on the DOM (NOT a React-rendered inline style)
-     so server and client markup match — no hydration mismatch. */
-  --snake: var(--color-accent-purple);
+  /* The snake is the primary text colour, so it reads as ink crawling across
+     the grid. */
+  --snake: var(--color-primary-text);
 
-  /* Green contribution scale, mixed over the page background so it tracks
-     light/dark automatically. */
+  /* Accent contribution scale, mixed over the page background so it tracks
+     light/dark automatically. We reference the CSS variable the accent provider
+     keeps in sync on the DOM (NOT a React-rendered inline style) so server and
+     client markup match — no hydration mismatch. */
   --cell-0: var(--color-grid-line);
-  --cell-1: color-mix(in srgb, var(--wf-green) 55%, var(--color-background));
-  --cell-2: color-mix(in srgb, var(--wf-green) 78%, var(--color-background));
-  --cell-3: var(--wf-green);
-  --cell-4: color-mix(in srgb, var(--wf-green) 100%, #000 22%);
+  --cell-1: color-mix(in srgb, var(--color-accent-purple) 72%, var(--color-background));
+  --cell-2: color-mix(in srgb, var(--color-accent-purple) 88%, var(--color-background));
+  --cell-3: var(--color-accent-purple);
+  --cell-4: color-mix(in srgb, var(--color-accent-purple) 100%, #000 22%);
 }
 .inner { max-width: var(--canvas-max-width); margin: 0 auto; }
 
@@ -116,8 +117,8 @@
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 999px;
-  border: 1px solid var(--snake);
-  background: var(--snake);
+  border: 1px solid var(--color-accent-purple);
+  background: var(--color-accent-purple);
   color: var(--color-background);
   transition: transform 0.25s var(--ease-out-expo), background 0.25s ease,
     color 0.25s ease, border-color 0.25s ease;
