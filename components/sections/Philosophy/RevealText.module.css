@@ -35,7 +35,8 @@
   overflow: hidden;
   position: relative;
   vertical-align: bottom;
-  cursor: pointer;
+  /* No pointer cursor: these highlight letters are a scroll/hover flourish,
+     not links. Inherit the body's `cursor: none` so no hand cursor appears. */
 }
 
 /* The inner letter that moves within the mask. Color is driven by the

@@ -44,8 +44,8 @@
     position: relative;
     /* Ensure the mask tightly wraps the letter */
     vertical-align: baseline;
-    /* Cursor to indicate interactivity */
-    cursor: pointer;
+    /* No pointer cursor: the portal is a hover flourish, not a link. Inherit
+       the body's `cursor: none` so only the custom cursor shows, not a hand. */
 }
 
 /* The inner letter that moves within the mask */

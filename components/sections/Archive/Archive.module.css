@@ -96,7 +96,8 @@
   overflow: hidden;
   position: relative;
   vertical-align: bottom;
-  cursor: pointer;
+  /* No pointer cursor: these highlight letters are a reveal flourish, not a
+     link. Inherit the body's `cursor: none` so no hand cursor appears. */
 }
 
 .portalLetter {
