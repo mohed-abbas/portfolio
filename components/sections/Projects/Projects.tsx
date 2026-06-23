@@ -283,36 +283,43 @@ export const Projects = () => {
                      </MetaLabel>
                    )}
 
-                   {/* Image */}
-                   <div className={styles.imageCard}>
-                        <div className={styles.projectImgWrapper}>
-                             <Image
-                                src={project.image}
-                                alt={project.title}
-                                fill
-                                style={{ objectFit: 'cover', objectPosition: 'top' }}
-                                sizes="(max-width: 768px) 100vw, 80vw"
-                             />
-                        </div>
-                   </div>
+                   {/* Image + corner badge share a frame. The frame is the badge's
+                       positioning anchor so it sits on the IMAGE's top-right corner
+                       at every viewport size (it used to be positioned against the
+                       full-height sticky, which only lined up on desktop). The frame
+                       carries no z-index/transform, so it creates no stacking context
+                       and the image (z5) ↔ title (z10) ↔ badge (z20) order is kept. */}
+                   <div className={styles.cardFrame}>
+                       <div className={styles.imageCard}>
+                            <div className={styles.projectImgWrapper}>
+                                 <Image
+                                    src={project.image}
+                                    alt={project.title}
+                                    fill
+                                    style={{ objectFit: 'cover', objectPosition: 'top' }}
+                                    sizes="(max-width: 768px) 100vw, 80vw"
+                                 />
+                            </div>
+                       </div>
 
-                   {/* Funky Badge */}
-                   <div
-                    className={styles.funkyBadge}
-                    style={{
-                        backgroundColor: project.badgeColor,
-                        color: project.badgeTextColor,
-                        boxShadow: `5px 5px 0px ${project.badgeShadowColor || 'black'}`
-                    }}
-                   >
-                       <span>
-                           {project.badge.split(/<br\s*\/?>/i).map((line, i, arr) => (
-                               <Fragment key={i}>
-                                   {line}
-                                   {i < arr.length - 1 && <br />}
-                               </Fragment>
-                           ))}
-                       </span>
+                       {/* Funky Badge */}
+                       <div
+                        className={styles.funkyBadge}
+                        style={{
+                            backgroundColor: project.badgeColor,
+                            color: project.badgeTextColor,
+                            boxShadow: `5px 5px 0px ${project.badgeShadowColor || 'black'}`
+                        }}
+                       >
+                           <span>
+                               {project.badge.split(/<br\s*\/?>/i).map((line, i, arr) => (
+                                   <Fragment key={i}>
+                                       {line}
+                                       {i < arr.length - 1 && <br />}
+                                   </Fragment>
+                               ))}
+                           </span>
+                       </div>
                    </div>
 
                    {/* Text Splitter */}
