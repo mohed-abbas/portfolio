@@ -754,3 +754,30 @@ export interface TransitionsConfig {
    *  of truth for what is valid. */
   effects?: Record<string, Record<string, unknown>>;
 }
+
+// ---------------------------------------------------------------------------
+// GitHub contributions (built at build time by scripts/fetch-contributions.mjs)
+// ---------------------------------------------------------------------------
+
+/** One day in the GitHub contribution heatmap. */
+export interface ContributionCell {
+  /** ISO date, YYYY-MM-DD. */
+  date: string;
+  /** Contribution count for the day. */
+  count: number;
+  /** GitHub intensity bucket, 0 (none) → 4 (most). */
+  level: 0 | 1 | 2 | 3 | 4;
+}
+
+/** The full last-year contribution grid, arranged as Sun→Sat week columns.
+ *  Leading/trailing padding days are `null` so the grid has clean empty
+ *  corners like GitHub's. Sourced from data/github-contributions.json. */
+export interface GithubContributions {
+  username: string;
+  /** Total contributions in the last year. */
+  total: number;
+  /** ISO date the file was generated. */
+  generatedAt: string;
+  /** Week columns; each is 7 entries (Sun→Sat), `null` for padding. */
+  weeks: Array<Array<ContributionCell | null>>;
+}

@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/fetch-contributions.mjs",
     "build": "next build",
     "start": "next start",
+    "contrib": "node scripts/fetch-contributions.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

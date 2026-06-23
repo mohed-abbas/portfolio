@@ -12,6 +12,7 @@ import type {
   CaseStudies,
   TransitionsConfig,
   Project,
+  GithubContributions,
 } from './types';
 
 // Import JSON files
@@ -23,6 +24,7 @@ import animationConfigJson from './animation-config.json';
 import featuresJson from './features.json';
 import caseStudiesJson from './case-studies.json';
 import transitionsJson from './transitions.json';
+import githubContributionsJson from './github-contributions.json';
 
 // Export typed data
 // `as SiteMetadata`: TS widens JSON string literals (e.g. openGraph.type) to
@@ -36,6 +38,10 @@ export const animationConfig: AnimationConfig = animationConfigJson;
 export const features: Features = featuresJson;
 export const caseStudies: CaseStudies = caseStudiesJson;
 export const transitionsConfig: TransitionsConfig = transitionsJson as TransitionsConfig;
+// `as`: the JSON `level` fields widen to `number`, so the 0|1|2|3|4 literal
+// union in GithubContributions needs an assertion at this single boundary.
+export const githubContributions: GithubContributions =
+  githubContributionsJson as GithubContributions;
 
 if (process.env.NODE_ENV !== 'production') {
   Object.entries(caseStudies).forEach(([slug, cs]) => {
@@ -103,6 +109,9 @@ export type {
   // Works index
   WorksIndexContent,
   WorksIndexProject,
+  // GitHub contributions
+  GithubContributions,
+  ContributionCell,
 } from './types';
 
 // Convenience helpers
