@@ -31,8 +31,10 @@ Dockerfile
 docker-compose*.yml
 .dockerignore
 
-# Scripts
-scripts/
+# Scripts — exclude all except the build-time prefetch the `prebuild` step runs
+# (it's tolerant: falls back to the committed data/github-contributions.json).
+scripts/*
+!scripts/fetch-contributions.mjs
 
 # Debug logs
 npm-debug.log*
