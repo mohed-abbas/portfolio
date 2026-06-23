@@ -1,8 +1,9 @@
 /* ABOUT PAGE · composition
    The dedicated /about page, built like a case study: the Echo hero masthead,
    the reused case-study Ledger as a vitals strip, an Intro reading column,
-   a numbered Experience list, Credentials (certs ledger + education), a
-   Colophon, and the shared home-page Contact form as the closing CTA.
+   a numbered Experience list, a Current Project spotlight (TASKTROX),
+   Credentials (certs ledger + education), a Colophon, and the shared
+   home-page Contact form as the closing CTA.
    Editorial is the base language; the Ledger is woven in at the top (vitals)
    and the bottom (colophon). */
 
@@ -11,6 +12,7 @@ import { Contact } from "@/components/sections/Contact";
 import { AboutPageHeroEcho } from "./Echo";
 import { AboutPageIntro } from "./Intro";
 import { AboutPageExperience } from "./Experience";
+import { AboutPageCurrentProject } from "./CurrentProject";
 import { AboutPageCredentials } from "./Credentials";
 import { AboutPageColophon } from "./Colophon";
 
@@ -29,6 +31,7 @@ export function AboutPageView() {
       <Ledger entries={VITALS} />
       <AboutPageIntro />
       <AboutPageExperience />
+      <AboutPageCurrentProject />
       <AboutPageCredentials />
       <AboutPageColophon />
       <Contact />
