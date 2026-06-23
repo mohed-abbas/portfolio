@@ -420,8 +420,14 @@ export function CustomCursor() {
     const handleSpotlightLeave = () => {
       isSpotlightActive.current = false;
 
-      // Reset CSS variable for spotlight state
+      // Reset CSS variables for spotlight state. Clear --spotlight-size too:
+      // the tagline reveal layers read `var(--spotlight-size, 0px)` and inherit
+      // this <html> value whenever their own container hasn't set one yet (e.g.
+      // a freshly remounted Hero after a back-navigation). Leaving it non-zero
+      // here strands the hidden tagline visible until the next hover writes 0px
+      // onto the container.
       document.documentElement.style.setProperty('--spotlight-active', '0');
+      document.documentElement.style.setProperty('--spotlight-size', '0px');
 
       // Bring back the main cursor
       gsap.to(cursor, {

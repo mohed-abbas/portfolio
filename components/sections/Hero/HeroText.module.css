@@ -93,6 +93,11 @@
 
 /* Container for both tagline layers - CSS Grid for perfect stacking */
 .taglineContainer {
+    /* Own the spotlight radius locally so the reveal layers never inherit a
+       stray `--spotlight-size` left on <html> by the CustomCursor spotlight
+       (which would strand the hidden tagline visible on a fresh remount). The
+       hover handlers override this inline; this is the at-rest default. */
+    --spotlight-size: 0px;
     display: grid;
     /* Removed place-items: end to allow stretch (default) so layers align perfectly */
     position: relative;
