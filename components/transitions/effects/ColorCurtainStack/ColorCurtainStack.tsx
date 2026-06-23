@@ -159,7 +159,7 @@ function buildCurtains(payload: TransitionEffectProps['payload']): CurtainConfig
         textTone: 'ink',
         labelTone: 'paper',
         scrollClass: styles.trackScrollLeft,
-        labels: { tl: 'Curtain · 01', br: 'M.A · Studio' },
+        labels: { br: 'M.A · Studio' },
       },
       {
         background: panelColor,
@@ -175,7 +175,7 @@ function buildCurtains(payload: TransitionEffectProps['payload']): CurtainConfig
         textTone: 'ink',
         labelTone: 'paper',
         scrollClass: styles.trackScrollLeftFast,
-        labels: { tl: 'Skill · 03', br: 'Now' },
+        labels: { br: 'Now' },
       },
     ];
   }
