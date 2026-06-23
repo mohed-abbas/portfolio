@@ -110,6 +110,19 @@
   overflow: hidden;
 }
 
+/* Per-row cell — the on-load "expand from solid" animates these (clip-path +
+   y), one per echo layer, so each layer emerges as its own element (the exact
+   reverse of the scroll-merge). The slide is clipped by the GROUP's
+   `overflow: hidden` (which spans band→solid), so the cell needs none itself.
+   Deliberately NO `will-change: transform` and no positioning: either would make
+   the cell a containing block and so the inner row's `offsetParent`, which would
+   zero `row.offsetTop` and break the scroll-merge's slide formula. After the
+   load animation the inline clip-path + transform are cleared (and the merge is
+   refreshed) so the cell is fully inert and the row measures against `.hero`. */
+.echoCell {
+  width: 100%;
+}
+
 /* Echo rows — each clips the full word to a thin band; the text inside is
    absolutely placed so the same glyph slice repeats across the rows. */
 .echoRow {

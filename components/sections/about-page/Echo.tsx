@@ -39,30 +39,63 @@ export function AboutPageHeroEcho() {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const echoes = gsap.utils.toArray<HTMLElement>("[data-echo]", section);
+        const cells = gsap.utils.toArray<HTMLElement>("[data-echo-cell]", section);
         const solidRow = section.querySelector<HTMLElement>(
           '[data-band="solid"]',
         );
 
-        // On-load reveal: the solid word slides up, the echoes fade in from the
-        // centre out, then the chrome settles.
+        // Distance to pull a cell so its echo row sits at the solid word's
+        // centre — the SAME value the scroll-merge slides the row INTO (read
+        // from transform-free layout offsets). The load is its exact inverse.
+        const cellDy = (cell: HTMLElement) => {
+          const row = cell.querySelector<HTMLElement>("[data-echo]");
+          if (!row || !solidRow) return 0;
+          return (
+            solidRow.offsetTop +
+            solidRow.offsetHeight / 2 -
+            (row.offsetTop + row.offsetHeight / 2)
+          );
+        };
+
+        // On-load reveal: the solid word slides up first (the anchor), then each
+        // echo layer slides OUT of the solid centre to its own band while its
+        // clip unfurls — the perfect reverse of the scroll-merge — then the
+        // chrome settles. The merge keeps owning the inner rows; the load only
+        // touches the per-row CELL wrappers, so the two never fight.
         gsap.set("[data-reveal]", { autoAlpha: 0, y: 24 });
         gsap.set("[data-solid]", { yPercent: 115 });
-        gsap.set(echoes, (_i: number, el: HTMLElement) => ({
-          autoAlpha: 0,
-          y: el.dataset.dir === "up" ? -16 : 16,
-        }));
+        // Each cell starts collapsed INTO the solid: pulled to the centre and
+        // clipped shut on its solid-facing edge (up rows close from the bottom,
+        // down rows from the top) — exactly where the merge leaves the row.
+        gsap.set(cells, {
+          y: (_i: number, el: HTMLElement) => cellDy(el),
+          clipPath: (_i: number, el: HTMLElement) =>
+            el.dataset.dir === "up"
+              ? "inset(0% 0% 100% 0%)"
+              : "inset(100% 0% 0% 0%)",
+        });
 
         const intro = gsap.timeline({ delay: 0.1 });
         intro
           .to("[data-solid]", { yPercent: 0, duration: 1, ease: "expo.out" })
           .to(
-            echoes,
+            cells,
             {
-              autoAlpha: 1,
               y: 0,
+              clipPath: "inset(0% 0% 0% 0%)",
               duration: 0.9,
               ease: "power3.out",
-              stagger: { each: 0.07, from: "center" },
+              // No stagger — every layer emerges at once, mirroring the merge,
+              // which retracts every row simultaneously.
+              // Once expanded, strip the inline clip + transform so the cell is
+              // fully inert: with no transform it stops being the row's
+              // offsetParent, so the merge measures row.offsetTop against .hero
+              // again. Refresh the merge so its slide distance recomputes from
+              // the now-clean DOM (covers a scroll that happened mid-intro).
+              onComplete: () => {
+                gsap.set(cells, { clearProps: "clipPath,transform" });
+                merge.scrollTrigger?.refresh();
+              },
             },
             "-=0.65",
           )
@@ -155,12 +188,18 @@ export function AboutPageHeroEcho() {
             {TOP_ROWS.map((tone, i) => (
               <div
                 key={`t${i}`}
-                className={`${styles.echoRow} ${styles[tone]}`}
-                data-band="top"
-                data-echo
+                className={styles.echoCell}
+                data-echo-cell
                 data-dir="up"
               >
-                <span className={styles.echoText}>{WORD}</span>
+                <div
+                  className={`${styles.echoRow} ${styles[tone]}`}
+                  data-band="top"
+                  data-echo
+                  data-dir="up"
+                >
+                  <span className={styles.echoText}>{WORD}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -176,12 +215,18 @@ export function AboutPageHeroEcho() {
             {BOTTOM_ROWS.map((tone, i) => (
               <div
                 key={`b${i}`}
-                className={`${styles.echoRow} ${styles[tone]}`}
-                data-band="bottom"
-                data-echo
+                className={styles.echoCell}
+                data-echo-cell
                 data-dir="down"
               >
-                <span className={styles.echoText}>{WORD}</span>
+                <div
+                  className={`${styles.echoRow} ${styles[tone]}`}
+                  data-band="bottom"
+                  data-echo
+                  data-dir="down"
+                >
+                  <span className={styles.echoText}>{WORD}</span>
+                </div>
               </div>
             ))}
           </div>
