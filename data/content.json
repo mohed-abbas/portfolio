@@ -447,14 +447,6 @@
         "year": 2025,
         "accent": "#93b99e",
         "marqueeDurationSec": 27
-      },
-      {
-        "id": "permitto",
-        "title": "permitto",
-        "discipline": "Full-Stack · Industrial Safety",
-        "year": 2025,
-        "accent": "#da3036",
-        "marqueeDurationSec": 30
       }
     ]
   }
