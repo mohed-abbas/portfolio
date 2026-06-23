@@ -144,6 +144,11 @@
   text-wrap: balance;
   color: var(--color-primary-text);
 }
+/* The trailing full stop carries the orbiting sphere's accent (the same
+   live teal that lights the crescent + corona), not the ink of the words. */
+.detailTitleStop {
+  color: var(--wf-live-accent);
+}
 .detailCopy {
   margin: 0;
   max-width: 52ch;

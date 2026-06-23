@@ -60,7 +60,12 @@ export function EclipseWorkflow() {
               data-name={stop.name}
               style={{ '--accent': workflowAccent(stop.accent, i, stops.length) } as React.CSSProperties}
             >
-              <h3 className={styles.detailTitle}>{stop.title}</h3>
+              <h3 className={styles.detailTitle}>
+                {stop.title.endsWith('.') ? stop.title.slice(0, -1) : stop.title}
+                {stop.title.endsWith('.') && (
+                  <span className={styles.detailTitleStop}>.</span>
+                )}
+              </h3>
               <p className={styles.detailCopy}>{renderCopy(stop, styles.em)}</p>
             </article>
           ))}
