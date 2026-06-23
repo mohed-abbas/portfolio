@@ -192,6 +192,23 @@ a.projectSticky {
     background-color: var(--color-background);
 }
 
+/* Mobile: the pills run oversized on phones (18px text + 10/20 padding ≈ a
+   68px-tall capsule). Scale the meta type down and tighten the pill padding +
+   gap so the two pills sit compactly under the card. Ported 1:1 from the
+   home-page Projects card; placed AFTER the base .pill / .projectMeta rules so
+   it wins on source order (a media query adds no specificity). */
+@media (max-width: 768px) {
+    .projectMeta {
+        font-size: 13px;
+        gap: 10px;
+    }
+
+    .pill {
+        padding: 7px 14px;
+        border-width: 1.5px;
+    }
+}
+
 /* No-JS fallback. The image, badge and meta start hidden and are revealed by
    the GSAP scroll timeline; with JS disabled that timeline never runs, so
    reveal them at their resting end-state so the card reads as a static layout.
